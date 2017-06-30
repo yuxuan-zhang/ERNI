@@ -18,6 +18,6 @@ _plot_each_contribution = 'Y'  # 1 means plot each isotope contribution
 _plot_mixed = 'N'  # 1 means plot mixed resonance
 
 
-plot_function._get_plot(thick_mm, element, density_sample, ele_at_ratio, mass_abund_other, _database,
+plot_function.get_plot(thick_mm, element, density_sample, ele_at_ratio, mass_abund_other, _database,
                         energy_max, energy_min, energy_sub,
                         _type_x_axis, _type_y_axis, _plot_each_contribution, _plot_mixed)
