@@ -10,7 +10,9 @@ import os
 from scipy import interpolate
 style.use('ggplot')
 
-def _get_plot(thick_mm, element, density_sample, ele_at_ratio, _database, energy_max, energy_min, energy_sub, _type_x_axis, _type_y_axis, _plot_each_contribution, _plot_mixed):
+
+def _get_plot(thick_mm, element, density_sample, ele_at_ratio, mass_abund_other, _database,
+              energy_max, energy_min, energy_sub, _type_x_axis, _type_y_axis, _plot_each_contribution, _plot_mixed):
     # # Parameters
     # thick_mm = 0.26  # mm
     # element = 'U'
@@ -22,7 +24,6 @@ def _get_plot(thick_mm, element, density_sample, ele_at_ratio, _database, energy
     # energy_max = 300  # max incident energy in eV
     # energy_min = 1  # min incident energy in eV
     # energy_sub = 100
-    # sub_x = energy_sub * (energy_max - energy_min)  # subdivided new x-axis
     # _type_x_axis = 'energy'  # 1 means plot x-axis as energy in eV
     # _type_y_axis = 'absorb'  # 1 means plot y-axis as transmission
     # _plot_each_contribution = 'Y'  # 1 means plot each isotope contribution
@@ -31,6 +32,7 @@ def _get_plot(thick_mm, element, density_sample, ele_at_ratio, _database, energy
     # _lamda_axis = 1 - _type_x_axis
     # _absorb_axis = 1 - _type_y_axis
     thick_cm = thick_mm / 10  # Thickness in cm
+    sub_x = energy_sub * (energy_max - energy_min)  # subdivided new x-axis
 
     ### From .csv file basename obtain isotope name, isotope number, z number as dict.
     ### Convert dict to list which is callable in following steps.
@@ -165,4 +167,4 @@ def _get_plot(thick_mm, element, density_sample, ele_at_ratio, _database, energy
     plt.ylabel(_y_words)
     plt.legend(loc='best')
     plt.show()
-    return print(df_raw)
+
