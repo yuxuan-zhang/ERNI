@@ -10,7 +10,6 @@ import os
 from scipy import interpolate
 style.use('ggplot')
 
-def _get_plot(thick_mm, element, density_sample, ele_at_ratio, _database, energy_max, energy_min, energy_sub, _type_x_axis, _type_y_axis, _plot_each_contribution, _plot_mixed):
 
 # Parameters
 thick_mm = 0.26  # mm
