@@ -12,12 +12,14 @@ iso_num = []
 df = pd.DataFrame()
 df_name = pd.DataFrame()
 
-url = ['http://www.nndc.bnl.gov/exfor/servlet/X4sGetTabData?datfile=E4R21934_tdat.dat&emin=1e-05&emax=2e%2B07']
+url = ['',
+       '',
+       '']
 
 # url = ['http://www.nndc.bnl.gov/exfor/servlet/X4sGetTabData?datfile=E4R21920_tdat.dat&emin=1e-05&emax=2e%2B08',
 #        'http://www.nndc.bnl.gov/exfor/servlet/X4sGetTabData?datfile=E4R21921_tdat.dat&emin=1e-05&emax=2e%2B08',
 #        'http://www.nndc.bnl.gov/exfor/servlet/X4sGetTabData?datfile=E4R21922_tdat.dat&emin=1e-05&emax=2e%2B08',
-#        'http://www.nndc.bnl.gov/exfor/servlet/X4sGetTabData?datfile=E4R21923_tdat.dat&emin=1e-05&emax=1.5e%2B08'
+#        'http://www.nndc.bnl.gov/exfor/servlet/X4sGetTabData?datfile=E4R21923_tdat.dat&emin=1e-05&emax=2e%2B08'
 #        ]
 
 # Co
