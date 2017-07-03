@@ -13,8 +13,6 @@ formula = {'U': 1, 'O': 3}
 ratio_array = []
 _natural_mix = 'Y'
 sample_density = 2  # 0.7875  # pt.elements.isotope(element).density  # g/cm3  https://en.wikipedia.org/wiki/Cadmium
-# ele_at_ratio = 0.25  # for single element, will be implanted for multiple elements compound
-# element2 = '16-O'
 _database = 'ENDF_VIII'
 energy_max = 300  # max incident energy in eV
 energy_min = 1  # min incident energy in eV
@@ -44,18 +42,18 @@ for _each_ in elements:
                                                                  _natural_mix, ratio_array)
 
     x_energy, y_i_iso_ele_dict, y_i_iso_ele_sum, df_raw = _plot_functions.get_xy(isotopes, file_names, energy_min,
-                                                                                 energy_max, iso_abundance, sub_x, ele_at_ratio)
+                                                                                 energy_max, iso_abundance, sub_x,
+                                                                                 ele_at_ratio, _natural_mix, ratio_array)
     y_i_iso_ele_dicts[_each_] = list(dict.values(y_i_iso_ele_dict))
     y_i_iso_ele_sum_dict[_each_] = y_i_iso_ele_sum
 
-print(y_i_iso_ele_dicts)
-print(y_i_iso_ele_sum_dict)
+# Get Number of atoms per unit volume (#/cm^3)
 mass_iso_ele_list = list(dict.values(mass_iso_ele_dict))
 mass_iso_ele_sum = sum(np.array(mass_iso_ele_list))
-
-print(mass_iso_ele_sum)
 mixed_atoms_per_cm3 = _functions.atoms_per_cm3(density=sample_density, mass=mass_iso_ele_sum)
 # print('Number of atoms per unit volume (#/cm^3): {}'.format(mixed_atoms_per_cm3))
+print(y_i_iso_ele_dicts)
+print(y_i_iso_ele_sum_dict)
 
 
 # _plot_functions.plot_xy(_element, _energy_x_axis, _trans_y_axis, _plot_each_contribution, _plot_mixed,

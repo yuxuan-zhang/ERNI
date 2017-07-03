@@ -40,18 +40,18 @@ def get_atom_per_cm3(iso_abundance, iso_mass, ele_at_ratio, _natural_mix, ratio_
     abundance_array = np.array(iso_abundance)
     mass_array = np.array(iso_mass)
     if _natural_mix == 'Y':
-        mass_abundance_multiplied = mass_array * abundance_array
-        mass_iso_ele = sum(mass_abundance_multiplied) * ele_at_ratio
+        abundance_array = abundance_array
     else:
-        mass_ratio_multiplied = mass_array * ratio_array
-        mass_iso_ele = sum(mass_ratio_multiplied) * ele_at_ratio
+        abundance_array = ratio_array
+    mass_abundance_multiplied = mass_array * abundance_array
+    mass_iso_ele = sum(mass_abundance_multiplied) * ele_at_ratio
     return mass_iso_ele
 
     # mixed_atoms_per_cm3 = sample_density * pt.constants.avogadro_number/sum_density
     # return mixed_atoms_per_cm3
 
 
-def get_xy(isotopes, file_names, energy_min, energy_max, iso_abundance, sub_x, ele_at_ratio):
+def get_xy(isotopes, file_names, energy_min, energy_max, iso_abundance, sub_x, ele_at_ratio, _natural_mix, ratio_array):
     # Transmission calculation of summed and separated contributions by each isotopes
     df = pd.DataFrame()
     df_raw = pd.DataFrame()
@@ -62,6 +62,10 @@ def get_xy(isotopes, file_names, energy_min, energy_max, iso_abundance, sub_x, e
     #     ele_at_ratio = 0.25
     # else:
     #     ele_at_ratio = 1
+    if _natural_mix == 'Y':
+        iso_at_ratio = iso_abundance
+    else:
+        iso_at_ratio = ratio_array
     for i, _isotope in enumerate(isotopes):
         # Read database .csv file
         df = pd.read_csv(file_names[i], header=1)
@@ -82,11 +86,11 @@ def get_xy(isotopes, file_names, energy_min, energy_max, iso_abundance, sub_x, e
         spline = interpolate.interp1d(x=df['E_eV'], y=df['Sig_b'], kind='linear')
         y_i = spline(x_energy)
         # y_i_sum = y_i_sum + y_i * iso_abundance[i] * ele_at_ratio
-        y_i_iso_ele_dict[i] = y_i * iso_abundance[i] * ele_at_ratio
-        y_i_iso_ele_sum = y_i_iso_ele_sum + y_i * iso_abundance[i] * ele_at_ratio
+        y_i_iso_ele_dict[i] = y_i * iso_at_ratio[i] * ele_at_ratio
+        y_i_iso_ele_sum = y_i_iso_ele_sum + y_i * iso_at_ratio[i] * ele_at_ratio
         ## For getting transmission contribution of each isotope, use the following
         # if _plot_each_iso_contribution == 'Y':
-        #     y_trans_i = _functions.sig2trans(thick_cm, mixed_atoms_per_cm3, ele_at_ratio, y_i, iso_abundance[i])
+        #     y_trans_i = _functions.sig2trans(thick_cm, mixed_atoms_per_cm3, ele_at_ratio, y_i, iso_at_ratio[i])
         #     y_trans_tot = y_trans_tot * y_trans_i
         #     trans_dict[_isotope] = y_trans_i
         #     absorb_dict[_isotope] = 1 - y_trans_i
