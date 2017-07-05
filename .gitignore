@@ -56,3 +56,4 @@ fabric.properties
 # Cache
 __pycache__/*
 *.pyc
+.cache/*
