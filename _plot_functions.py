@@ -117,8 +117,15 @@ def get_xy(isotopes, file_names, energy_min, energy_max, iso_abundance, sub_x, e
     return x_energy, y_i_iso_ele_dict, y_i_iso_ele_sum, df_raw
 
 
-def plot_xy(_all_elements, _energy_x_axis, _trans_y_axis, _plot_each_ele_contribution, _plot_mixed,
-            x_energy, y_trans_tot, thick_mm, mixed_atoms_per_cm3, sig_iso_ele_sum_dict):
+def set_xy(_all, thick_mm, mixed_atoms_per_cm3, sig_dict, _x_axis):
+    for _i in _all:
+        _y_axis_i = _functions.sig2trans_quick(thick_mm, mixed_atoms_per_cm3, sig_dict[_i])
+        plt.plot(_x_axis, _y_axis_i, label=_i)
+    return
+
+
+def plot_xy(_all, _energy_x_axis, _trans_y_axis, _plot_each_contribution, _plot_mixed,
+            x_energy, y_trans_tot, thick_mm, mixed_atoms_per_cm3, sig_iso_ele_dict):
     if _energy_x_axis == 'Y':
         _x_axis = x_energy
         _x_words = 'Energy (eV)'
@@ -133,18 +140,18 @@ def plot_xy(_all_elements, _energy_x_axis, _trans_y_axis, _plot_each_ele_contrib
         _y_axis = 1 - y_trans_tot
         _y_words = 'Neutron attenuation'
 
-    if _plot_each_ele_contribution == 'Y':
+    if _plot_each_contribution == 'Y':
         if _trans_y_axis == 'Y':
-            for _i in _all_elements:
-                _y_axis_i = _functions.sig2trans_quick(thick_mm, mixed_atoms_per_cm3, sig_iso_ele_sum_dict[_i])
+            for _i in _all:
+                _y_axis_i = _functions.sig2trans_quick(thick_mm, mixed_atoms_per_cm3, sig_iso_ele_dict[_i])
                 plt.plot(_x_axis, _y_axis_i, label=_i)
         else:
-            for _i in _all_elements:
-                _y_axis_i = _functions.sig2trans_quick(thick_mm, mixed_atoms_per_cm3, sig_iso_ele_sum_dict[_i])
+            for _i in _all:
+                _y_axis_i = _functions.sig2trans_quick(thick_mm, mixed_atoms_per_cm3, sig_iso_ele_dict[_i])
                 plt.plot(_x_axis, 1 - _y_axis_i, label=_i)
 
     if _plot_mixed == 'Y':
-        plt.plot(_x_axis, _y_axis, label='UO3')
+        plt.plot(_x_axis, _y_axis, label='Mixture')
 
     plt.ylim(-0.01, 1.01)
     plt.xlabel(_x_words)
