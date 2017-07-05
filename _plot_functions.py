@@ -86,7 +86,7 @@ def get_xy(isotopes, file_names, energy_min, energy_max, iso_abundance, sub_x, e
         spline = interpolate.interp1d(x=df['E_eV'], y=df['Sig_b'], kind='linear')
         y_i = spline(x_energy)
         # y_i_sum = y_i_sum + y_i * iso_abundance[i] * ele_at_ratio
-        y_i_iso_ele_dict[i] = y_i * iso_at_ratio[i] * ele_at_ratio
+        y_i_iso_ele_dict[_isotope] = y_i * iso_at_ratio[i] * ele_at_ratio
         y_i_iso_ele_sum = y_i_iso_ele_sum + y_i * iso_at_ratio[i] * ele_at_ratio
         ## For getting transmission contribution of each isotope, use the following
         # if _plot_each_iso_contribution == 'Y':

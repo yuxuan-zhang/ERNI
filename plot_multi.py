@@ -12,10 +12,10 @@ thick_mm = 0.26  # mm
 formula = {'U': 1, 'O': 3}
 ratio_array = []
 _natural_mix = 'Y'
-sample_density = 2  # 0.7875  # pt.elements.isotope(element).density  # g/cm3  https://en.wikipedia.org/wiki/Cadmium
+sample_density = 0.7875  #2  # 0.7875  # pt.elements.isotope(element).density  # g/cm3  https://en.wikipedia.org/wiki/Cadmium
 _database = 'ENDF_VIII'
 energy_max = 300  # max incident energy in eV
-energy_min = 1  # min incident energy in eV
+energy_min = 0  # min incident energy in eV
 energy_sub = 100
 sub_x = energy_sub * (energy_max - energy_min)  # subdivided new x-axis
 _multi_element = 'N'
@@ -41,10 +41,10 @@ for _each_ in elements:
     mass_iso_ele_dict[_each_] = _plot_functions.get_atom_per_cm3(iso_abundance, iso_mass, ele_at_ratio,
                                                                  _natural_mix, ratio_array)
 
-    x_energy, y_i_iso_ele_dict, y_i_iso_ele_sum, df_raw = _plot_functions.get_xy(isotopes, file_names, energy_min,
-                                                                                 energy_max, iso_abundance, sub_x,
-                                                                                 ele_at_ratio, _natural_mix, ratio_array)
-    y_i_iso_ele_dicts[_each_] = list(dict.values(y_i_iso_ele_dict))
+    x_energy, y_i_iso_ele_dict, y_i_iso_ele_sum, df_raw_dict[_each_] = \
+        _plot_functions.get_xy(isotopes, file_names, energy_min, energy_max, iso_abundance,
+                               sub_x, ele_at_ratio, _natural_mix, ratio_array)
+    y_i_iso_ele_dicts[_each_] = y_i_iso_ele_dict #list(dict.values(y_i_iso_ele_dict))
     y_i_iso_ele_sum_dict[_each_] = y_i_iso_ele_sum
 
 # Get Number of atoms per unit volume (#/cm^3)
@@ -52,8 +52,26 @@ mass_iso_ele_list = list(dict.values(mass_iso_ele_dict))
 mass_iso_ele_sum = sum(np.array(mass_iso_ele_list))
 mixed_atoms_per_cm3 = _functions.atoms_per_cm3(density=sample_density, mass=mass_iso_ele_sum)
 # print('Number of atoms per unit volume (#/cm^3): {}'.format(mixed_atoms_per_cm3))
-print(y_i_iso_ele_dicts)
+# print(y_i_iso_ele_dicts['U'])
+# print(y_i_iso_ele_dict)
 print(y_i_iso_ele_sum_dict)
+# print(df_raw_dict)
+keys = list(dict.keys(y_i_iso_ele_sum_dict))
+yi_values = list(dict.values(y_i_iso_ele_sum_dict))
+yi_values_sum = sum(yi_values)
+print(yi_values_sum)
+
+trans_sum = _functions.sig2trans_quick(thick_mm, mixed_atoms_per_cm3, yi_values_sum)
+
+
+# _x_axis = x_energy
+# _y_axis = 1 - trans_sum
+# plt.plot(_x_axis, _y_axis) #label=_element+' natural mixture')
+# plt.ylim(-0.01, 1.01)
+# plt.show()
+# _plot_functions.plot_xy(_element, _energy_x_axis, _trans_y_axis, _plot_each_contribution, _plot_mixed,
+#             x_energy, y_trans_tot, isotopes, trans_dict)
+
 
 
 # _plot_functions.plot_xy(_element, _energy_x_axis, _trans_y_axis, _plot_each_contribution, _plot_mixed,
