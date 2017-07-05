@@ -80,15 +80,16 @@ y_trans_tot = trans_sum
 
 
 print(y_i_iso_ele_dicts)
-# tans_dict = {}
-# for _each_ in elements:
-#     print(y_i_iso_ele_dicts[_each_])
-#     b = y_i_iso_ele_dicts[_each_]
-#
-#     tans_dict[] = _functions.sig2trans_quick(thick_mm, mixed_atoms_per_cm3, b['235-U'])
-# print(a)
-# print(len(a))
-# print(len(b['235-U']))
+tans_dicts = {}
+for _ele in elements:
+    for _iso in isotopes_dict[_ele]:
+    print(y_i_iso_ele_dicts[_ele])
+    b = y_i_iso_ele_dicts[_ele]
+
+    tans_dict[] = _functions.sig2trans_quick(thick_mm, mixed_atoms_per_cm3, b['235-U'])
+print(a)
+print(len(a))
+print(len(b['235-U']))
 
 # if _energy_x_axis == 'Y':
 #     _x_axis = x_energy
