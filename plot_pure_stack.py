@@ -8,12 +8,11 @@ import numpy as np
 
 # Parameters
 
-_input = 'UO3'
+_input = 'UO'
 _natural_ele = 'Y'
-thick_mm = 0.26  # mm
+thick_mm = 10  # mm
+_input_density = 0.7875  # g/cm3  not needed if _input is single element
 # ratios = [[0, 0, 15, 85], [1, 0, 0]]
-sample_density = 0.7875  #2  # 0.7875  # pt.elements.isotope(element).density  # g/cm3  https://en.wikipedia.org/wiki/Cadmium
-
 _database = 'ENDF_VIII'
 energy_max = 300  # max incident energy in eV
 energy_min = 0  # min incident energy in eV
@@ -24,14 +23,22 @@ _energy_x_axis = 'Y'  # 1 means plot x-axis as energy in eV
 _trans_y_axis = 'N'  # 1 means plot y-axis as transmission
 _plot_each_iso_contribution = 'N'  # 1 means plot each isotope's contribution
 _plot_each_ele_contribution = 'Y'  # 1 means plot each element's contribution
-_plot_mixed = 'N'  # 1 means plot mixed resonance
+_plot_mixed = 'Y'  # 1 means plot mixed resonance
 
-formula, natural_mix_dict, ratio_array = _functions.input2formula(_input, _natural_ele)  # Function called to parse input formula and return elements and ratios
+formula, natural_mix_dict, unnatrual_ratio_array_dict = _functions.input2formula(_input, _natural_ele)  # Function called to parse input formula and return elements and ratios
 elements = list(dict.keys(formula))
 ratios = list(dict.values(formula))
+if len(elements) == 1:
+    sample_density = pt.elements.isotope(_input).density  # g/cm3  https://en.wikipedia.org/wiki/Cadmium
+else:
+    # _input_density = 0.7875  # g/cm3  need to input while the _input is multi-element mixture
+    sample_density = _input_density
+
 for _each_ in elements:
-    ratio_array[_each_] = []
-print(ratio_array)
+    unnatrual_ratio_array_dict[_each_] = []
+print('unnatrual_ratio_array_dict', unnatrual_ratio_array_dict)
+
+
 mass_iso_ele_dict = {}  # For number of atoms per cm3 calculation
 y_i_iso_ele_dicts = {}  # For transmission calculation at isotope lever
 y_i_iso_ele_sum_dict = {}  # For transmission calculation at element lever
@@ -45,11 +52,11 @@ for _each_ in elements:
         _plot_functions.get_pre_data(_database, _element)
 
     mass_iso_ele_dict[_each_] = _plot_functions.get_atom_per_cm3(iso_abundance, iso_mass, ele_at_ratio,
-                                                                 natural_mix_dict[_each_], ratio_array[_each_])
+                                                                 natural_mix_dict[_each_], unnatrual_ratio_array_dict[_each_])
 
     x_energy, y_i_iso_ele_dict, y_i_iso_ele_sum, df_raw_dict[_each_] = \
         _plot_functions.get_xy(isotopes_dict[_each_], file_names, energy_min, energy_max, iso_abundance,
-                               sub_x, ele_at_ratio, natural_mix_dict[_each_], ratio_array[_each_])
+                               sub_x, ele_at_ratio, natural_mix_dict[_each_], unnatrual_ratio_array_dict[_each_])
     y_i_iso_ele_dicts[_each_] = y_i_iso_ele_dict #list(dict.values(y_i_iso_ele_dict))
     y_i_iso_ele_sum_dict[_each_] = y_i_iso_ele_sum
 
@@ -64,25 +71,70 @@ mixed_atoms_per_cm3 = sample_density * pt.constants.avogadro_number/mass_iso_ele
 # Use function: mixed_atoms_per_cm3 = _functions.atoms_per_cm3(density=sample_density, mass=mass_iso_ele_sum)
 
 
-# print(y_i_iso_ele_dicts.items())
-# print(y_i_iso_ele_sum_dict)
-# print(df_raw_dict)
 keys = list(dict.keys(y_i_iso_ele_sum_dict))
 yi_values = list(dict.values(y_i_iso_ele_sum_dict))
 yi_values_sum = sum(yi_values)
-# print(y_i_iso_ele_dicts['U'])
 print(isotopes_dict)
 trans_sum = _functions.sig2trans_quick(thick_mm, mixed_atoms_per_cm3, yi_values_sum)
 y_trans_tot = trans_sum
 
-if _plot_each_iso_contribution == 'N':
-    _plot_functions.plot_xy(elements, _energy_x_axis, _trans_y_axis, _plot_each_ele_contribution, _plot_mixed,
-                            x_energy, y_trans_tot, thick_mm, mixed_atoms_per_cm3, y_i_iso_ele_sum_dict)
-else:
-    for _each_ in elements:
-        isotopes = isotopes_dict[_each_]
-        _plot_functions.plot_xy(isotopes, _energy_x_axis, _trans_y_axis, _plot_each_iso_contribution, _plot_mixed,
-                                x_energy, y_trans_tot, thick_mm, mixed_atoms_per_cm3, y_i_iso_ele_dicts[_each_])
+
+print(y_i_iso_ele_dicts)
+# tans_dict = {}
+# for _each_ in elements:
+#     print(y_i_iso_ele_dicts[_each_])
+#     b = y_i_iso_ele_dicts[_each_]
+#
+#     tans_dict[] = _functions.sig2trans_quick(thick_mm, mixed_atoms_per_cm3, b['235-U'])
+# print(a)
+# print(len(a))
+# print(len(b['235-U']))
+
+# if _energy_x_axis == 'Y':
+#     _x_axis = x_energy
+#     _x_words = 'Energy (eV)'
+# else:
+#     _x_axis = _functions.ev2lamda(x_energy)
+#     _x_words = 'Wavelength (Å)'
+#
+# if _trans_y_axis == 'Y':
+#     _y_axis = y_trans_tot
+#     _y_words = 'Neutron transmission'
+# else:
+#     _y_axis = 1 - y_trans_tot
+#     _y_words = 'Neutron attenuation'
+#
+# if _plot_each_contribution == 'Y':
+#     if _trans_y_axis == 'Y':
+#         for _i in _all:
+#             _y_axis_i = _functions.sig2trans_quick(thick_mm, mixed_atoms_per_cm3, sig_iso_ele_dict[_i])
+#             plt.plot(_x_axis, _y_axis_i, label=_i)
+#     else:
+#         for _i in _all:
+#             _y_axis_i = _functions.sig2trans_quick(thick_mm, mixed_atoms_per_cm3, sig_iso_ele_dict[_i])
+#             plt.plot(_x_axis, 1 - _y_axis_i, label=_i)
+#
+# if _plot_mixed == 'Y':
+#     plt.plot(_x_axis, _y_axis, label='Mixture')
 
 
+
+
+
+
+
+
+
+
+
+# if _plot_each_iso_contribution == 'N':
+#     _plot_functions.plot_xy(elements, _energy_x_axis, _trans_y_axis, _plot_each_ele_contribution, _plot_mixed,
+#                             x_energy, y_trans_tot, thick_mm, mixed_atoms_per_cm3, y_i_iso_ele_sum_dict)
+# else:
+#     for _each_ in elements:
+#         isotopes = isotopes_dict[_each_]
+#         _plot_functions.plot_xy(isotopes, _energy_x_axis, _trans_y_axis, _plot_each_iso_contribution, _plot_mixed,
+#                                 x_energy, y_trans_tot, thick_mm, mixed_atoms_per_cm3, y_i_iso_ele_dicts[_each_])
+#
+#
 

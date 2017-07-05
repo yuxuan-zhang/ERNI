@@ -11,7 +11,8 @@ import re
 thick_mm = 0.26  # mm
 # _element = 'U'
 _input = 'Cd'
-formula = _functions.input2formula(_input)  # Function called to parse input formula and return elements and ratios
+_natural_ele = 'Y'
+formula, natural_mix, ratio_array = _functions.input2formula(_input, _natural_ele)  # Function called to parse input formula and return elements and ratios
 elements = list(dict.keys(formula))
 ratios = list(dict.values(formula))
 elements_str = str(elements)
