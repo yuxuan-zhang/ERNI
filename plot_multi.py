@@ -4,12 +4,11 @@ import matplotlib.pyplot as plt
 import periodictable as pt
 from periodictable import constants
 import numpy as np
-import re
 
 
 # Parameters
 
-_input = 'Gd'
+_input = 'UO3'
 _natural_ele = 'Y'
 thick_mm = 0.26  # mm
 # ratios = [[0, 0, 15, 85], [1, 0, 0]]
@@ -54,8 +53,11 @@ for _each_ in elements:
     y_i_iso_ele_dicts[_each_] = y_i_iso_ele_dict #list(dict.values(y_i_iso_ele_dict))
     y_i_iso_ele_sum_dict[_each_] = y_i_iso_ele_sum
 
+print(mass_iso_ele_dict)
 # Get Number of atoms per unit volume (#/cm^3)
-for _each_ in elements:
+# mixed_atoms_per_cm3_dict = {}
+# for _each_ in elements:
+#     mixed_atoms_per_cm3_dict[_each_] = sample_density[_each_] * pt.constants.avogadro_number/mass_iso_ele_dict[_each_]
 mass_iso_ele_list = list(dict.values(mass_iso_ele_dict))
 mass_iso_ele_sum = sum(np.array(mass_iso_ele_list))
 mixed_atoms_per_cm3 = sample_density * pt.constants.avogadro_number/mass_iso_ele_sum
