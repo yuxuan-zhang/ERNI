@@ -132,4 +132,4 @@ def plot_input(_input, _natural_ele, thick_mm, _input_density, _input_ratios_dic
     plt.xlabel(_x_words)
     plt.ylabel(_y_words)
     plt.legend(loc='best')
-    # plt.show()
+    plt.show()
