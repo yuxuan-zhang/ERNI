@@ -43,24 +43,39 @@ def sig2trans_quick(_thick_mm, _atoms_per_cm3, _sigma_portion_sum):
     return neutron_transmission
 
 
-def input2formula(_input, _natural_ele):
+def input2formula(_input):
     _input_parsed = re.findall(r'([A-Z][a-z]*)(\d*)', _input)
     _formula = {}
-    _natural_mix = {}
-    _ratio_array = {}
+    # _natural_mix = {}
+    # _ratio_array = {}
     for _element in _input_parsed:
         _element_list = list(_element)
         if _element_list[1] == '':
             _element_list[1] = 1
         _element_list[1] = int(_element_list[1])
         _formula[_element_list[0]] = _element_list[1]
-        _natural_mix[_element_list[0]] = _natural_ele
-        _ratio_array[_element_list[0]] = []
     print('Parsed chemical formula: {}'.format(_formula))
-    return _formula, _natural_mix, _ratio_array
+    return _formula
 
 
-# def deter_xy(_energy_x_axis, ):
+def formula_ratio_array(_input, _natural_boo, ratios_dict):
+    _natural_ele = {}
+    _ratio_array = {}
+    _p = 0
+    for _element in _input:
+        _natural_ele[_element] = _natural_boo[_p]
+        if _natural_boo[_p] == 'Y':
+            _ratio_array[_element] = []
+        else:
+            _ratio_array[_element] = ratios_dict[_element]
+        _p = _p + 1
+    print('Natual elements? ', _natural_ele)
+    print('Isotope ratio array: ', _ratio_array)
+    return _natural_ele, _ratio_array
+
+
+
+        # def deter_xy(_energy_x_axis, ):
 #
 # if _energy_x_axis == 'Y':
 #     _x_axis = x_energy
