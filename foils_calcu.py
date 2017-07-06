@@ -1,4 +1,5 @@
 import _one
+import matplotlib as plt
 
 folis_thickmm_dict = {'Gd': 1,
                       'Cd': 1,
@@ -36,3 +37,5 @@ _plot_mixed = 'N'  # Y means plot mixed resonance
 _one.plot_input(_input, _natural_ele, thick_mm, _input_density, _input_ratios_dict, _database,
                 energy_max, energy_min, energy_sub, _energy_x_axis, _trans_y_axis, _plot_mixed,
                 _plot_each_ele_contribution, _plot_each_iso_contribution)
+
+plt.show()

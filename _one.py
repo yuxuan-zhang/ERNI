@@ -60,7 +60,7 @@ def plot_input(_input, _natural_ele, thick_mm, _input_density, _input_ratios_dic
     mixed_atoms_per_cm3 = sample_density * pt.constants.avogadro_number/mass_iso_ele_sum
     # Use function: mixed_atoms_per_cm3 = _functions.atoms_per_cm3(density=sample_density, mass=mass_iso_ele_sum)
 
-    keys = list(dict.keys(y_i_iso_ele_sum_dict))
+    # keys = list(dict.keys(y_i_iso_ele_sum_dict))
     yi_values = list(dict.values(y_i_iso_ele_sum_dict))
     yi_values_sum = sum(yi_values)
     trans_sum = _functions.sig2trans_quick(thick_mm, mixed_atoms_per_cm3, yi_values_sum)
@@ -132,4 +132,4 @@ def plot_input(_input, _natural_ele, thick_mm, _input_density, _input_ratios_dic
     plt.xlabel(_x_words)
     plt.ylabel(_y_words)
     plt.legend(loc='best')
-    plt.show()
+    # plt.show()
