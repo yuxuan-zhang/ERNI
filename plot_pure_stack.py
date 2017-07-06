@@ -7,7 +7,6 @@ import numpy as np
 
 
 # Parameters
-
 _input = 'UO3'
 _natural_ele = 'N'
 thick_mm = .26  # mm
@@ -18,7 +17,7 @@ energy_max = 300  # max incident energy in eV
 energy_min = 0  # min incident energy in eV
 energy_sub = 100
 sub_x = energy_sub * (energy_max - energy_min)  # subdivided new x-axis
-_multi_element = 'N'
+# _multi_element = 'N'
 _energy_x_axis = 'Y'  # 1 means plot x-axis as energy in eV
 _trans_y_axis = 'N'  # 1 means plot y-axis as transmission
 _plot_each_ele_contribution = 'Y'  # 1 means plot each element's contribution
