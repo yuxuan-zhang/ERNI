@@ -48,8 +48,6 @@ def get_mass_iso_ele(iso_abundance, iso_mass, ele_at_ratio, _natural_mix, ratio_
     return mass_iso_ele
 
 
-
-
 def get_xy(isotopes, file_names, energy_min, energy_max, iso_abundance, sub_x, ele_at_ratio, _natural_mix, ratio_array):
     # Transmission calculation of summed and separated contributions by each isotopes
     df = pd.DataFrame()
