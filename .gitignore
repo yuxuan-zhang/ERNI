@@ -57,3 +57,7 @@ fabric.properties
 __pycache__/*
 *.pyc
 .cache/*
+
+## Notebook
+.ipynb*
+.cache/*
