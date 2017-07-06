@@ -139,9 +139,3 @@ def plot_xy(_all, _energy_x_axis, _trans_y_axis, _plot_each_contribution, _plot_
     plt.legend(loc='best')
     plt.show()
 
-
-def plot_input(_input, _natural_ele, thick_mm, _input_density, _input_ratios,
-               _database, energy_max, energy_min, energy_sub,
-               _energy_x_axis, _trans_y_axis, _plot_mixed,
-               _plot_each_ele_contribution, _plot_each_iso_contribution):
-    return
