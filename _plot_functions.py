@@ -35,7 +35,7 @@ def get_pre_data(_database, _element):
     return isotopes, iso_abundance, iso_density, iso_mass, abundance_dict, density_dict, mass_dict, file_names
 
 
-def get_atom_per_cm3(iso_abundance, iso_mass, ele_at_ratio, _natural_mix, ratio_array):
+def get_mass_iso_ele(iso_abundance, iso_mass, ele_at_ratio, _natural_mix, ratio_array):
     # Calculate the number of atoms per unit volume
     abundance_array = np.array(iso_abundance)
     mass_array = np.array(iso_mass)
@@ -47,8 +47,7 @@ def get_atom_per_cm3(iso_abundance, iso_mass, ele_at_ratio, _natural_mix, ratio_
     mass_iso_ele = sum(mass_abundance_multiplied) * ele_at_ratio
     return mass_iso_ele
 
-    # mixed_atoms_per_cm3 = sample_density * pt.constants.avogadro_number/sum_density
-    # return mixed_atoms_per_cm3
+
 
 
 def get_xy(isotopes, file_names, energy_min, energy_max, iso_abundance, sub_x, ele_at_ratio, _natural_mix, ratio_array):
@@ -58,10 +57,7 @@ def get_xy(isotopes, file_names, energy_min, energy_max, iso_abundance, sub_x, e
     y_i_iso_ele_dict = {}
     # thick_cm = thick_mm/10
     y_i_iso_ele_sum = 0.
-    # if _multi_element == 'Y':
-    #     ele_at_ratio = 0.25
-    # else:
-    #     ele_at_ratio = 1
+
     if _natural_mix == 'Y':
         iso_at_ratio = iso_abundance
     else:
@@ -88,12 +84,7 @@ def get_xy(isotopes, file_names, energy_min, energy_max, iso_abundance, sub_x, e
         # y_i_sum = y_i_sum + y_i * iso_abundance[i] * ele_at_ratio
         y_i_iso_ele_dict[_isotope] = y_i * iso_at_ratio[i] * ele_at_ratio
         y_i_iso_ele_sum = y_i_iso_ele_sum + y_i * iso_at_ratio[i] * ele_at_ratio
-        ## For getting transmission contribution of each isotope, use the following
-        # if _plot_each_iso_contribution == 'Y':
-        #     y_trans_i = _functions.sig2trans(thick_cm, mixed_atoms_per_cm3, ele_at_ratio, y_i, iso_at_ratio[i])
-        #     y_trans_tot = y_trans_tot * y_trans_i
-        #     trans_dict[_isotope] = y_trans_i
-        #     absorb_dict[_isotope] = 1 - y_trans_i
+
         """
         Attention:
         The following part is for producing df_raw of all isotopes for future reference
@@ -104,16 +95,7 @@ def get_xy(isotopes, file_names, energy_min, energy_max, iso_abundance, sub_x, e
         second_col = _isotope + ', Sig_b'
         df.rename(columns={'E_eV': first_col, 'Sig_b': second_col}, inplace=True)
         df_raw = pd.concat([df_raw, df], axis=1)
-    # if _plot_each_ele_contribution == 'Y':
-    #     y_trans = _functions.sig2trans_quick()
 
-    # print(trans_dict)
-    # print(absorb_dict)
-    # print(df_raw.head())
-    # x_lamda = _functions.ev2lamda(x_energy)
-    # y_trans_tot = _functions.sig2trans_quick(thick_cm, mixed_atoms_per_cm3, y_i_sum)
-    # y_absorb_tot = 1 - y_trans_tot
-    # return x_energy, y_trans_tot, trans_dict, absorb_dict, y_i_sum, df_raw
     return x_energy, y_i_iso_ele_dict, y_i_iso_ele_sum, df_raw
 
 

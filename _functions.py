@@ -58,3 +58,20 @@ def input2formula(_input, _natural_ele):
         _ratio_array[_element_list[0]] = []
     print('Parsed chemical formula: {}'.format(_formula))
     return _formula, _natural_mix, _ratio_array
+
+
+# def deter_xy(_energy_x_axis, ):
+#
+# if _energy_x_axis == 'Y':
+#     _x_axis = x_energy
+#     _x_words = 'Energy (eV)'
+# else:
+#     _x_axis = ev2lamda(x_energy)
+#     _x_words = 'Wavelength (Å)'
+#
+# if _trans_y_axis == 'Y':
+#     _y_axis = y_trans_tot
+#     _y_words = 'Neutron transmission'
+# else:
+#     _y_axis = 1 - y_trans_tot
+#     _y_words = 'Neutron attenuation'
