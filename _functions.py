@@ -1,8 +1,8 @@
 import numpy as np
 import periodictable as pt
 import re
-
-# Functions for energy, lamda and time conversions
+import os
+import glob
 
 
 def ev2lamda(energy):  # function to convert energy in eV to angstrom
@@ -43,9 +43,31 @@ def sig2trans_quick(_thick_mm, _atoms_per_cm3, _sigma_portion_sum):
     return neutron_transmission
 
 
+def get_isotope_dict(_database, _element):
+    main_dir = os.path.dirname(os.path.abspath(__file__))
+    isotope_dicts = {}
+    for _each in _element:
+        path = main_dir + '/data_web/' + _database + '/' + _each + '*.csv'
+        file_names = glob.glob(path)
+        isotope_dict = {}
+        for _i, file in enumerate(file_names):
+            # Obtain element, z number from the basename
+            _basename = os.path.basename(file)
+            _name_number_csv = _basename.split('.')
+            _name_number = _name_number_csv[0]
+            _name = _name_number.split('-')
+            _symbol = _name[1] + '-' + _name[0]
+            isotope = str(_symbol)
+            isotope_dict[isotope] = isotope
+        isotopes = list(dict.values(isotope_dict))
+        isotope_dicts[_each] = isotopes
+    return isotope_dicts
+
+
 def input2formula(_input):
     _input_parsed = re.findall(r'([A-Z][a-z]*)(\d*)', _input)
     _formula = {}
+    # _natural_ele_boo_dict = {}
     # _natural_mix = {}
     # _ratio_array = {}
     for _element in _input_parsed:
@@ -54,8 +76,42 @@ def input2formula(_input):
             _element_list[1] = 1
         _element_list[1] = int(_element_list[1])
         _formula[_element_list[0]] = _element_list[1]
+        # _natural_ele_boo_dict[_element_list[0]] = 'Y'
     print('Parsed chemical formula: {}'.format(_formula))
-    return _formula
+    return _formula #, _natural_ele_boo_dict
+
+
+def dict_key_list(_formula_dict):
+    _elements = list(dict.keys(_formula_dict))
+    return _elements
+
+
+def dict_value_list(_formula_dict):
+    _ratios = list(dict.values(_formula_dict))
+    return _ratios
+
+
+def boo_dict(_key_list):
+    _boo_dict = {}
+    for key in _key_list:
+        _boo_dict[key] = 'Y'
+    return _boo_dict
+
+
+def thick_dict(_key_list, _thick_mm):
+    _thick_dict = {}
+    for key in _key_list:
+        _thick_dict[key] = _thick_mm
+    return _thick_dict
+
+
+def boo_dict_invert_by_key(_key_list, _boo_dict):
+    for key in _key_list:
+        if _boo_dict[key] == 'Y':
+            _boo_dict[key] = 'N'
+        else:
+            _boo_dict[key] = 'Y'
+    return _boo_dict
 
 
 def formula_ratio_array(_input, _natural_boo, ratios_dict):
@@ -71,9 +127,9 @@ def formula_ratio_array(_input, _natural_boo, ratios_dict):
         _p = _p + 1
     print('Natual elements? ', _natural_ele)
     print('Isotope ratio array: ', _ratio_array)
-    return _natural_ele, _ratio_array
+    return _ratio_array
 
-
+# def get_
 
         # def deter_xy(_energy_x_axis, ):
 #

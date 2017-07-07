@@ -7,37 +7,35 @@ import numpy as np
 import pandas as pd
 
 
-foils_thickmm_dict = {'Gd': 1,
-                      'Cd': 1,
-                      'U': 1,
-                      'Ag': 1,
-                      'Au': 1,
-                      'Ta': 1,
-                      'In': 1,
-                      'W': 1,
-                      'Co': 1,
-                      'Hf': 1,
-                      'Pb': 1,
-                      'Eu': 1,
-                      'B': 1
-                      }
-elements = list(dict.keys(foils_thickmm_dict))
-thick = list(dict.values(foils_thickmm_dict))
-elements_str = ''.join(elements)
-print(elements_str)
+# foils_thickmm_dict = {'Gd': 1,
+#                       'Cd': 1,
+#                       'U': 1,
+#                       'Ag': 1,
+#                       'Au': 1,
+#                       'Ta': 1,
+#                       'In': 1,
+#                       'W': 1,
+#                       'Co': 1,
+#                       'Hf': 1,
+#                       'Pb': 1,
+#                       'Eu': 1,
+#                       'B': 1
+#                       }
+# elements = list(dict.keys(foils_thickmm_dict))
+# thick = list(dict.values(foils_thickmm_dict))
+# elements_str = ''.join(elements)
+# print(elements_str)
+
+
 # Parameters
-_input = elements_str
-_natural_ele = ['Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y']
-print(len(_natural_ele) == len(elements))
-thick_mm = 5  # mm
+# _input = elements_str
+_input = 'UO3'
+thick_mm = .3  # mm
 _input_density = 0.7875  # g/cm3  not needed if _input is single element
-_input_ratios_dict = {'U': [0, 0, 0.15, 0.85]
-                      # 'O': [1, 0, 0]
-                      }  # at.%  not needed if _natural_ele is 'Y'
 _database = 'ENDF_VIII'
-energy_max = 21  # max incident energy in eV
+energy_max = 300  # max incident energy in eV
 energy_min = 0  # min incident energy in eV
-energy_sub = 1000
+energy_sub = 100
 sub_x = energy_sub * (energy_max - energy_min)  # subdivided new x-axis
 # _multi_element = 'N'
 _energy_x_axis = 'Y'  # 1 means plot x-axis as energy in eV
@@ -46,12 +44,41 @@ _plot_each_ele_contribution = 'Y'  # 1 means plot each element's contribution
 _plot_each_iso_contribution = 'N'  # 1 means plot each isotope's contribution
 _plot_mixed = 'N'  # 1 means plot mixed resonance
 
-formula = _functions.input2formula(_input)  # Function called to parse input formula and return elements and ratios
-elements = list(dict.keys(formula))
-ratios = list(dict.values(formula))
-natural_ele_dict, ratios_dict = _functions.formula_ratio_array(elements, _natural_ele, _input_ratios_dict)
+formula_dict = _functions.input2formula(_input)  # Function called to parse input formula and return elements and ratios
+elements = _functions.dict_key_list(formula_dict)
+ratios = _functions.dict_value_list(formula_dict)
+natural_ele_boo_dict = _functions.boo_dict(elements)  # Dict for natural mixture
+thick_mm_dict = _functions.thick_dict(elements, thick_mm)
 
-unnatrual_ratio_array_dict = ratios_dict
+# For unnatural mixture elements:
+_natural_ele_input = 'Y'  # input('Is there any unnatural mixture? ')
+if _natural_ele_input == 'Y':
+    unnatural_ratio_dicts = {}
+    unnatural_element_str = 'U,O'  # input('Please list all separated by only ",": ')
+    unnatural_element = unnatural_element_str.split(',')
+    natural_ele_boo_dict = _functions.boo_dict_invert_by_key(unnatural_element, natural_ele_boo_dict)
+    isotope_dict = _functions.get_isotope_dict(_database, unnatural_element)
+    print(isotope_dict)
+    for ele in unnatural_element:
+        isotopes = isotope_dict[ele]
+        unnatural_ratio_dict = {}
+        for iso in isotopes:
+            unnatural_ratio_dict[iso] = float(input('Atomic ratio of {} in mixture: '.format(iso)))
+        unnatural_ratio_dicts[ele] = unnatural_ratio_dict
+    print(unnatural_ratio_dicts)
+
+# For sample with various thickness:
+_thick_input = input('Is there any element with different thickness? ')
+if _thick_input == 'Y':
+    resize_element = input('Please list all: ')
+    for _ele in resize_element:
+        thick_mm_dict[_ele] = input('Specify the thickness of {} in mm :'.format(_ele))
+
+
+ratios_dict = _functions.formula_ratio_array(elements, _natural_ele_boo, _input_ratios_dict)
+
+unnatural_ratio_array_dict = ratios_dict
+print(unnatural_ratio_array_dict)
 
 if len(elements) == 1:
     sample_density = pt.elements.isotope(_input).density  # g/cm3  https://en.wikipedia.org/wiki/Cadmium
@@ -59,15 +86,15 @@ else:
     # _input_density = 0.7875  # g/cm3  need to input while the _input is multi-element mixture
     sample_density = _input_density
 
-# if _natural_ele == 'Y':
+# if _natural_ele_boo == 'Y':
 #     for _each_ in elements:
-#         unnatrual_ratio_array_dict[_each_] = []
+#         unnatural_ratio_array_dict[_each_] = []
 # else:
 #     _p = 0
 #     for _each_ in elements:
-#         unnatrual_ratio_array_dict[_each_] = [_p]
+#         unnatural_ratio_array_dict[_each_] = [_p]
 #         _p = _p + 1
-# print('Unnatrual_ratio_array_dict: ', unnatrual_ratio_array_dict)
+# print('unnatural_ratio_array_dict: ', unnatural_ratio_array_dict)
 
 
 mass_iso_ele_dict = {}  # For number of atoms per cm3 calculation
@@ -84,16 +111,16 @@ for _each_ in elements:
         _plot_functions.get_pre_data(_database, _element)
 
     mass_iso_ele_dict[_each_] = _plot_functions.get_mass_iso_ele(iso_abundance, iso_mass, ele_at_ratio,
-                                                                 natural_ele_dict[_each_],
-                                                                 unnatrual_ratio_array_dict[_each_])
+                                                                 natural_ele_boo_dict[_each_],
+                                                                 unnatural_ratio_array_dict[_each_])
 
     x_energy, y_i_iso_ele_dict, y_i_iso_ele_sum, df_raw_dict[_each_] = \
         _plot_functions.get_xy(isotopes_dict[_each_], file_names, energy_min, energy_max, iso_abundance,
-                               sub_x, ele_at_ratio, natural_ele_dict[_each_], unnatrual_ratio_array_dict[_each_])
+                               sub_x, ele_at_ratio, natural_ele_boo_dict[_each_], unnatural_ratio_array_dict[_each_])
     y_i_iso_ele_dicts[_each_] = y_i_iso_ele_dict
     y_i_iso_ele_sum_dict[_each_] = y_i_iso_ele_sum
-    if natural_ele_dict[_each_] == 'N':
-        abundance_dicts[_each_] = unnatrual_ratio_array_dict[_each_]
+    if natural_ele_boo_dict[_each_] == 'N':
+        abundance_dicts[_each_] = unnatural_ratio_array_dict[_each_]
     else:
         abundance_dicts[_each_] = abundance_dict
 
