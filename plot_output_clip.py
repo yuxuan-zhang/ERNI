@@ -52,7 +52,7 @@ y_i_iso_ele_dicts = {}  # For transmission calculation at isotope lever
 y_i_iso_ele_sum_dict = {}  # For transmission calculation at element lever
 df_raw_dict = {}  # Raw sigma data for elements and isotopes
 isotopes_dict = {}  # List all isotopes for each element involved
-abundance_dicts = {}  # List all natrual abundance for each isotope of each element involved
+abundance_dicts = {}  # List all natural abundance for each isotope of each element involved
 for _each_ in elements:
     _element = _each_
     ele_at_ratio = formula[_each_] / sum(ratios)
