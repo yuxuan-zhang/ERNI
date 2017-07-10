@@ -32,18 +32,18 @@ def get_pre_data(_database, _element):
     iso_abundance = list(dict.values(abundance_dict))  # List of isotopic abundance
     iso_density = list(dict.values(density_dict))  # List of isotopic density
     iso_mass = list(dict.values(mass_dict))  # List of isotopic molar mass
-    return isotopes, iso_abundance, iso_density, iso_mass, abundance_dict, density_dict, mass_dict, file_names
+    return isotopes, abundance_dict, iso_abundance, iso_density, iso_mass, abundance_dict, density_dict, mass_dict, file_names
 
 
 def get_mass_iso_ele(iso_abundance, iso_mass, ele_at_ratio, _natural_mix, _unnatural_ratio_dict):
     # Calculate the number of atoms per unit volume
     abundance_array = np.array(iso_abundance)
     mass_array = np.array(iso_mass)
-    ratio_list = list(dict.values(_unnatural_ratio_dict))
-    ratio_array = np.array(ratio_list)
     if _natural_mix == 'Y':
         abundance_array = abundance_array
     else:
+        ratio_list = list(dict.values(_unnatural_ratio_dict))
+        ratio_array = np.array(ratio_list)
         abundance_array = ratio_array
     mass_abundance_multiplied = mass_array * abundance_array
     mass_iso_ele = sum(mass_abundance_multiplied) * ele_at_ratio
@@ -57,11 +57,12 @@ def get_xy(isotopes, file_names, energy_min, energy_max, iso_abundance, sub_x, e
     y_i_iso_ele_dict = {}
     # thick_cm = thick_mm/10
     y_i_iso_ele_sum = 0.
-    ratio_list = list(dict.values(_unnatural_ratio_dict))
-    ratio_array = np.array(ratio_list)
+
     if _natural_mix == 'Y':
         iso_at_ratio = iso_abundance
     else:
+        ratio_list = list(dict.values(_unnatural_ratio_dict))
+        ratio_array = np.array(ratio_list)
         iso_at_ratio = ratio_array
     for i, _isotope in enumerate(isotopes):
         # Read database .csv file

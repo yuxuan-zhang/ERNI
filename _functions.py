@@ -64,6 +64,17 @@ def get_isotope_dict(_database, _element):
     return isotope_dicts
 
 
+# def get_abundance_dicts(_isotope_dicts, _element):
+#     abundance_dict = {}
+#     abundance_dicts = {}
+#     for _each in _element:
+#         isotopes = list(dict.values(_isotope_dicts[_each])
+#         for _iso in isotopes:
+#             abundance_dict[_iso] = pt.elements.isotope(_iso).abundance / 100
+#         abundance_dicts[_each] = abundance_dict
+#     return abundance_dicts
+
+
 def input2formula(_input):
     _input_parsed = re.findall(r'([A-Z][a-z]*)(\d*)', _input)
     _formula = {}
@@ -106,10 +117,12 @@ def thick_dict(_key_list, _thick_mm):
 
 
 def empty_dict(_key_list):
+    _empty_dicts = {}
     _empty_dict = {}
     for key in _key_list:
-        _empty_dict[key] = _empty_dict
-    return _empty_dict
+        _empty_dicts[key] = _empty_dict
+    return _empty_dicts
+
 
 def boo_dict_invert_by_key(_key_list, _boo_dict):
     for key in _key_list:
