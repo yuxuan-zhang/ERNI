@@ -66,16 +66,6 @@ else:
     # _input_density = 0.7875  # g/cm3  need to input while the _input is multi-element mixture
     sample_density = float(input('Sample density of {} in g/cm3: '.format(_input)))
 
-# if _natural_ele_boo == 'Y':
-#     for _each_ in elements:
-#         unnatural_ratio_array_dict[_each_] = []
-# else:
-#     _p = 0
-#     for _each_ in elements:
-#         unnatural_ratio_array_dict[_each_] = [_p]
-#         _p = _p + 1
-# print('unnatural_ratio_array_dict: ', unnatural_ratio_array_dict)
-
 
 mass_iso_ele_dict = {}  # For number of atoms per cm3 calculation
 y_i_iso_ele_dicts = {}  # For transmission calculation at isotope lever
