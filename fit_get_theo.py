@@ -123,6 +123,7 @@ if _plot_each_ele_contribution == 'Y':
         else:
             y_ele_dict[_ele] = 1 - _functions.sig2trans_quick(thick_mm, mixed_atoms_per_cm3, y_i_iso_ele_sum_dict[_ele])
 
+
 ### Create the trans or absorb dict : y_iso_dicts of isotopes for plotting if needed
 if _plot_each_iso_contribution == 'Y':
     y_iso_dicts = {}
