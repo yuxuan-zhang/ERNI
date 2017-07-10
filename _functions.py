@@ -10,7 +10,7 @@ def ev2lamda(energy):  # function to convert energy in eV to angstrom
     return lamda
 
 
-def time2lamda(time_tot):  # function to convert time in us to angstrom
+def time2lamda(time_tot, source_to_detector):  # function to convert time in us to angstrom
     lamda = 0.3956 * time_tot/source_to_detector
     return lamda
 
@@ -64,17 +64,6 @@ def get_isotope_dict(_database, _element):
     return isotope_dicts
 
 
-# def get_abundance_dicts(_isotope_dicts, _element):
-#     abundance_dict = {}
-#     abundance_dicts = {}
-#     for _each in _element:
-#         isotopes = list(dict.values(_isotope_dicts[_each])
-#         for _iso in isotopes:
-#             abundance_dict[_iso] = pt.elements.isotope(_iso).abundance / 100
-#         abundance_dicts[_each] = abundance_dict
-#     return abundance_dicts
-
-
 def input2formula(_input):
     _input_parsed = re.findall(r'([A-Z][a-z]*)(\d*)', _input)
     _formula = {}
@@ -89,7 +78,7 @@ def input2formula(_input):
         _formula[_element_list[0]] = _element_list[1]
         # _natural_ele_boo_dict[_element_list[0]] = 'Y'
     print('Parsed chemical formula: {}'.format(_formula))
-    return _formula #, _natural_ele_boo_dict
+    return _formula
 
 
 def dict_key_list(_formula_dict):
@@ -146,9 +135,17 @@ def formula_ratio_array(_input, _all_ele_boo_dict, ratios_dict):
     print('Isotope ratio array: ', _ratio_array)
     return _ratio_array
 
+    # def get_abundance_dicts(_isotope_dicts, _element):
+    #     abundance_dict = {}
+    #     abundance_dicts = {}
+    #     for _each in _element:
+    #         isotopes = list(dict.values(_isotope_dicts[_each])
+    #         for _iso in isotopes:
+    #             abundance_dict[_iso] = pt.elements.isotope(_iso).abundance / 100
+    #         abundance_dicts[_each] = abundance_dict
+    #     return abundance_dicts
 # def get_
-
-        # def deter_xy(_energy_x_axis, ):
+# def deter_xy(_energy_x_axis, ):
 #
 # if _energy_x_axis == 'Y':
 #     _x_axis = x_energy
