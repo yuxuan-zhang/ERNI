@@ -150,25 +150,6 @@ if _plot_each_iso_contribution == 'Y':
     # print(y_iso_dicts)
 
 
-### Export to clipboard
-_name = '_' + _input
-df_yi_tot = pd.DataFrame(data=x_energy, index=None)
-df_yi_tot.rename(columns={0: 'eV'+_name}, inplace=True)
-df_yi_tot['lamda'+_name] = _functions.ev2lamda(x_energy)
-df_yi_tot['sample_density'+_name] = sample_density
-df_yi_tot['avo_divided'+_name] = avo_divided
-df_yi_tot['sigma'+_name] = yi_values_sum
-
-
-print(y_i_iso_ele_sum_dict)
-for _each_ in elements:
-    df_test = pd.DataFrame(y_i_iso_ele_dicts[_each_])
-    df_yi_tot = pd.concat([df_yi_tot, df_test], axis=1)
-
-print(df_yi_tot.head())
-df_yi_tot.to_clipboard(excel=True)
-
-
 ### Determine x y axis types and captions
 if _energy_x_axis == 'Y':
     _x_axis = x_energy
