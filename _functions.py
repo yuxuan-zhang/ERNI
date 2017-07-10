@@ -105,6 +105,12 @@ def thick_dict(_key_list, _thick_mm):
     return _thick_dict
 
 
+def empty_dict(_key_list):
+    _empty_dict = {}
+    for key in _key_list:
+        _empty_dict[key] = _empty_dict
+    return _empty_dict
+
 def boo_dict_invert_by_key(_key_list, _boo_dict):
     for key in _key_list:
         if _boo_dict[key] == 'Y':

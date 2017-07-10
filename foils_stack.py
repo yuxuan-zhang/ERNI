@@ -49,12 +49,13 @@ elements = _functions.dict_key_list(formula_dict)
 ratios = _functions.dict_value_list(formula_dict)
 all_ele_boo_dict = _functions.boo_dict(elements)  # Dict for natural mixture
 thick_mm_dict = _functions.thick_dict(elements, thick_mm)
+unnatural_ratio_dicts = _functions.empty_dict(elements)
 
 # For unnatural mixture elements:
-_unnatural_ele_input = 'Y'  # input('Is there any unnatural mixture? ')
+_unnatural_ele_input = input('Is there any unnatural mixture? ')
 if _unnatural_ele_input == 'Y':
     unnatural_ratio_dicts = {}
-    unnatural_element_str = 'U O'  # input('Please list all separated by only ",": ')
+    unnatural_element_str = input('Please list all separated by only " ": ')
     unnatural_element = unnatural_element_str.split(' ')
     all_ele_boo_dict = _functions.boo_dict_invert_by_key(unnatural_element, all_ele_boo_dict)
     isotope_dict = _functions.get_isotope_dict(_database, unnatural_element)
@@ -165,8 +166,6 @@ if _plot_each_iso_contribution == 'Y':
         y_iso_dicts[_ele] = y_iso_dict
         y_iso_dict = {}  # Clear for following set of isotopes
     # print(y_iso_dicts)
-
-
 
 
 ### Determine x y axis types and captions
