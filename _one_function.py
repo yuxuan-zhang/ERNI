@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import periodictable as pt
 from periodictable import constants
 import numpy as np
+import pandas as pd
 
 
 # Parameters
@@ -111,7 +112,8 @@ print('Abundance_dicts: ', all_ratio_dicts)
 
 mass_iso_ele_list = list(dict.values(mass_iso_ele_dict))
 mass_iso_ele_sum = sum(np.array(mass_iso_ele_list))
-mixed_atoms_per_cm3 = sample_density * pt.constants.avogadro_number/mass_iso_ele_sum
+avo_divided = pt.constants.avogadro_number/mass_iso_ele_sum
+mixed_atoms_per_cm3 = sample_density * avo_divided
 # Use function: mixed_atoms_per_cm3 = _functions.atoms_per_cm3(density=sample_density, mass=mass_iso_ele_sum)
 
 keys = list(dict.keys(y_i_iso_ele_sum_dict))
@@ -146,6 +148,25 @@ if _plot_each_iso_contribution == 'Y':
         y_iso_dicts[_ele] = y_iso_dict
         y_iso_dict = {}  # Clear for following set of isotopes
     # print(y_iso_dicts)
+
+
+### Export to clipboard
+_name = '_' + _input
+df_yi_tot = pd.DataFrame(data=x_energy, index=None)
+df_yi_tot.rename(columns={0: 'eV'+_name}, inplace=True)
+df_yi_tot['lamda'+_name] = _functions.ev2lamda(x_energy)
+df_yi_tot['sample_density'+_name] = sample_density
+df_yi_tot['avo_divided'+_name] = avo_divided
+df_yi_tot['sigma'+_name] = yi_values_sum
+
+
+print(y_i_iso_ele_sum_dict)
+for _each_ in elements:
+    df_test = pd.DataFrame(y_i_iso_ele_dicts[_each_])
+    df_yi_tot = pd.concat([df_yi_tot, df_test], axis=1)
+
+print(df_yi_tot.head())
+df_yi_tot.to_clipboard(excel=True)
 
 
 ### Determine x y axis types and captions
