@@ -7,29 +7,29 @@ import numpy as np
 import pandas as pd
 
 
-# foils_thickmm_dict = {'Gd': 1,
-#                       'Cd': 1,
-#                       'U': 1,
-#                       'Ag': 1,
-#                       'Au': 1,
-#                       'Ta': 1,
-#                       'In': 1,
-#                       'W': 1,
-#                       'Co': 1,
-#                       'Hf': 1,
-#                       'Pb': 1,
-#                       'Eu': 1,
-#                       'B': 1
-#                       }
-# elements = list(dict.keys(foils_thickmm_dict))
-# thick = list(dict.values(foils_thickmm_dict))
-# elements_str = ''.join(elements)
-# print(elements_str)
+foils_thickmm_dict = {'Gd': 1,
+                      'Cd': 1,
+                      'U': 1,
+                      'Ag': 1,
+                      'Au': 1,
+                      'Ta': 1,
+                      'In': 1,
+                      'W': 1,
+                      'Co': 1,
+                      'Hf': 1,
+                      'Pb': 1,
+                      'Eu': 1,
+                      'B': 1
+                      }
+elements = list(dict.keys(foils_thickmm_dict))
+thick = list(dict.values(foils_thickmm_dict))
+elements_str = ''.join(elements)
+print(elements_str)
 
 
 # Parameters
-# _input = elements_str
-_input = 'UO3'
+_input = elements_str
+# _input = 'UO3'
 thick_mm = .3  # mm
 _input_density = 0.7875  # g/cm3  not needed if _input is single element
 _database = 'ENDF_VIII'
