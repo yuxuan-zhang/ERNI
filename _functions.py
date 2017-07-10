@@ -114,17 +114,15 @@ def boo_dict_invert_by_key(_key_list, _boo_dict):
     return _boo_dict
 
 
-def formula_ratio_array(_input, _natural_boo, ratios_dict):
+def formula_ratio_array(_input, _all_ele_boo_dict, ratios_dict):
     _natural_ele = {}
     _ratio_array = {}
-    _p = 0
     for _element in _input:
-        _natural_ele[_element] = _natural_boo[_p]
-        if _natural_boo[_p] == 'Y':
+        _natural_ele[_element] = _all_ele_boo_dict[_element]
+        if _all_ele_boo_dict[_element] == 'Y':
             _ratio_array[_element] = []
         else:
             _ratio_array[_element] = ratios_dict[_element]
-        _p = _p + 1
     print('Natual elements? ', _natural_ele)
     print('Isotope ratio array: ', _ratio_array)
     return _ratio_array

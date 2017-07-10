@@ -47,16 +47,16 @@ _plot_mixed = 'N'  # 1 means plot mixed resonance
 formula_dict = _functions.input2formula(_input)  # Function called to parse input formula and return elements and ratios
 elements = _functions.dict_key_list(formula_dict)
 ratios = _functions.dict_value_list(formula_dict)
-natural_ele_boo_dict = _functions.boo_dict(elements)  # Dict for natural mixture
+all_ele_boo_dict = _functions.boo_dict(elements)  # Dict for natural mixture
 thick_mm_dict = _functions.thick_dict(elements, thick_mm)
 
 # For unnatural mixture elements:
-_natural_ele_input = 'Y'  # input('Is there any unnatural mixture? ')
-if _natural_ele_input == 'Y':
+_unnatural_ele_input = 'Y'  # input('Is there any unnatural mixture? ')
+if _unnatural_ele_input == 'Y':
     unnatural_ratio_dicts = {}
-    unnatural_element_str = 'U,O'  # input('Please list all separated by only ",": ')
-    unnatural_element = unnatural_element_str.split(',')
-    natural_ele_boo_dict = _functions.boo_dict_invert_by_key(unnatural_element, natural_ele_boo_dict)
+    unnatural_element_str = 'U O'  # input('Please list all separated by only ",": ')
+    unnatural_element = unnatural_element_str.split(' ')
+    all_ele_boo_dict = _functions.boo_dict_invert_by_key(unnatural_element, all_ele_boo_dict)
     isotope_dict = _functions.get_isotope_dict(_database, unnatural_element)
     print(isotope_dict)
     for ele in unnatural_element:
@@ -75,10 +75,10 @@ if _thick_input == 'Y':
         thick_mm_dict[_ele] = input('Specify the thickness of {} in mm :'.format(_ele))
 
 
-ratios_dict = _functions.formula_ratio_array(elements, _natural_ele_boo, _input_ratios_dict)
+# ratios_dict = _functions.formula_ratio_array(elements, all_ele_boo_dict, unnatural_ratio_dict)
 
-unnatural_ratio_array_dict = ratios_dict
-print(unnatural_ratio_array_dict)
+# unnatural_ratio_array_dict = all_ele_boo_dict
+# print(unnatural_ratio_array_dict)
 
 if len(elements) == 1:
     sample_density = pt.elements.isotope(_input).density  # g/cm3  https://en.wikipedia.org/wiki/Cadmium
@@ -102,25 +102,25 @@ y_i_iso_ele_dicts = {}  # For transmission calculation at isotope lever
 y_i_iso_ele_sum_dict = {}  # For transmission calculation at element lever
 df_raw_dict = {}  # Raw sigma data for elements and isotopes
 isotopes_dict = {}  # List all isotopes for each element involved
-abundance_dicts = {}  # List all natrual abundance for each isotope of each element involved
+abundance_dicts = {}  # List all natural abundance for each isotope of each element involved
 for _each_ in elements:
     _element = _each_
-    ele_at_ratio = formula[_each_] / sum(ratios)
+    ele_at_ratio = formula_dict[_each_] / sum(ratios)
     # Get pre info (isotopes, abundance, mass, density) of each element from the formula
     isotopes_dict[_each_], iso_abundance, iso_density, iso_mass, abundance_dict, density_dict, mass_dict, file_names = \
         _plot_functions.get_pre_data(_database, _element)
 
     mass_iso_ele_dict[_each_] = _plot_functions.get_mass_iso_ele(iso_abundance, iso_mass, ele_at_ratio,
-                                                                 natural_ele_boo_dict[_each_],
-                                                                 unnatural_ratio_array_dict[_each_])
+                                                                 all_ele_boo_dict[_each_],
+                                                                 unnatural_ratio_dicts[_each_])
 
     x_energy, y_i_iso_ele_dict, y_i_iso_ele_sum, df_raw_dict[_each_] = \
         _plot_functions.get_xy(isotopes_dict[_each_], file_names, energy_min, energy_max, iso_abundance,
-                               sub_x, ele_at_ratio, natural_ele_boo_dict[_each_], unnatural_ratio_array_dict[_each_])
+                               sub_x, ele_at_ratio, all_ele_boo_dict[_each_], unnatural_ratio_dicts[_each_])
     y_i_iso_ele_dicts[_each_] = y_i_iso_ele_dict
     y_i_iso_ele_sum_dict[_each_] = y_i_iso_ele_sum
-    if natural_ele_boo_dict[_each_] == 'N':
-        abundance_dicts[_each_] = unnatural_ratio_array_dict[_each_]
+    if all_ele_boo_dict[_each_] == 'N':
+        abundance_dicts[_each_] = unnatural_ratio_dicts[_each_]
     else:
         abundance_dicts[_each_] = abundance_dict
 

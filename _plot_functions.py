@@ -35,10 +35,12 @@ def get_pre_data(_database, _element):
     return isotopes, iso_abundance, iso_density, iso_mass, abundance_dict, density_dict, mass_dict, file_names
 
 
-def get_mass_iso_ele(iso_abundance, iso_mass, ele_at_ratio, _natural_mix, ratio_array):
+def get_mass_iso_ele(iso_abundance, iso_mass, ele_at_ratio, _natural_mix, _unnatural_ratio_dict):
     # Calculate the number of atoms per unit volume
     abundance_array = np.array(iso_abundance)
     mass_array = np.array(iso_mass)
+    ratio_list = list(dict.values(_unnatural_ratio_dict))
+    ratio_array = np.array(ratio_list)
     if _natural_mix == 'Y':
         abundance_array = abundance_array
     else:
@@ -48,14 +50,15 @@ def get_mass_iso_ele(iso_abundance, iso_mass, ele_at_ratio, _natural_mix, ratio_
     return mass_iso_ele
 
 
-def get_xy(isotopes, file_names, energy_min, energy_max, iso_abundance, sub_x, ele_at_ratio, _natural_mix, ratio_array):
+def get_xy(isotopes, file_names, energy_min, energy_max, iso_abundance, sub_x, ele_at_ratio, _natural_mix, _unnatural_ratio_dict):
     # Transmission calculation of summed and separated contributions by each isotopes
     df = pd.DataFrame()
     df_raw = pd.DataFrame()
     y_i_iso_ele_dict = {}
     # thick_cm = thick_mm/10
     y_i_iso_ele_sum = 0.
-
+    ratio_list = list(dict.values(_unnatural_ratio_dict))
+    ratio_array = np.array(ratio_list)
     if _natural_mix == 'Y':
         iso_at_ratio = iso_abundance
     else:
