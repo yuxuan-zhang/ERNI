@@ -8,9 +8,9 @@ import numpy as np
 
 # Parameters
 # _input = elements_str
-_input = 'UGd'  # input('Please input the chemicals? ')
-thick_mm = 1  # input('Please input the thickness in mm : ')
-_input_density = 0.7875  # g/cm3  not needed if _input is single element
+_input = input('Please input the chemicals? ')
+thick_mm = float(input('Please input the thickness in mm : '))
+# _input_density = 0.7875  # g/cm3  not needed if _input is single element
 _database = 'ENDF_VIII'
 energy_max = 300  # max incident energy in eV
 energy_min = 0  # min incident energy in eV
@@ -63,7 +63,7 @@ if len(elements) == 1:
     sample_density = pt.elements.isotope(_input).density  # g/cm3  https://en.wikipedia.org/wiki/Cadmium
 else:
     # _input_density = 0.7875  # g/cm3  need to input while the _input is multi-element mixture
-    sample_density = _input_density  # input('Please input the density in g/cm3 : ')
+    sample_density = float(input('Sample density of {} in g/cm3: '.format(_input)))
 
 # if _natural_ele_boo == 'Y':
 #     for _each_ in elements:
