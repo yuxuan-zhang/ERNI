@@ -48,14 +48,15 @@ print('Thickness (mm): ', thick_mm_dict)
 _density_input = 'Y'  # input('Mixture or not standard solid? ')
 if _density_input == 'Y':
     _porous_pure = 'Y'  # input('Porous pure solid? ')
-    if _porous_pure == 'N':
-        sample_density = float(input('Total sample density of {} in g/cm3: '.format(_input)))
-    else:
+    if _porous_pure == 'Y':
+        _compound = 'N'
         density_element_str = input('Please list all separated by only " ": ')
         density_element = density_element_str.split(' ')
         density_boo_dict = _functions.boo_dict_invert_by_key(density_element, density_boo_dict)
         for ele in density_element:
             density_gcm3_dict[ele] = float(input('Modified density of {} in g/cm3: '.format(ele)))
+    else:
+        _compound = 'Y'
     print('Density (g/cm3): ', density_gcm3_dict)
 
 
@@ -91,7 +92,7 @@ df_raw_dict = {}  # Raw sigma data for elements and isotopes
 isotopes_dict = {}  # List all isotopes for each element involved
 abundance_dicts = {}  # List all natural abundance for each isotope of each element involved
 all_ratio_dicts = {}
-# unnatural_ratio_dicts = _functions.empty_dict(elements)  # empty with value of 1 no meaning
+sample_density = .0
 for _each_ in elements:
     _element = _each_
     ele_at_ratio = formula_dict[_each_] / sum(ratios)
@@ -100,13 +101,17 @@ for _each_ in elements:
         abundance_dict, density_dict, mass_dict, file_names \
         = _plot_functions.get_pre_data(_database, _element)
 
+    # Replace the at.% if isotope composition does not follow natural abundance in the main isotope ratio dict
     if _unnatural_ele_input == 'Y':
         for _each in unnatural_ratio_dicts:
             all_ratio_dicts[_each] = unnatural_ratio_dicts[_each]
 
+    # A part for getting atoms_per_cm3, this part is irrelevant to fitting parameters, and will be exported for fitting
     mass_iso_ele_dict[_each_] = _plot_functions.get_mass_iso_ele(iso_abundance, iso_mass, ele_at_ratio,
                                                                  all_ele_boo_dict[_each_],
                                                                  all_ratio_dicts[_each_])
+    # Total density calculation
+    sample_density = sample_density + density_gcm3_dict[_each_] * ele_at_ratio
 
     x_energy, y_i_iso_ele_dict, y_i_iso_ele_sum, df_raw_dict[_each_] = \
         _plot_functions.get_xy(isotopes_dict[_each_], file_names, energy_min, energy_max, iso_abundance,
@@ -114,11 +119,13 @@ for _each_ in elements:
     y_i_iso_ele_dicts[_each_] = y_i_iso_ele_dict
     y_i_iso_ele_sum_dict[_each_] = y_i_iso_ele_sum
 
-    sample_density = density_gcm3_dict[_each_]
 
 print('Abundance_dicts: ', all_ratio_dicts)
 # print(mass_iso_ele_dict)
 # print(ele_at_ratio)
+if _density_input == 'Y':
+    if _compound == 'Y':
+        sample_density = float(input('Total sample density of {} in g/cm3: '.format(_input)))
 
 mass_iso_ele_list = list(dict.values(mass_iso_ele_dict))
 mass_iso_ele_sum = sum(np.array(mass_iso_ele_list))
