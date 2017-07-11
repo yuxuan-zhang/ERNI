@@ -9,8 +9,8 @@ import pandas as pd
 
 # Parameters
 # _input = elements_str
-_input = 'W'  # input('Please input the chemicals? ')
-thick_mm = 0.01  # float(input('Please input the thickness in mm : '))
+_input = input('Please input the chemicals? ')
+thick_mm = 0.26  # float(input('Please input the thickness in mm : '))
 _database = 'ENDF_VIII'
 energy_max = 300  # max incident energy in eV
 energy_min = 0  # min incident energy in eV
@@ -34,7 +34,7 @@ density_gcm3_dict = _functions.density_dict(elements)
 
 
 ### For element with various thickness:
-_thick_input = 'N'  # input('Is there any element with different thickness? ')
+_thick_input = input('Is there any element with different thickness? ')
 if _thick_input == 'Y':
     resize_element_str = input('Please list all separated by only " ": ')
     resize_element = resize_element_str.split(' ')
@@ -45,10 +45,10 @@ print('Thickness (mm): ', thick_mm_dict)
 
 
 ### For sample doesn't have standard density:
-_density_input = 'Y'  # input('Mixture or not standard solid? ')
+_density_input = input('Mixture or any element not follow standard density? ')
 if _density_input == 'Y':
-    _porous_pure = 'Y'  # input('Porous pure solid? ')
-    if _porous_pure == 'Y':
+    _diff_density_pure = input('Pure element but would like to input density other than standard? ')
+    if _diff_density_pure == 'Y':
         _compound = 'N'
         density_element_str = input('Please list all separated by only " ": ')
         density_element = density_element_str.split(' ')
@@ -61,7 +61,7 @@ if _density_input == 'Y':
 
 
 ### For element doesn't contain isotopes in natural abundance:
-_unnatural_ele_input = 'N'  # input('Is there any unnatural mixture? ')
+_unnatural_ele_input = input('Is there any unnatural mixture? ')
 if _unnatural_ele_input == 'Y':
     unnatural_ratio_dicts = {}
     unnatural_element_str = input('Please list all separated by only " ": ')
@@ -125,7 +125,7 @@ print('Abundance_dicts: ', all_ratio_dicts)
 # print(ele_at_ratio)
 if _density_input == 'Y':
     if _compound == 'Y':
-        sample_density = float(input('Total sample density of {} in g/cm3: '.format(_input)))
+        sample_density = float(input('Mixture or compound density of {} in g/cm3: '.format(_input)))
 
 mass_iso_ele_list = list(dict.values(mass_iso_ele_dict))
 mass_iso_ele_sum = sum(np.array(mass_iso_ele_list))
