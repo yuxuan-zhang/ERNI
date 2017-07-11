@@ -140,12 +140,6 @@ def dict_replace_value_by_key(_dict, _key_list, _value_list):
         p = p + 1
     return _dict
 
-resize_element_str = input('Please list all separated by only " ": ')
-    resize_element = resize_element_str.split(' ')
-    all_ele_boo_dict = _functions.boo_dict_invert_by_key(resize_element, thick_boo_dict)
-    for ele in resize_element:
-        thick_mm_dict[ele] = float(input('Thickness of {} in mm: '.format(ele)))
-
 
 def formula_ratio_array(_input, _all_ele_boo_dict, ratios_dict):
     _natural_ele = {}
