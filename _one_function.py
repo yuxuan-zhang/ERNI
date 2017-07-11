@@ -17,7 +17,6 @@ energy_max = 300  # max incident energy in eV
 energy_min = 0  # min incident energy in eV
 energy_sub = 100
 sub_x = energy_sub * (energy_max - energy_min)  # subdivided new x-axis
-# _multi_element = 'N'
 _energy_x_axis = 'Y'  # 1 means plot x-axis as energy in eV
 _trans_y_axis = 'N'  # 1 means plot y-axis as transmission
 _plot_each_ele_contribution = 'Y'  # 1 means plot each element's contribution
@@ -27,8 +26,8 @@ _plot_mixed = 'N'  # 1 means plot mixed resonance
 formula_dict = _functions.input2formula(_input)  # Function called to parse input formula and return elements and ratios
 elements = _functions.dict_key_list(formula_dict)
 ratios = _functions.dict_value_list(formula_dict)
-all_ele_boo_dict = _functions.boo_dict(elements)  # Dict for natural mixture
-thick_boo_dict = _functions.boo_dict(elements)  # Dict for same thickness
+all_ele_boo_dict = _functions.boo_dict(elements, 'Y')  # Y/N Dict for natural mixture
+thick_boo_dict = _functions.boo_dict(elements, 'Y')  # Y/N Dict for same thickness
 thick_mm_dict = _functions.thick_dict(elements, thick_mm)
 
 

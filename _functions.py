@@ -93,10 +93,10 @@ def dict_value_list(_formula_dict):
     return _ratios
 
 
-def boo_dict(_key_list):
+def boo_dict(_key_list, _y_or_n):
     _boo_dict = {}
     for key in _key_list:
-        _boo_dict[key] = 'Y'
+        _boo_dict[key] = _y_or_n
     return _boo_dict
 
 
@@ -105,6 +105,15 @@ def thick_dict(_key_list, _thick_mm):
     for key in _key_list:
         _thick_dict[key] = _thick_mm
     return _thick_dict
+
+
+def density_dict(_key_list):
+    _density_dict = {}
+    for key in _key_list:
+        _density_dict[key] = pt.elements.isotope(key).density
+        # key can be element ('Co') or isotopes ('59-Co')
+        # Unit: g/cm3
+    return _density_dict
 
 
 def empty_dict(_key_list):
@@ -122,6 +131,20 @@ def boo_dict_invert_by_key(_key_list, _boo_dict):
         else:
             _boo_dict[key] = 'Y'
     return _boo_dict
+
+
+def dict_replace_value_by_key(_dict, _key_list, _value_list):
+    p = 0
+    for key in _key_list:
+        _dict[key] = _value_list[p]
+        p = p + 1
+    return _dict
+
+resize_element_str = input('Please list all separated by only " ": ')
+    resize_element = resize_element_str.split(' ')
+    all_ele_boo_dict = _functions.boo_dict_invert_by_key(resize_element, thick_boo_dict)
+    for ele in resize_element:
+        thick_mm_dict[ele] = float(input('Thickness of {} in mm: '.format(ele)))
 
 
 def formula_ratio_array(_input, _all_ele_boo_dict, ratios_dict):
