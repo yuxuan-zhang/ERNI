@@ -9,14 +9,14 @@ import pandas as pd
 
 # Parameters
 # _input = elements_str
-_input = 'Co'  # input('Please input the chemicals? ')
-thick_mm = 1  # float(input('Please input the thickness in mm : '))
+_input = 'W'  # input('Please input the chemicals? ')
+thick_mm = 0.01  # float(input('Please input the thickness in mm : '))
 _database = 'ENDF_VIII'
 energy_max = 300  # max incident energy in eV
 energy_min = 0  # min incident energy in eV
 energy_sub = 100
 sub_x = energy_sub * (energy_max - energy_min)  # subdivided new x-axis
-_plot_or_not = 'N'
+_plot_or_not = 'Y'
 _energy_x_axis = 'Y'  # 1 means plot x-axis as energy in eV
 _trans_y_axis = 'N'  # 1 means plot y-axis as transmission
 _plot_each_ele_contribution = 'Y'  # 1 means plot each element's contribution
@@ -56,7 +56,7 @@ if _thick_input == 'Y':
     all_ele_boo_dict = _functions.boo_dict_invert_by_key(resize_element, thick_boo_dict)
     for ele in resize_element:
         thick_mm_dict[ele] = float(input('Thickness of {} in mm: '.format(ele)))
-print(thick_mm_dict)
+print('Thickness in mm: ', thick_mm_dict)
 
 
 if len(elements) == 1:
@@ -151,7 +151,7 @@ df_yi_tot['avo_divided'+_name] = avo_divided
 df_yi_tot['sigma'+_name] = yi_values_sum
 
 
-print(y_i_iso_ele_sum_dict)
+# print(y_i_iso_ele_sum_dict)
 for _each_ in elements:
     df_test = pd.DataFrame(y_i_iso_ele_dicts[_each_])
     df_yi_tot = pd.concat([df_yi_tot, df_test], axis=1)

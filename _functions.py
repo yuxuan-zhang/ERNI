@@ -10,8 +10,9 @@ def ev2lamda(energy):  # function to convert energy in eV to angstrom
     return lamda
 
 
-def time2lamda(time_tot, source_to_detector):  # function to convert time in us to angstrom
-    lamda = 0.3956 * time_tot/source_to_detector
+def time2lamda(time_tot_s, delay_us, source_to_detector_cm):  # function to convert time in us to angstrom
+    time_tot_us = 1e6 * time_tot_s + delay_us
+    lamda = 0.3956 * time_tot_us/source_to_detector_cm
     return lamda
 
 
@@ -20,8 +21,9 @@ def lamda2ev(lamda):  # function to convert angstrom to eV
     return energy
 
 
-def time2ev(time_tot, source_to_detector):  # function to convert time in us to energy in eV
-    energy = 81.787/(1000 * (0.3956 * time_tot/source_to_detector) ** 2)
+def time2ev(time_tot_s, delay_ms, source_to_detector_cm):  # function to convert time in us to energy in eV
+    time_tot_us = time_tot_s + delay_ms * 1000
+    energy = 81.787/(1000 * (0.3956 * time_tot_us/source_to_detector_cm) ** 2)
     return energy
 
 
