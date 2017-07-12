@@ -22,9 +22,10 @@ def lamda2ev(lamda):  # function to convert angstrom to eV
 
 
 def time2ev(time_tot_s, delay_ms, source_to_detector_cm):  # function to convert time in us to energy in eV
-    time_tot_us = time_tot_s + delay_ms * 1000
-    energy = 81.787/(1000 * (0.3956 * time_tot_us/source_to_detector_cm) ** 2)
-    return energy
+    time_tot_us = 1e6 * time_tot_s + delay_ms * 1000
+    energy_miliev = 81.787/(0.3956 * time_tot_us/source_to_detector_cm) ** 2
+    energy_ev = energy_miliev/1000
+    return energy_ev
 
 
 def atoms_per_cm3(density, mass):
