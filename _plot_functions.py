@@ -11,8 +11,9 @@ style.use('ggplot')
 
 
 def get_pre_data(_database, _element):
-    main_dir = os.path.dirname(os.path.abspath(__file__))
-    path = main_dir + '/data_web/' + _database + '/' + _element + '*.csv'
+    # main_dir = os.path.dirname(os.path.abspath(__file__))
+    # path = main_dir + '/data_web/' + _database + '/' + _element + '*.csv'
+    path = 'data_web/' + _database + '/' + _element + '*.csv'
     file_names = glob.glob(path)
     abundance_dict = {}
     mass_dict = {}

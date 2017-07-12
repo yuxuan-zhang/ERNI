@@ -27,6 +27,8 @@ df_sum['ob'] = ob_18[1] + ob_delme[1] + ob_Cd[1]
 df_sum['norm'] = df_sum['data'] / df_sum['ob']
 df_data = pd.read_csv('foil3.csv')
 df_data['norm'] = df_data['Y'] / df_sum['ob']
+df = pd.read_csv('data_web/ENDF_VII/Ag-107.csv')
+print(df.head())
 print(df_data.head())
 # df_all.set_index(df_all['lamda'], inplace=True)
 # plt.plot(df_all['eV'], df_sum['data'])
