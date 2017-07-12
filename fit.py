@@ -21,32 +21,12 @@ df_all['ob_18'] = ob_18[1]
 df_all['ob_delme'] = ob_delme[1]
 df_all['ob_Cd'] = ob_Cd[1]
 df_all.set_index(df_all['eV'], inplace=True)
-# print(len(data_20))
-# print(len(data_40))
-# print(len(data_3749))
-#
-# print(len(ob18))
-# print(len(ob_delme))
-# print(len(ob_Cd))
-# print(data_20[0] == data_3749[0])
-print(df_all)
 
-# plt.plot(data_20[0], data_20[1], label='20')
-# plt.plot(data_40[0], data_40[1], label='40')
-# plt.plot(data_3749[0], data_3749[1], label='40')
-# plt.plot(ob18[1], label='OB18')
-# plt.plot(ob_Cd[1], label='OB_Cd')
-# plt.plot(ob_delme[1], label='OB_delme')
-
-# plt.plot(df_all['eV'], data_20[1], label='20')
-# plt.plot(df_all['eV'], data_40[1], label='40')
-# plt.plot(df_all['eV'], data_3749[1], label='40')
-# plt.plot(df_all['eV'], ob_18[1], label='OB_18')
-# plt.plot(df_all['eV'], ob_Cd[1], label='OB_Cd')
-# plt.plot(df_all['eV'], ob_delme[1], label='OB_delme')
-#
-# plt.legend(loc='best')
+# df_all.plot()
 # plt.show()
 
-df_all.plot()
-plt.show()
+df_a = pd.read_csv('Analysis_07_11_2017.csv')
+
+print(df_a)
+
+
