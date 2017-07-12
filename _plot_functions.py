@@ -15,9 +15,7 @@ def get_pre_data(_database, _element):
     path = main_dir + '/data_web/' + _database + '/' + _element + '*.csv'
     file_names = glob.glob(path)
     abundance_dict = {}
-    density_dict = {}
     mass_dict = {}
-    # z_number = {}
     for _i, file in enumerate(file_names):
         # Obtain element, z number from the basename
         _basename = os.path.basename(file)
@@ -26,13 +24,12 @@ def get_pre_data(_database, _element):
         _name = _name_number.split('-')
         _symbol = _name[1] + '-' + _name[0]
         abundance_dict[str(_symbol)] = pt.elements.isotope(_symbol).abundance / 100
-        density_dict[str(_symbol)] = pt.elements.isotope(_symbol).density
         mass_dict[str(_symbol)] = pt.elements.isotope(_symbol).mass
     isotopes = list(dict.keys(abundance_dict))  # List of isotopes such as '238-U', ''235-U
     iso_abundance = list(dict.values(abundance_dict))  # List of isotopic abundance
-    iso_density = list(dict.values(density_dict))  # List of isotopic density
+    # iso_density = list(dict.values(density_dict))  # List of isotopic density
     iso_mass = list(dict.values(mass_dict))  # List of isotopic molar mass
-    return isotopes, abundance_dict, iso_abundance, iso_density, iso_mass, abundance_dict, density_dict, mass_dict, file_names
+    return isotopes, abundance_dict, iso_abundance, iso_mass, file_names
 
 
 def get_mass_iso_ele(iso_abundance, iso_mass, ele_at_ratio, _natural_mix, _unnatural_ratio_dict):

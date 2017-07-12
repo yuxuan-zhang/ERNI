@@ -102,8 +102,7 @@ for _each_ in elements:
     _element = _each_
     ele_at_ratio = formula_dict[_each_] / sum(ratios)
     # Get pre info (isotopes, abundance, mass, density) of each element from the formula
-    isotopes_dict[_each_], all_ratio_dicts[_each_], iso_abundance, iso_density, iso_mass, \
-        abundance_dict, density_dict, mass_dict, file_names \
+    isotopes_dict[_each_], all_ratio_dicts[_each_], iso_abundance, iso_mass, file_names \
         = _plot_functions.get_pre_data(_database, _element)
 
     # Replace the at.% if isotope composition does not follow natural abundance in the main isotope ratio dict
