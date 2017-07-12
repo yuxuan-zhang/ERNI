@@ -240,7 +240,8 @@ if _plot_or_not == 'Y':
             for _iso in isotopes_dict[_ele]:
                 _y_each_axis = y_iso_dicts[_ele][_iso]
                 plt.plot(_x_axis, _y_each_axis, label=_iso)
-
+    if _energy_x_axis != 'Y':
+        plt.xlim(-0.01, 1.01)
     plt.ylim(-0.01, 1.01)
     plt.xlabel(_x_words)
     plt.ylabel(_y_words)

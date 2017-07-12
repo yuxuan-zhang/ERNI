@@ -13,20 +13,21 @@ ob_18 = pd.read_csv('OB_image18_pectra.txt', sep='\t', header=None)
 ob_delme = pd.read_csv('OB_delme_spectra.txt', sep='\t', header=None)
 ob_Cd = pd.read_csv('OB_Cd_spectra.txt', sep='\t', header=None)
 df_all = pd.DataFrame()
-df_all['eV'] = _functions.time2ev(data_20[0], delay_ms, source_to_detector_cm)
+# df_all['eV'] = _functions.time2ev(data_20[0], delay_ms, source_to_detector_cm)
+df_all['lamda'] = _functions.time2lamda(data_20[0], delay_ms, source_to_detector_cm)
 df_all['20'] = data_20[1]
 df_all['40'] = data_40[1]
 df_all['3749'] = data_3749[1]
 df_all['ob_18'] = ob_18[1]
 df_all['ob_delme'] = ob_delme[1]
 df_all['ob_Cd'] = ob_Cd[1]
-df_all.set_index(df_all['eV'], inplace=True)
+df_all.set_index(df_all['lamda'], inplace=True)
 
-# df_all.plot()
-# plt.show()
+df_all.plot()
+plt.show()
 
-df_a = pd.read_csv('Analysis_07_11_2017.csv')
+# df_a = pd.read_csv('Analysis_07_11_2017.csv')
 
-print(df_a)
+print(df_all.head())
 
 
