@@ -130,10 +130,10 @@ for _each_ in elements:
     # One level dict of elemental array of (L * sigma * iso_ratio * ele_ratio)
     sigma_iso_ele_sum_l_eledict[_each_] = sigma_iso_ele_sum * thick_cm
 
-    # # Two level dict of isotopic array of (sigma * iso_ratio * ele_ratio)
-    # sigma_iso_ele_eleisodict[_each_] = sigma_iso_ele_isodict
-    # # One level dict of elemental array of (sigma * iso_ratio * ele_ratio)
-    # sigma_iso_ele_sum_eledict[_each_] = sigma_iso_ele_sum
+    # Two level dict of isotopic array of (sigma * iso_ratio * ele_ratio)
+    sigma_iso_ele_eleisodict[_each_] = sigma_iso_ele_isodict
+    # One level dict of elemental array of (sigma * iso_ratio * ele_ratio)
+    sigma_iso_ele_sum_eledict[_each_] = sigma_iso_ele_sum
 
 print('Abundance_dicts: ', all_ratio_dicts)
 
@@ -147,12 +147,15 @@ avo_divided = pt.constants.avogadro_number/mass_iso_ele_sum
 mixed_atoms_per_cm3 = sample_density * avo_divided
 # Use function: mixed_atoms_per_cm3 = _functions.atoms_per_cm3(density=sample_density, mass=mass_iso_ele_sum)
 
-yi_values = list(dict.values(sigma_iso_ele_sum_l_eledict))
+# sum of (sigma * ele_ratio * iso_ratio * l)
+yi_values_l = list(dict.values(sigma_iso_ele_sum_l_eledict))
+yi_values_l_sum = sum(yi_values_l)
+# sum of (sigma * ele_ratio * iso_ratio)
+yi_values = list(dict.values(sigma_iso_ele_sum_eledict))
 yi_values_sum = sum(yi_values)
-print(type(yi_values_sum))
 
 
-trans_sum = _functions.sigl2trans_quick(mixed_atoms_per_cm3, yi_values_sum)
+trans_sum = _functions.sigl2trans_quick(mixed_atoms_per_cm3, yi_values_l_sum)
 y_trans_tot = trans_sum
 
 ### Create the trans or absorb dict of ele for plotting if needed
@@ -182,22 +185,25 @@ if _plot_each_iso_contribution == 'Y':
     # print(y_iso_dicts)
 
 
-# ### Export to clipboard
-# _name = '_' + _input_formula
+# ### Export to clipboard for density and thickness manipulations with Excel or DataGraph
+# _name = _input_formula
 # df_yi_tot = pd.DataFrame(data=x_energy, index=None)
 # df_yi_tot.rename(columns={0: 'eV'+_name}, inplace=True)
-# df_yi_tot['lamda'+_name] = _functions.ev2lamda(x_energy)
-# df_yi_tot['sample_density'+_name] = sample_density
-# df_yi_tot['avo_divided'+_name] = avo_divided
-# df_yi_tot['sigma'+_name] = yi_values_sum
+# df_yi_tot['lamda-'+_name] = _functions.ev2lamda(x_energy)
+# df_yi_tot['sample_density-'+_name] = sample_density
+# df_yi_tot['avo_divided-'+_name] = avo_divided
+# df_yi_tot['sigma-'+_name] = yi_values_sum
 #
 #
 # # print(y_i_iso_ele_sum_dict)
 # for _each_ in elements:
-#     df_test = pd.DataFrame(y_i_iso_ele_dicts[_each_])
+#     _ele_str = str(_each_)
+#     df_yi_tot['sigma-'+_ele_str] = sigma_iso_ele_sum_eledict[_each_]
+#     df_test = pd.DataFrame(sigma_iso_ele_eleisodict[_each_])
 #     df_yi_tot = pd.concat([df_yi_tot, df_test], axis=1)
 #
 # print(df_yi_tot.head())
+# # # Export to clipboard
 # # df_yi_tot.to_clipboard(excel=True)
 
 
