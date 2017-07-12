@@ -33,7 +33,7 @@ print(df_data.head())
 # df_all.set_index(df_all['lamda'], inplace=True)
 # plt.plot(df_all['eV'], df_sum['data'])
 # plt.plot(df_all['eV'], df_sum['ob'])
-plt.plot(df_all['lamda'], df_data['norm'], 'r')
+plt.plot(df_all['eV'], df_data['norm'], 'r')
 
 # df_all.plot.scatter('eV', '20')
 # plt.xlim(-0.01, 1.01)
