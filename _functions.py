@@ -39,9 +39,13 @@ def sig2trans(_thick_cm, _atoms_per_cm3, _ele_atomic_ratio, _sigma_b, _iso_atomi
     return neutron_transmission
 
 
-def sig2trans_quick(_thick_mm, _atoms_per_cm3, _sigma_portion_sum):
-    _thick_cm = _thick_mm/10
+def sig2trans_quick(_thick_cm, _atoms_per_cm3, _sigma_portion_sum):
     neutron_transmission = np.exp(-1 * _thick_cm * _atoms_per_cm3 * 1e-24 * _sigma_portion_sum)
+    return neutron_transmission
+
+
+def sigl2trans_quick(_atoms_per_cm3, _sigma_l_portion_sum):
+    neutron_transmission = np.exp(-1 * _atoms_per_cm3 * 1e-24 * _sigma_l_portion_sum)
     return neutron_transmission
 
 

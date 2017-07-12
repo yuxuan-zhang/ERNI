@@ -47,14 +47,16 @@ def get_mass_iso_ele(iso_abundance, iso_mass, ele_at_ratio, _natural_mix, _unnat
     return mass_iso_ele
 
 
-def get_xy(isotopes, file_names, energy_min, energy_max, iso_abundance, sub_x, ele_at_ratio, _natural_mix, _unnatural_ratio_dict):
+def get_xy(isotopes, thick_cm, file_names, energy_min, energy_max, iso_abundance, sub_x, ele_at_ratio, _natural_mix, _unnatural_ratio_dict):
     # Transmission calculation of summed and separated contributions by each isotopes
     df = pd.DataFrame()
     df_raw = pd.DataFrame()
-    y_i_iso_ele_dict = {}
+    sigma_iso_ele_isodict = {}
+    sigma_iso_ele_l_isodict = {}
+    # sigma_iso_ele_l_isodict = {}
     # thick_cm = thick_mm/10
-    y_i_iso_ele_sum = 0.
-
+    sigma_iso_ele_sum = 0.
+    # sigma_iso_ele_l_sum = 0.
     if _natural_mix == 'Y':
         iso_at_ratio = iso_abundance
     else:
@@ -80,9 +82,13 @@ def get_xy(isotopes, file_names, energy_min, energy_max, iso_abundance, sub_x, e
         x_energy = np.linspace(df['E_eV'].min(), df['E_eV'].max(), sub_x)
         spline = interpolate.interp1d(x=df['E_eV'], y=df['Sig_b'], kind='linear')
         y_i = spline(x_energy)
+        sigma_b = y_i
         # y_i_sum = y_i_sum + y_i * iso_abundance[i] * ele_at_ratio
-        y_i_iso_ele_dict[_isotope] = y_i * iso_at_ratio[i] * ele_at_ratio
-        y_i_iso_ele_sum = y_i_iso_ele_sum + y_i * iso_at_ratio[i] * ele_at_ratio
+        sigma_iso_ele_isodict[_isotope] = sigma_b * iso_at_ratio[i] * ele_at_ratio
+        sigma_iso_ele_l_isodict[_isotope] = sigma_iso_ele_isodict[_isotope] * thick_cm
+        sigma_iso_ele_sum = sigma_iso_ele_sum + sigma_b * iso_at_ratio[i] * ele_at_ratio
+        # sigma_iso_ele_l_isodict[_isotope] = sigma_b * iso_at_ratio[i] * ele_at_ratio * thick_cm
+        # sigma_iso_ele_l_sum = sigma_iso_ele_l_sum + sigma_b * iso_at_ratio[i] * ele_at_ratio * thick_cm
 
         """
         Attention:
@@ -95,7 +101,7 @@ def get_xy(isotopes, file_names, energy_min, energy_max, iso_abundance, sub_x, e
         df.rename(columns={'E_eV': first_col, 'Sig_b': second_col}, inplace=True)
         df_raw = pd.concat([df_raw, df], axis=1)
 
-    return x_energy, y_i_iso_ele_dict, y_i_iso_ele_sum, df_raw
+    return x_energy, sigma_iso_ele_isodict, sigma_iso_ele_l_isodict, sigma_iso_ele_sum, df_raw
 
 
 def set_xy(_all, thick_mm, mixed_atoms_per_cm3, sig_dict, _x_axis):

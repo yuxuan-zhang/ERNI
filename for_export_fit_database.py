@@ -9,7 +9,7 @@ import pandas as pd
 
 # Parameters
 # _input = elements_str
-_input = input('Please input the chemicals? ')
+_input = 'UO3'  # input('Please input the chemicals? ')
 thick_mm = 0.26  # float(input('Please input the thickness in mm : '))
 _database = 'ENDF_VIII'
 energy_max = 300  # max incident energy in eV
@@ -34,7 +34,7 @@ density_gcm3_dict = _functions.density_dict(elements)
 
 
 ### For element with various thickness:
-_thick_input = input('Is there any element with different thickness? ')
+_thick_input = 'N'  # input('Is there any element with different thickness? ')
 if _thick_input == 'Y':
     resize_element_str = input('Please list all separated by only " ": ')
     resize_element = resize_element_str.split(' ')
@@ -45,7 +45,7 @@ print('Thickness (mm): ', thick_mm_dict)
 
 
 ### For sample doesn't have standard density:
-_density_input = input('Mixture or any element not follow standard density? ')
+_density_input = 'N' #input('Mixture or any element not follow standard density? ')
 if _density_input == 'Y':
     _diff_density_pure = input('Pure element but would like to input density other than standard? ')
     if _diff_density_pure == 'Y':
@@ -61,7 +61,7 @@ if _density_input == 'Y':
 
 
 ### For element doesn't contain isotopes in natural abundance:
-_unnatural_ele_input = input('Is there any unnatural mixture? ')
+_unnatural_ele_input = 'Y' #input('Is there any unnatural mixture? ')
 if _unnatural_ele_input == 'Y':
     unnatural_ratio_dicts = {}
     unnatural_element_str = input('Please list all separated by only " ": ')
@@ -76,14 +76,19 @@ if _unnatural_ele_input == 'Y':
         for iso in isotopes:
             unnatural_ratio_dict[iso] = float(input('Atomic ratio of {} in mixture: '.format(iso)))
             iso_density_dict[iso] = pt.elements.isotope(iso).density
+        # Get array of isotopic density
         iso_density_list = list(dict.values(iso_density_dict))
         iso_density_array = np.array(iso_density_list)
+        # Get array of input/modified isotopic atomic ratio
         iso_unnatural_ratio_list = list(dict.values(unnatural_ratio_dict))
         iso_unnatural_ratio_array = np.array(iso_unnatural_ratio_list)
+        # Calculate the modified density due to the introduced change in isotopic abundance
         ratio_modified_density = sum(iso_unnatural_ratio_array * iso_density_array)
         unnatural_ratio_dicts[ele] = unnatural_ratio_dict
         density_gcm3_dict[ele] = ratio_modified_density
     # print(unnatural_ratio_dicts)
+    # print(density_gcm3_dicts)
+    # print(density_gcm3_dict)
 
 mass_iso_ele_dict = {}  # For number of atoms per cm3 calculation
 y_i_iso_ele_dicts = {}  # For transmission calculation at isotope lever
@@ -97,8 +102,7 @@ for _each_ in elements:
     _element = _each_
     ele_at_ratio = formula_dict[_each_] / sum(ratios)
     # Get pre info (isotopes, abundance, mass, density) of each element from the formula
-    isotopes_dict[_each_], all_ratio_dicts[_each_], iso_abundance, iso_density, iso_mass, \
-        abundance_dict, density_dict, mass_dict, file_names \
+    isotopes_dict[_each_], all_ratio_dicts[_each_], iso_abundance, iso_mass, file_names \
         = _plot_functions.get_pre_data(_database, _element)
 
     # Replace the at.% if isotope composition does not follow natural abundance in the main isotope ratio dict
@@ -110,7 +114,7 @@ for _each_ in elements:
     mass_iso_ele_dict[_each_] = _plot_functions.get_mass_iso_ele(iso_abundance, iso_mass, ele_at_ratio,
                                                                  all_ele_boo_dict[_each_],
                                                                  all_ratio_dicts[_each_])
-    # Total density calculation
+    # Total density calculation of mixture mixed by ele_at_ratio
     sample_density = sample_density + density_gcm3_dict[_each_] * ele_at_ratio
 
     x_energy, y_i_iso_ele_dict, y_i_iso_ele_sum, df_raw_dict[_each_] = \
@@ -121,6 +125,7 @@ for _each_ in elements:
 
 
 print('Abundance_dicts: ', all_ratio_dicts)
+print(y_i_iso_ele_sum_dict)
 # print(mass_iso_ele_dict)
 # print(ele_at_ratio)
 if _density_input == 'Y':
@@ -133,9 +138,13 @@ avo_divided = pt.constants.avogadro_number/mass_iso_ele_sum
 mixed_atoms_per_cm3 = sample_density * avo_divided
 # Use function: mixed_atoms_per_cm3 = _functions.atoms_per_cm3(density=sample_density, mass=mass_iso_ele_sum)
 
-keys = list(dict.keys(y_i_iso_ele_sum_dict))
+# keys = list(dict.keys(y_i_iso_ele_sum_dict))
 yi_values = list(dict.values(y_i_iso_ele_sum_dict))
 yi_values_sum = sum(yi_values)
+
+for _each_ in elements:
+    thick_mm = thick_mm_dict[_each]
+
 trans_sum = _functions.sig2trans_quick(thick_mm, mixed_atoms_per_cm3, yi_values_sum)
 y_trans_tot = trans_sum
 # print(y_i_iso_ele_sum_dict)
@@ -168,23 +177,23 @@ if _plot_each_iso_contribution == 'Y':
     # print(y_iso_dicts)
 
 
-### Export to clipboard
-_name = '_' + _input
-df_yi_tot = pd.DataFrame(data=x_energy, index=None)
-df_yi_tot.rename(columns={0: 'eV'+_name}, inplace=True)
-df_yi_tot['lamda'+_name] = _functions.ev2lamda(x_energy)
-df_yi_tot['sample_density'+_name] = sample_density
-df_yi_tot['avo_divided'+_name] = avo_divided
-df_yi_tot['sigma'+_name] = yi_values_sum
-
-
-# print(y_i_iso_ele_sum_dict)
-for _each_ in elements:
-    df_test = pd.DataFrame(y_i_iso_ele_dicts[_each_])
-    df_yi_tot = pd.concat([df_yi_tot, df_test], axis=1)
-
-print(df_yi_tot.head())
-# df_yi_tot.to_clipboard(excel=True)
+# ### Export to clipboard
+# _name = '_' + _input
+# df_yi_tot = pd.DataFrame(data=x_energy, index=None)
+# df_yi_tot.rename(columns={0: 'eV'+_name}, inplace=True)
+# df_yi_tot['lamda'+_name] = _functions.ev2lamda(x_energy)
+# df_yi_tot['sample_density'+_name] = sample_density
+# df_yi_tot['avo_divided'+_name] = avo_divided
+# df_yi_tot['sigma'+_name] = yi_values_sum
+#
+#
+# # print(y_i_iso_ele_sum_dict)
+# for _each_ in elements:
+#     df_test = pd.DataFrame(y_i_iso_ele_dicts[_each_])
+#     df_yi_tot = pd.concat([df_yi_tot, df_test], axis=1)
+#
+# print(df_yi_tot.head())
+# # df_yi_tot.to_clipboard(excel=True)
 
 
 ### Plot the database
