@@ -1,12 +1,14 @@
 import numpy as np
 import periodictable as pt
+from periodictable import constants
 import re
 import os
 import glob
 
 
-def ev2lamda(energy):  # function to convert energy in eV to angstrom
-    lamda = np.sqrt(81.787/(1000 * energy))
+def ev2lamda(energy_ev):  # function to convert energy in eV to angstrom
+    energy_miliev = energy_ev * 1000
+    lamda = np.sqrt(81.787/energy_miliev)
     return lamda
 
 
@@ -17,12 +19,13 @@ def time2lamda(time_tot_s, delay_us, source_to_detector_cm):  # function to conv
 
 
 def lamda2ev(lamda):  # function to convert angstrom to eV
-    energy = 81.787/(1000 * lamda ** 2)
-    return energy
+    energy_miliev = 81.787/(lamda ** 2)
+    energy_ev = energy_miliev/1000
+    return energy_ev
 
 
-def time2ev(time_tot_s, delay_ms, source_to_detector_cm):  # function to convert time in us to energy in eV
-    time_tot_us = 1e6 * time_tot_s + delay_ms * 1000
+def time2ev(time_tot_s, delay_us, source_to_detector_cm):  # function to convert time in us to energy in eV
+    time_tot_us = 1e6 * time_tot_s + delay_us
     energy_miliev = 81.787/(0.3956 * time_tot_us/source_to_detector_cm) ** 2
     energy_ev = energy_miliev/1000
     return energy_ev

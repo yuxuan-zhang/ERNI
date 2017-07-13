@@ -7,22 +7,43 @@ import glob
 # Parameters
 source_to_detector_cm = 1610.9  # cm
 delay_ms = 4.5  # ms
+delay_us = delay_ms * 1000
+time_lamda_ev_axis = 'ev'
 _name = 'foil'
 path = 'data/' + _name + '*.csv'
 file_names = glob.glob(path)
 df_spectra = pd.read_csv('data/data_spectra_20.txt', sep='\t', header=None)
 print(file_names)
+df_all = pd.DataFrame()
+time_array = (np.array(df_spectra[0]))
+if time_lamda_ev_axis == 't':
+    df_all['time'] = time_array
+    df_all.set_index(df_all['time'], inplace=True)
+    del df_all['time']
+if time_lamda_ev_axis == 'lamda':
+    lamda_array = _functions.time2lamda(time_array, delay_us, source_to_detector_cm)
+    df_all['lamda'] = lamda_array
+    df_all.set_index(df_all['lamda'], inplace=True)
+    del df_all['lamda']
+if time_lamda_ev_axis == 'ev':
+    ev_array = _functions.time2ev(time_array, delay_us, source_to_detector_cm)
+    df_all['eV'] = ev_array
+    df_all.set_index(df_all['eV'], inplace=True)
+    del df_all['eV']
 p = 1
 for _files in file_names:
-    df1 = pd.read_csv(_files, skiprows=2773, header=None)
-    df2 = pd.read_csv(_files, skiprows=2773, header=None)
-    df1 = df1.reset_index(drop=True)  # Reset index after dropping values
+    df = pd.read_csv(_files, header=None, skiprows=1)
+    # df1 = df[::len(df)/2]  # drop rows beyond range
+    # df2 = df[len(df)/2::-1]
+    data_array = np.array(df[1])
+    data = data_array[:int(len(data_array)/2)]
+    ob = data_array[int(len(data_array)/2):]
+    normalized = data/ob
     # OB at the end of 2773
-    # df_spectra[_name+str(p)] = df['Y']
+    df_all[_name+str(p)] = -1 * normalized
     p = p+1
-print(df1.head())
-print(df1.tail())
-print(df_spectra.tail())
+print(df_all.head())
+print(df_all.tail())
 # data_20 = pd.read_csv('data_spectra_20.txt', sep='\t', header=None)
 # data_40 = pd.read_csv('data_spectra_40.txt', sep='\t', header=None)
 # data_3749 = pd.read_csv('data_spectra_3749.txt', sep='\t', header=None)
@@ -57,6 +78,14 @@ print(df_spectra.tail())
 # plt.show()
 
 # df_a = pd.read_csv('Analysis_07_11_2017.csv')
+df_all.plot()
 
+plt.xlim(0.00453, 0.00492)
+# plt.ylim(-0.01, 1.01)
+# plt.xlabel(_x_words)
+# plt.ylabel(_y_words)
+
+plt.legend(loc=2)
+plt.show()
 
 
