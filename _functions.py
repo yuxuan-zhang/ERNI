@@ -4,6 +4,7 @@ from periodictable import constants
 import re
 import os
 import glob
+import pandas as pd
 
 
 def ev2lamda(energy_ev):  # function to convert energy in eV to angstrom
@@ -162,28 +163,51 @@ def formula_ratio_array(_input, _all_ele_boo_dict, ratios_dict):
     print('Isotope ratio array: ', _ratio_array)
     return _ratio_array
 
-    # def get_abundance_dicts(_isotope_dicts, _element):
-    #     abundance_dict = {}
-    #     abundance_dicts = {}
-    #     for _each in _element:
-    #         isotopes = list(dict.values(_isotope_dicts[_each])
-    #         for _iso in isotopes:
-    #             abundance_dict[_iso] = pt.elements.isotope(_iso).abundance / 100
-    #         abundance_dicts[_each] = abundance_dict
-    #     return abundance_dicts
-# def get_
-# def deter_xy(_energy_x_axis, ):
-#
-# if _energy_x_axis == 'Y':
-#     _x_axis = x_energy
-#     _x_words = 'Energy (eV)'
-# else:
-#     _x_axis = ev2lamda(x_energy)
-#     _x_words = 'Wavelength (Å)'
-#
-# if _trans_y_axis == 'Y':
-#     _y_axis = y_trans_tot
-#     _y_words = 'Neutron transmission'
-# else:
-#     _y_axis = 1 - y_trans_tot
-#     _y_words = 'Neutron attenuation'
+
+def get_normalized_data(_filename):
+    df = pd.read_csv(_filename, header=None, skiprows=1)
+    data_array = np.array(df[1])
+    data = data_array[:int(len(data_array)/2)]
+    ob = data_array[int(len(data_array)/2):]
+    normalized_array = data/ob
+    # OB at the end of 2773
+    return normalized_array
+
+
+def get_normalized_data_slice(_filename, _slice):
+    df = pd.read_csv(_filename, header=None, skiprows=1)
+    data_array = np.array(df[1])
+    data = data_array[:int(len(data_array)/2)]
+    ob = data_array[int(len(data_array)/2):]
+    normalized_array = data/ob
+    normalized_array = normalized_array[_slice:]
+    # OB at the end of 2773
+    return normalized_array
+
+
+def get_spectra(_filename, time_lamda_ev_axis, delay_us, source_to_detector_cm):
+    df_spectra = pd.read_csv(_filename, sep='\t', header=None)
+    time_array = (np.array(df_spectra[0]))
+    # flux_array = (np.array(df_spectra[1]))
+    if time_lamda_ev_axis == 'lamda':
+        lamda_array = time2lamda(time_array, delay_us, source_to_detector_cm)
+        return lamda_array
+    if time_lamda_ev_axis == 'eV':
+        ev_array = time2ev(time_array, delay_us, source_to_detector_cm)
+        return ev_array
+    if time_lamda_ev_axis == 'lamda':
+        return time_array
+
+def get_spectra_slice(_filename, time_lamda_ev_axis, delay_us, source_to_detector_cm, _slice):
+    df_spectra = pd.read_csv(_filename, sep='\t', header=None)
+    time_array = (np.array(df_spectra[0]))
+    # flux_array = (np.array(df_spectra[1]))
+    if time_lamda_ev_axis == 'lamda':
+        lamda_array = time2lamda(time_array, delay_us, source_to_detector_cm)
+        return lamda_array
+    if time_lamda_ev_axis == 'eV':
+        ev_array = time2ev(time_array, delay_us, source_to_detector_cm)
+        ev_array = ev_array[_slice:]
+        return ev_array
+    if time_lamda_ev_axis == 'lamda':
+        return time_array

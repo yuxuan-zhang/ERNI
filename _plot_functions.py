@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib import style
 import glob
 import os
-from scipy import interpolate
+from scipy.interpolate import *
 style.use('ggplot')
 
 

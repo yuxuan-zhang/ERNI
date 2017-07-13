@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import periodictable as pt
 from periodictable import constants
 import numpy as np
-import pandas as pd
 
 
 # Parameters
