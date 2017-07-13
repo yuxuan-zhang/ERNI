@@ -14,12 +14,14 @@ df_spectra = pd.read_csv('data/data_spectra_20.txt', sep='\t', header=None)
 print(file_names)
 p = 1
 for _files in file_names:
-    df = pd.read_csv(_files)
+    df1 = pd.read_csv(_files, skiprows=2773, header=None)
+    df2 = pd.read_csv(_files, skiprows=2773, header=None)
+    df1 = df1.reset_index(drop=True)  # Reset index after dropping values
     # OB at the end of 2773
-    df_spectra[_name+str(p)] = df['Y']
+    # df_spectra[_name+str(p)] = df['Y']
     p = p+1
-print(df.head())
-print(df.tail())
+print(df1.head())
+print(df1.tail())
 print(df_spectra.tail())
 # data_20 = pd.read_csv('data_spectra_20.txt', sep='\t', header=None)
 # data_40 = pd.read_csv('data_spectra_40.txt', sep='\t', header=None)
