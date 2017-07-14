@@ -6,12 +6,12 @@ import _functions
 # Parameters
 source_to_detector_cm = 1610.9  # cm
 delay_ms = 0.45  # ms
-data_20 = pd.read_csv('data_spectra_20.txt', sep='\t', header=None)
-data_40 = pd.read_csv('data_spectra_40.txt', sep='\t', header=None)
-data_3749 = pd.read_csv('data_spectra_3749.txt', sep='\t', header=None)
-ob_18 = pd.read_csv('OB_image18_pectra.txt', sep='\t', header=None)
-ob_delme = pd.read_csv('OB_delme_spectra.txt', sep='\t', header=None)
-ob_Cd = pd.read_csv('OB_Cd_spectra.txt', sep='\t', header=None)
+data_20 = pd.read_csv('data/data_spectra_20.txt', sep='\t', header=None)
+data_40 = pd.read_csv('data/data_spectra_40.txt', sep='\t', header=None)
+data_3749 = pd.read_csv('data/data_spectra_3749.txt', sep='\t', header=None)
+ob_18 = pd.read_csv('data/OB_image18_pectra.txt', sep='\t', header=None)
+ob_delme = pd.read_csv('data/OB_delme_spectra.txt', sep='\t', header=None)
+ob_Cd = pd.read_csv('data/OB_Cd_spectra.txt', sep='\t', header=None)
 df_all = pd.DataFrame()
 df_all['eV'] = _functions.time2ev(data_20[0], delay_ms, source_to_detector_cm)
 df_all['lamda'] = _functions.time2lamda(data_20[0], delay_ms, source_to_detector_cm)

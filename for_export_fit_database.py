@@ -9,7 +9,7 @@ import pandas as pd
 
 # Parameters
 # _input_formula = elements_str
-_input_formula = 'UO3'  # input('Please input the chemicals? ')
+_input_formula = 'Co'  # input('Please input the chemicals? ')
 _input_thick_mm = 0.26  # float(input('Please input the thickness in mm : '))
 _input_thick_cm = _input_thick_mm/10
 _database = 'ENDF_VIII'

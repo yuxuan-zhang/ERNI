@@ -105,11 +105,11 @@ def get_xy(isotopes, thick_cm, file_names, energy_min, energy_max, iso_abundance
     return x_energy, sigma_iso_ele_isodict, sigma_iso_ele_l_isodict, sigma_iso_ele_sum, df_raw
 
 
-def set_xy(_all, thick_mm, mixed_atoms_per_cm3, sig_dict, _x_axis):
-    for _i in _all:
-        _y_axis_i = _functions.sig2trans_quick(thick_mm, mixed_atoms_per_cm3, sig_dict[_i])
-        plt.plot(_x_axis, _y_axis_i, label=_i)
-    return
+# def set_xy(_all, thick_mm, mixed_atoms_per_cm3, sig_dict, _x_axis):
+#     for _i in _all:
+#         _y_axis_i = _functions.sig2trans_quick(thick_mm, mixed_atoms_per_cm3, sig_dict[_i])
+#         plt.plot(_x_axis, _y_axis_i, label=_i)
+#     return
 
 
 def plot_xy(_all, _energy_x_axis, _trans_y_axis, _plot_each_contribution, _plot_mixed,
