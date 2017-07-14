@@ -81,14 +81,13 @@ def get_xy(isotopes, thick_cm, file_names, energy_min, energy_max, iso_abundance
         '''
         # Spline x-axis and y-axis for transmission calculation
         x_energy = np.linspace(df['E_eV'].min(), df['E_eV'].max(), sub_x)
-        spline = interpolate.interp1d(x=df['E_eV'], y=df['Sig_b'], kind='linear')
-        y_i = spline(x_energy)
+        y_spline = interpolate.interp1d(x=df['E_eV'], y=df['Sig_b'], kind='linear')
+        y_i = y_spline(x_energy)
         sigma_b = y_i
         # y_i_sum = y_i_sum + y_i * iso_abundance[i] * ele_at_ratio
         sigma_iso_ele_isodict[_isotope] = sigma_b * iso_at_ratio[i] * ele_at_ratio
         sigma_iso_ele_l_isodict[_isotope] = sigma_iso_ele_isodict[_isotope] * thick_cm
         sigma_iso_ele_sum = sigma_iso_ele_sum + sigma_b * iso_at_ratio[i] * ele_at_ratio
-        # sigma_iso_ele_l_isodict[_isotope] = sigma_b * iso_at_ratio[i] * ele_at_ratio * thick_cm
         # sigma_iso_ele_l_sum = sigma_iso_ele_l_sum + sigma_b * iso_at_ratio[i] * ele_at_ratio * thick_cm
 
         """

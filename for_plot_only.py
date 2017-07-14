@@ -33,8 +33,10 @@ thick_cm_dict = _functions.thick_dict(elements, _input_thick_cm)
 density_boo_dict = _functions.boo_dict(elements, 'N')  # Y/N Dict for density manual input
 density_gcm3_dict = _functions.density_dict(elements)
 
+# To check whether the input are foils stacked
+foils_stacked = ratios.count(ratios[0] == len(ratios))
 
-### For element with various thickness:
+### For elements with various thickness:
 _thick_input = 'N'  # input('Is there any element with different thickness? ')
 if _thick_input == 'Y':
     resize_element_str = input('Please list all separated by only " ": ')
@@ -45,9 +47,9 @@ if _thick_input == 'Y':
 print('Thickness (cm): ', thick_cm_dict)
 
 
-### For sample doesn't have standard density:
-_density_input = 'N' #input('Mixture or any element not follow standard density? ')
-if _density_input == 'Y':
+### For elements doesn't have standard density:
+_mixture_or_ele_with_diff_density = 'N' #input('Mixture or any element not follow standard density? ')
+if _mixture_or_ele_with_diff_density == 'Y':
     _diff_density_pure = input('Pure element but would like to input density other than standard? ')
     if _diff_density_pure == 'Y':
         _compound = 'N'
@@ -61,7 +63,7 @@ if _density_input == 'Y':
     print('Density (g/cm3): ', density_gcm3_dict)
 
 
-### For element doesn't contain isotopes in natural abundance:
+### For element with isotopic enrichment or depletion:
 _unnatural_ele_input = 'N' #input('Is there any unnatural mixture? ')
 if _unnatural_ele_input == 'Y':
     unnatural_ratio_dicts = {}
@@ -103,7 +105,14 @@ all_ratio_dicts = {}
 sample_density = .0
 for _each_ in elements:
     _element = _each_
-    ele_at_ratio = formula_dict[_each_] / sum(ratios)
+    if foils_stacked is False:
+        if _mixture_or_ele_with_diff_density == 'Y':
+            ele_at_ratio = formula_dict[_each_] / sum(ratios)
+    else:
+        if _mixture_or_ele_with_diff_density == 'Y':
+            ele_at_ratio = formula_dict[_each_] / sum(ratios)
+        else:
+            ele_at_ratio = 1
     # Get pre info (isotopes, abundance, mass, density) of each element from the formula
     isotopes_dict[_each_], all_ratio_dicts[_each_], iso_abundance, iso_mass, file_names \
         = _plot_functions.get_pre_data(_database, _element)
@@ -123,8 +132,17 @@ for _each_ in elements:
     sample_density = sample_density + density_gcm3_dict[_each_] * ele_at_ratio
 
     thick_cm = thick_cm_dict[_each_]
-    x_energy, sigma_iso_ele_isodict, sigma_iso_ele_l_isodict, sigma_iso_ele_sum, df_raw_dict[_each_] = _plot_functions.get_xy(isotopes_dict[_each_], thick_cm, file_names, energy_min, energy_max, iso_abundance,
-                               sub_x, ele_at_ratio, all_ele_boo_dict[_each_], all_ratio_dicts[_each_])
+    x_energy, sigma_iso_ele_isodict, sigma_iso_ele_l_isodict, sigma_iso_ele_sum, df_raw_dict[_each_] \
+        = _plot_functions.get_xy(isotopes_dict[_each_],
+                                 thick_cm,
+                                 file_names,
+                                 energy_min,
+                                 energy_max,
+                                 iso_abundance,
+                                 sub_x,
+                                 ele_at_ratio,
+                                 all_ele_boo_dict[_each_],
+                                 all_ratio_dicts[_each_])
     # Two level dict of isotopic array of (L * sigma * iso_ratio * ele_ratio)
     sigma_iso_ele_l_eleisodict[_each_] = sigma_iso_ele_l_isodict
     # One level dict of elemental array of (L * sigma * iso_ratio * ele_ratio)
@@ -137,7 +155,7 @@ for _each_ in elements:
 
 print('Abundance_dicts: ', all_ratio_dicts)
 
-if _density_input == 'Y':
+if _mixture_or_ele_with_diff_density == 'Y':
     if _compound == 'Y':
         sample_density = float(input('Mixture or compound density of {} in g/cm3: '.format(_input_formula)))
 

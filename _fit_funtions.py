@@ -7,43 +7,45 @@ import glob
 import pandas as pd
 import _functions
 import matplotlib.pyplot as plt
+from scipy.interpolate import *
 
 
-def get_multi_data(file_name_signature, time_lamda_ev_axis, delay_us, source_to_detector_cm, _slice):
-    # time_lamda_ev_axis = 'eV'
-    # _file_name_signature = 'foil*'
-    path = 'data/*' + file_name_signature + '*.csv'
-    spectra_path = 'data/spectra.txt'
-    file_names = glob.glob(path)
-    x_axis_array = _functions.get_spectra_slice(spectra_path, time_lamda_ev_axis, delay_us,
-                                                source_to_detector_cm, _slice)
-    df = pd.DataFrame()
-    key_dict = {}
-    for i in range(len(file_names)):
-        key_dict[i] = file_name_signature + str(i + 1)
-    # df[time_lamda_ev_axis] = x_axis_array
-    key_list = list(dict.values(key_dict))
-    plot_boo_dict = _functions.boo_dict(key_list, 'N')
-    plot_foil_num = [1, 2, 4]
-    plot_foil = {}
-    for num in plot_foil_num:
-        plot_foil[num] = file_name_signature + str(num)
-    plot_foil_list = list(dict.values(plot_foil))
-    print(plot_foil_list)
-    plot_boo_dict = _functions.boo_dict_invert_by_key(plot_foil_list, plot_boo_dict)
-    print(plot_boo_dict)
-    for foil in key_list:
-        df[foil] = _functions.get_normalized_data_slice('data/' + foil + '.csv', _slice)
-        if plot_boo_dict[foil] == 'Y':
-            plt.plot(x_axis_array, df[foil], '.', label=foil)
-    print(df.head())
-    print(df.tail())
 
-    # plt.xlim(0, 300)
-    # plt.ylim(-0.01, 1.01)ß
-    plt.legend(loc='best')
-    plt.xlabel(time_lamda_ev_axis)
-    plt.show()
+# def get_multi_data(file_name_signature, time_lamda_ev_axis, delay_us, source_to_detector_cm, _slice):
+#     # time_lamda_ev_axis = 'eV'
+#     # _file_name_signature = 'foil*'
+#     path = 'data/*' + file_name_signature + '*.csv'
+#     spectra_path = 'data/spectra.txt'
+#     file_names = glob.glob(path)
+#     x_axis_array = _functions.get_spectra_slice(spectra_path, time_lamda_ev_axis, delay_us,
+#                                                 source_to_detector_cm, _slice)
+#     df = pd.DataFrame()
+#     key_dict = {}
+#     for i in range(len(file_names)):
+#         key_dict[i] = file_name_signature + str(i + 1)
+#     # df[time_lamda_ev_axis] = x_axis_array
+#     key_list = list(dict.values(key_dict))
+#     plot_boo_dict = _functions.boo_dict(key_list, 'N')
+#     plot_foil_num = [1, 2, 4]
+#     plot_foil = {}
+#     for num in plot_foil_num:
+#         plot_foil[num] = file_name_signature + str(num)
+#     plot_foil_list = list(dict.values(plot_foil))
+#     print(plot_foil_list)
+#     plot_boo_dict = _functions.boo_dict_invert_by_key(plot_foil_list, plot_boo_dict)
+#     print(plot_boo_dict)
+#     for foil in key_list:
+#         df[foil] = _functions.get_normalized_data_slice('data/' + foil + '.csv', _slice)
+#         if plot_boo_dict[foil] == 'Y':
+#             plt.plot(x_axis_array, df[foil], '.', label=foil)
+#     print(df.head())
+#     print(df.tail())
+#
+#     # plt.xlim(0, 300)
+#     # plt.ylim(-0.01, 1.01)ß
+#     plt.legend(loc='best')
+#     plt.xlabel(time_lamda_ev_axis)
+#     plt.show()
 
 
 def get_pre_data_to_fit(_database, _element):
@@ -78,22 +80,22 @@ def get_mass_iso_ele_to_fit(iso_abundance, iso_mass, ele_at_ratio):
     return mass_iso_ele
 
 
-def get_xy_to_fit(isotopes, thick_cm, file_names, energy_min, energy_max, iso_abundance, sub_x, ele_at_ratio, _natural_mix, _unnatural_ratio_dict):
+def get_xy_to_fit(isotopes, file_names, energy_min, energy_max, iso_abundance, sub_x, ele_at_ratio):
     # Transmission calculation of summed and separated contributions by each isotopes
     df = pd.DataFrame()
     df_raw = pd.DataFrame()
     sigma_iso_ele_isodict = {}
-    sigma_iso_ele_l_isodict = {}
+    # sigma_iso_ele_l_isodict = {}
     # sigma_iso_ele_l_isodict = {}
     # thick_cm = thick_mm/10
     sigma_iso_ele_sum = 0.
     # sigma_iso_ele_l_sum = 0.
-    if _natural_mix == 'Y':
-        iso_at_ratio = iso_abundance
-    else:
-        ratio_list = list(dict.values(_unnatural_ratio_dict))
-        ratio_array = np.array(ratio_list)
-        iso_at_ratio = ratio_array
+    # if _natural_mix == 'Y':
+    #     iso_at_ratio = iso_abundance
+    # else:
+    #     ratio_list = list(dict.values(_unnatural_ratio_dict))
+    #     ratio_array = np.array(ratio_list)
+    iso_at_ratio = iso_abundance
     for i, _isotope in enumerate(isotopes):
         # Read database .csv file
         df = pd.read_csv(file_names[i], header=1)
@@ -111,14 +113,13 @@ def get_xy_to_fit(isotopes, thick_cm, file_names, energy_min, energy_max, iso_ab
         '''
         # Spline x-axis and y-axis for transmission calculation
         x_energy = np.linspace(df['E_eV'].min(), df['E_eV'].max(), sub_x)
-        spline = interpolate.interp1d(x=df['E_eV'], y=df['Sig_b'], kind='linear')
-        y_i = spline(x_energy)
+        y_spline = interpolate.interp1d(x=df['E_eV'], y=df['Sig_b'], kind='linear')
+        y_i = y_spline(x_energy)
         sigma_b = y_i
         # y_i_sum = y_i_sum + y_i * iso_abundance[i] * ele_at_ratio
         sigma_iso_ele_isodict[_isotope] = sigma_b * iso_at_ratio[i] * ele_at_ratio
-        sigma_iso_ele_l_isodict[_isotope] = sigma_iso_ele_isodict[_isotope] * thick_cm
+        # sigma_iso_ele_l_isodict[_isotope] = sigma_iso_ele_isodict[_isotope] * thick_cm
         sigma_iso_ele_sum = sigma_iso_ele_sum + sigma_b * iso_at_ratio[i] * ele_at_ratio
-        # sigma_iso_ele_l_isodict[_isotope] = sigma_b * iso_at_ratio[i] * ele_at_ratio * thick_cm
         # sigma_iso_ele_l_sum = sigma_iso_ele_l_sum + sigma_b * iso_at_ratio[i] * ele_at_ratio * thick_cm
 
         """
@@ -132,5 +133,5 @@ def get_xy_to_fit(isotopes, thick_cm, file_names, energy_min, energy_max, iso_ab
         df.rename(columns={'E_eV': first_col, 'Sig_b': second_col}, inplace=True)
         df_raw = pd.concat([df_raw, df], axis=1)
 
-    return x_energy, sigma_iso_ele_isodict, sigma_iso_ele_l_isodict, sigma_iso_ele_sum, df_raw
+    return x_energy, sigma_iso_ele_isodict, sigma_iso_ele_sum, df_raw
 
