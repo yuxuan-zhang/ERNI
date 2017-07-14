@@ -58,26 +58,27 @@ elements = _functions.dict_key_list(formula_dict)
 ratios = _functions.dict_value_list(formula_dict)
 
 # To check whether the input are foils stacked
-# foils_stacked = ratios.count(ratios[0]) == len(ratios)
-# if foils_stacked is True:
-ele_at_ratio = 1
+foils_stacked = ratios.count(ratios[0]) == len(ratios)
+for _each_ in elements:
+    if foils_stacked is True:
+        ele_at_ratio = 1
 ### Get the data from database specified
-isotopes, abundance_dict, iso_abundance, iso_mass, file_names = _fit_funtions.get_pre_data_to_fit(_database, _input_element)
+    isotopes, abundance_dict, iso_abundance, iso_mass, file_names = _fit_funtions.get_pre_data_to_fit(_database, _input_element)
 # Get (mass * iso_ratio * ele_ratio). In this case, ele_at_ratio = 1
-mass_iso_ele = _fit_funtions.get_mass_iso_ele_to_fit(iso_abundance, iso_mass, ele_at_ratio)
+    mass_iso_ele = _fit_funtions.get_mass_iso_ele_to_fit(iso_abundance, iso_mass, ele_at_ratio)
 # Get density and then N (number of atoms per unit volume cm3)
-density_gcm3 = pt.elements.isotope(_input_element).density
-mixed_atoms_per_cm3 = density_gcm3 * pt.constants.avogadro_number/mass_iso_ele
+    density_gcm3 = pt.elements.isotope(_input_element).density
+    mixed_atoms_per_cm3 = density_gcm3 * pt.constants.avogadro_number/mass_iso_ele
 # Get transmission and/or attenuation
-x_energy, sigma_iso_ele_isodict, sigma_iso_ele_sum, df_raw = \
-    _fit_funtions.get_xy_to_fit(isotopes,
-                                file_names,
-                                energy_min,
-                                energy_max,
-                                iso_abundance,
-                                sub_x,
-                                ele_at_ratio)
-
+    x_energy, sigma_iso_ele_isodict, sigma_iso_ele_sum, df_raw = \
+        _fit_funtions.get_xy_to_fit(isotopes,
+                                    file_names,
+                                    energy_min,
+                                    energy_max,
+                                    iso_abundance,
+                                    sub_x,
+                                    ele_at_ratio)
+aasdad = 1
 
 
 def get_residual():
