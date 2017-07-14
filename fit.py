@@ -5,6 +5,7 @@ import _functions
 import glob
 import _fit_funtions
 from lmfit import minimize, Parameters
+import os
 
 # Parameters
 # Parameters

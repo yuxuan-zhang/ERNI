@@ -46,4 +46,91 @@ def get_multi_data(file_name_signature, time_lamda_ev_axis, delay_us, source_to_
     plt.show()
 
 
-# def get_ele_trans():
+def get_pre_data_to_fit(_database, _element):
+    # main_dir = os.path.dirname(os.path.abspath(__file__))
+    # path = main_dir + '/data_web/' + _database + '/' + _element + '*.csv'
+    path = 'data_web/' + _database + '/' + _element + '*.csv'
+    file_names = glob.glob(path)
+    abundance_dict = {}
+    mass_dict = {}
+    for _i, file in enumerate(file_names):
+        # Obtain element, z number from the basename
+        _basename = os.path.basename(file)
+        _name_number_csv = _basename.split('.')
+        _name_number = _name_number_csv[0]
+        _name = _name_number.split('-')
+        _symbol = _name[1] + '-' + _name[0]
+        abundance_dict[str(_symbol)] = pt.elements.isotope(_symbol).abundance / 100
+        mass_dict[str(_symbol)] = pt.elements.isotope(_symbol).mass
+    isotopes = list(dict.keys(abundance_dict))  # List of isotopes such as '238-U', ''235-U
+    iso_abundance = list(dict.values(abundance_dict))  # List of isotopic abundance
+    # iso_density = list(dict.values(density_dict))  # List of isotopic density
+    iso_mass = list(dict.values(mass_dict))  # List of isotopic molar mass
+    return isotopes, abundance_dict, iso_abundance, iso_mass, file_names
+
+
+def get_mass_iso_ele_to_fit(iso_abundance, iso_mass, ele_at_ratio):
+    # Calculate the number of atoms per unit volume
+    abundance_array = np.array(iso_abundance)
+    mass_array = np.array(iso_mass)
+    mass_abundance_multiplied = mass_array * abundance_array
+    mass_iso_ele = sum(mass_abundance_multiplied) * ele_at_ratio
+    return mass_iso_ele
+
+
+def get_xy_to_fit(isotopes, thick_cm, file_names, energy_min, energy_max, iso_abundance, sub_x, ele_at_ratio, _natural_mix, _unnatural_ratio_dict):
+    # Transmission calculation of summed and separated contributions by each isotopes
+    df = pd.DataFrame()
+    df_raw = pd.DataFrame()
+    sigma_iso_ele_isodict = {}
+    sigma_iso_ele_l_isodict = {}
+    # sigma_iso_ele_l_isodict = {}
+    # thick_cm = thick_mm/10
+    sigma_iso_ele_sum = 0.
+    # sigma_iso_ele_l_sum = 0.
+    if _natural_mix == 'Y':
+        iso_at_ratio = iso_abundance
+    else:
+        ratio_list = list(dict.values(_unnatural_ratio_dict))
+        ratio_array = np.array(ratio_list)
+        iso_at_ratio = ratio_array
+    for i, _isotope in enumerate(isotopes):
+        # Read database .csv file
+        df = pd.read_csv(file_names[i], header=1)
+        # Drop rows beyond range
+        df = df.drop(df[df.E_eV < energy_min].index)  # drop rows beyond range
+        df = df.drop(df[df.E_eV > energy_max].index)  # drop rows beyond range
+        df = df.reset_index(drop=True)  # Reset index after dropping values
+        # print(df.head())
+        # print(df.tail())
+        '''
+        Attention!!!
+        The drop here not works perfect since all the data not at the same intervals.
+        df1 ends at 4999 and df2 might end at 5000. 
+        This will affect the accuracy of the summation performed later. 
+        '''
+        # Spline x-axis and y-axis for transmission calculation
+        x_energy = np.linspace(df['E_eV'].min(), df['E_eV'].max(), sub_x)
+        spline = interpolate.interp1d(x=df['E_eV'], y=df['Sig_b'], kind='linear')
+        y_i = spline(x_energy)
+        sigma_b = y_i
+        # y_i_sum = y_i_sum + y_i * iso_abundance[i] * ele_at_ratio
+        sigma_iso_ele_isodict[_isotope] = sigma_b * iso_at_ratio[i] * ele_at_ratio
+        sigma_iso_ele_l_isodict[_isotope] = sigma_iso_ele_isodict[_isotope] * thick_cm
+        sigma_iso_ele_sum = sigma_iso_ele_sum + sigma_b * iso_at_ratio[i] * ele_at_ratio
+        # sigma_iso_ele_l_isodict[_isotope] = sigma_b * iso_at_ratio[i] * ele_at_ratio * thick_cm
+        # sigma_iso_ele_l_sum = sigma_iso_ele_l_sum + sigma_b * iso_at_ratio[i] * ele_at_ratio * thick_cm
+
+        """
+        Attention:
+        The following part is for producing df_raw of all isotopes for future reference
+        """
+        # Create a new DataFrame including all isotopic data
+        # within the selected energy range
+        first_col = _isotope + ', E_eV'
+        second_col = _isotope + ', Sig_b'
+        df.rename(columns={'E_eV': first_col, 'Sig_b': second_col}, inplace=True)
+        df_raw = pd.concat([df_raw, df], axis=1)
+
+    return x_energy, sigma_iso_ele_isodict, sigma_iso_ele_l_isodict, sigma_iso_ele_sum, df_raw
+

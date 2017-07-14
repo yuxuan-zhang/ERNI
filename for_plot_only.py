@@ -23,7 +23,8 @@ _plot_each_ele_contribution = 'Y'  # 1 means plot each element's contribution
 _plot_each_iso_contribution = 'N'  # 1 means plot each isotope's contribution
 _plot_mixed = 'N'  # 1 means plot mixed resonance
 
-formula_dict = _functions.input2formula(_input_formula)  # Function called to parse input formula and return elements and ratios
+# Function below is called to parse input formula and return elements and ratios
+formula_dict = _functions.input2formula(_input_formula)
 elements = _functions.dict_key_list(formula_dict)
 ratios = _functions.dict_value_list(formula_dict)
 all_ele_boo_dict = _functions.boo_dict(elements, 'Y')  # Y/N Dict for natural mixture
@@ -239,8 +240,7 @@ if _plot_or_not == 'Y':
             for _iso in isotopes_dict[_ele]:
                 _y_each_axis = y_iso_dicts[_ele][_iso]
                 plt.plot(_x_axis, _y_each_axis, label=_iso)
-    if _energy_x_axis != 'Y':
-        plt.xlim(-0.01, 1.01)
+
     plt.ylim(-0.01, 1.01)
     plt.xlabel(_x_words)
     plt.ylabel(_y_words)

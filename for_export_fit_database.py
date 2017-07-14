@@ -4,13 +4,12 @@ import matplotlib.pyplot as plt
 import periodictable as pt
 from periodictable import constants
 import numpy as np
-import pandas as pd
 
 
 # Parameters
 # _input_formula = elements_str
-_input_formula = 'Co'  # input('Please input the chemicals? ')
-_input_thick_mm = 0.26  # float(input('Please input the thickness in mm : '))
+_input_formula = 'AgAuWHfCdCoCdIn'  # input('Please input the chemicals? ')
+_input_thick_mm = 0.1  # float(input('Please input the thickness in mm : '))
 _input_thick_cm = _input_thick_mm/10
 _database = 'ENDF_VIII'
 energy_max = 300  # max incident energy in eV
@@ -24,7 +23,8 @@ _plot_each_ele_contribution = 'Y'  # 1 means plot each element's contribution
 _plot_each_iso_contribution = 'N'  # 1 means plot each isotope's contribution
 _plot_mixed = 'N'  # 1 means plot mixed resonance
 
-formula_dict = _functions.input2formula(_input_formula)  # Function called to parse input formula and return elements and ratios
+# Function below is called to parse input formula and return elements and ratios
+formula_dict = _functions.input2formula(_input_formula)
 elements = _functions.dict_key_list(formula_dict)
 ratios = _functions.dict_value_list(formula_dict)
 all_ele_boo_dict = _functions.boo_dict(elements, 'Y')  # Y/N Dict for natural mixture
