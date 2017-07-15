@@ -94,8 +94,8 @@ if _unnatural_ele_input == 'Y':
     # print(density_gcm3_dict)
 
 mass_iso_ele_dict = {}  # For number of atoms per cm3 calculation
-sigma_iso_ele_eleisodict = {}  # For transmission calculation at isotope lever
-sigma_iso_ele_sum_eledict = {}  # For transmission calculation at element lever
+sigma_iso_ele_eleisodict = {}  # For transmission calculation at isotope level
+sigma_iso_ele_sum_eledict = {}  # For transmission calculation at element level
 sigma_iso_ele_sum_l_eledict = {}
 sigma_iso_ele_l_eleisodict = {}
 df_raw_dict = {}  # Raw sigma data for elements and isotopes
@@ -185,10 +185,10 @@ if _plot_each_ele_contribution == 'Y':
         else:
             y_ele_dict[_ele] = 1 - _functions.sigl2trans_quick(mixed_atoms_per_cm3, sigma_iso_ele_sum_l_eledict[_ele])
 
-
+y_iso_dicts = {}
 ### Create the trans or absorb dict : y_iso_dicts of isotopes for plotting if needed
 if _plot_each_iso_contribution == 'Y':
-    y_iso_dicts = {}
+
     y_iso_dict = {}
     for _ele in elements:
         for _iso in isotopes_dict[_ele]:
@@ -226,41 +226,44 @@ if _plot_each_iso_contribution == 'Y':
 
 
 ### Plot the theoretical neutron resonance
-if _plot_or_not == 'Y':
-    ### Determine x y axis types and captions
-    if _energy_x_axis == 'Y':
-        _x_axis = x_energy
-        _x_words = 'Energy (eV)'
-    else:
-        _x_axis = _functions.ev2lamda(x_energy)
-        _x_words = 'Wavelength (Å)'
+_plot_functions.plot_multi(_energy_x_axis, _trans_y_axis, _plot_mixed, _plot_each_ele_contribution, _plot_each_iso_contribution,
+            elements, isotopes_dict, x_energy, y_trans_tot, y_ele_dict, y_iso_dicts, _input_formula)
 
-    if _trans_y_axis == 'Y':
-        _y_words = 'Neutron transmission'
-    else:
-        _y_words = 'Neutron attenuation'
-
-    ### Determine x y axis values
-    if _plot_mixed == 'Y':
-        if _trans_y_axis == 'Y':
-            _y_axis = y_trans_tot
-        else:
-            _y_axis = 1 - y_trans_tot
-        plt.plot(_x_axis, _y_axis, label=_input_formula)
-
-    if _plot_each_ele_contribution == 'Y':
-        for _ele in elements:
-            _y_each_axis = y_ele_dict[_ele]
-            plt.plot(_x_axis, _y_each_axis, label=_ele)
-
-    if _plot_each_iso_contribution == 'Y':
-        for _ele in elements:
-            for _iso in isotopes_dict[_ele]:
-                _y_each_axis = y_iso_dicts[_ele][_iso]
-                plt.plot(_x_axis, _y_each_axis, label=_iso)
-
-    plt.ylim(-0.01, 1.01)
-    plt.xlabel(_x_words)
-    plt.ylabel(_y_words)
-    plt.legend(loc='best')
-    plt.show()
+# if _plot_or_not == 'Y':
+#     ### Determine x y axis types and captions
+#     if _energy_x_axis == 'Y':
+#         _x_axis = x_energy
+#         _x_words = 'Energy (eV)'
+#     else:
+#         _x_axis = _functions.ev2lamda(x_energy)
+#         _x_words = 'Wavelength (Å)'
+#
+#     if _trans_y_axis == 'Y':
+#         _y_words = 'Neutron transmission'
+#     else:
+#         _y_words = 'Neutron attenuation'
+#
+#     ### Determine x y axis values
+#     if _plot_mixed == 'Y':
+#         if _trans_y_axis == 'Y':
+#             _y_axis = y_trans_tot
+#         else:
+#             _y_axis = 1 - y_trans_tot
+#         plt.plot(_x_axis, _y_axis, label=_input_formula)
+#
+#     if _plot_each_ele_contribution == 'Y':
+#         for _ele in elements:
+#             _y_each_axis = y_ele_dict[_ele]
+#             plt.plot(_x_axis, _y_each_axis, label=_ele)
+#
+#     if _plot_each_iso_contribution == 'Y':
+#         for _ele in elements:
+#             for _iso in isotopes_dict[_ele]:
+#                 _y_each_axis = y_iso_dicts[_ele][_iso]
+#                 plt.plot(_x_axis, _y_each_axis, label=_iso)
+#
+#     plt.ylim(-0.01, 1.01)
+#     plt.xlabel(_x_words)
+#     plt.ylabel(_y_words)
+#     plt.legend(loc='best')
+#     plt.show()

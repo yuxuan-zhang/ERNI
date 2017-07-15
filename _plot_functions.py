@@ -111,8 +111,10 @@ def get_xy(isotopes, thick_cm, file_names, energy_min, energy_max, iso_abundance
 #     return
 
 
-def plot_xy(_all, _energy_x_axis, _trans_y_axis, _plot_each_contribution, _plot_mixed,
-            x_energy, y_trans_tot, thick_mm, mixed_atoms_per_cm3, sig_iso_ele_dict):
+def plot_multi(_energy_x_axis, _trans_y_axis, _plot_mixed, _plot_each_ele_contribution, _plot_each_iso_contribution,
+            elements, isotopes_dict, x_energy, y_trans_tot, y_ele_dict, y_iso_dicts, _input_formula):
+    ### Plot the theoretical neutron resonance
+    ### Determine x y axis types and captions
     if _energy_x_axis == 'Y':
         _x_axis = x_energy
         _x_words = 'Energy (eV)'
@@ -121,24 +123,28 @@ def plot_xy(_all, _energy_x_axis, _trans_y_axis, _plot_each_contribution, _plot_
         _x_words = 'Wavelength (Å)'
 
     if _trans_y_axis == 'Y':
-        _y_axis = y_trans_tot
         _y_words = 'Neutron transmission'
     else:
-        _y_axis = 1 - y_trans_tot
         _y_words = 'Neutron attenuation'
 
-    if _plot_each_contribution == 'Y':
-        if _trans_y_axis == 'Y':
-            for _i in _all:
-                _y_axis_i = _functions.sig2trans_quick(thick_mm, mixed_atoms_per_cm3, sig_iso_ele_dict[_i])
-                plt.plot(_x_axis, _y_axis_i, label=_i)
-        else:
-            for _i in _all:
-                _y_axis_i = _functions.sig2trans_quick(thick_mm, mixed_atoms_per_cm3, sig_iso_ele_dict[_i])
-                plt.plot(_x_axis, 1 - _y_axis_i, label=_i)
-
+    ### Determine x y axis values
     if _plot_mixed == 'Y':
-        plt.plot(_x_axis, _y_axis, label='Mixture')
+        if _trans_y_axis == 'Y':
+            _y_axis = y_trans_tot
+        else:
+            _y_axis = 1 - y_trans_tot
+        plt.plot(_x_axis, _y_axis, label=_input_formula)
+
+    if _plot_each_ele_contribution == 'Y':
+        for _ele in elements:
+            _y_each_axis = y_ele_dict[_ele]
+            plt.plot(_x_axis, _y_each_axis, label=_ele)
+
+    if _plot_each_iso_contribution == 'Y':
+        for _ele in elements:
+            for _iso in isotopes_dict[_ele]:
+                _y_each_axis = y_iso_dicts[_ele][_iso]
+                plt.plot(_x_axis, _y_each_axis, label=_iso)
 
     plt.ylim(-0.01, 1.01)
     plt.xlabel(_x_words)
