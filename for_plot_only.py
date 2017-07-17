@@ -29,9 +29,9 @@ elements = _functions.dict_key_list(formula_dict)
 ratios = _functions.dict_value_list(formula_dict)
 all_ele_boo_dict = _functions.boo_dict(elements, 'Y')  # Y/N Dict for natural mixture
 thick_boo_dict = _functions.boo_dict(elements, 'Y')  # Y/N Dict for same thickness
-thick_cm_dict = _functions.thick_dict(elements, _input_thick_cm)
+thick_cm_dict = _functions.get_thick_dict(elements, _input_thick_cm)
 density_boo_dict = _functions.boo_dict(elements, 'N')  # Y/N Dict for density manual input
-density_gcm3_dict = _functions.density_dict(elements)
+density_gcm3_dict = _functions.get_density_dict(elements)
 
 # To check whether the input are foils stacked
 foils_stacked = ratios.count(ratios[0] == len(ratios))

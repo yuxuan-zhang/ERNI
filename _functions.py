@@ -55,10 +55,11 @@ def sigl2trans_quick(_atoms_per_cm3, _sigma_l_portion_sum):
 
 
 def get_isotope_dict(_database, _element):
-    main_dir = os.path.dirname(os.path.abspath(__file__))
+    # main_dir = os.path.dirname(os.path.abspath(__file__))
     isotope_dicts = {}
     for _each in _element:
-        path = main_dir + '/data_web/' + _database + '/' + _each + '*.csv'
+        path = 'data_web/' + _database + '/' + _each + '*.csv'
+        # path = main_dir + '/data_web/' + _database + '/' + _each + '*.csv'
         file_names = glob.glob(path)
         isotope_dict = {}
         for _i, file in enumerate(file_names):
@@ -108,21 +109,50 @@ def boo_dict(_key_list, _y_or_n):
         _boo_dict[key] = _y_or_n
     return _boo_dict
 
-
-def thick_dict(_key_list, _thick_mm):
+#########
+def get_thick_dict(_key_list, _thick_mm):
     _thick_dict = {}
     for key in _key_list:
         _thick_dict[key] = _thick_mm
     return _thick_dict
 
 
-def density_dict(_key_list):
+def get_density_dict(_key_list):
     _density_dict = {}
     for key in _key_list:
         _density_dict[key] = pt.elements.isotope(key).density
         # key can be element ('Co') or isotopes ('59-Co')
         # Unit: g/cm3
     return _density_dict
+
+
+def get_iso_ratio_dict(_element, enrich_boo, modified_ratio_list):
+    iso_ratio_dict = {}
+    path = 'data_web/EDNF_VIII/' + _element + '*.csv'
+    file_paths = glob.glob(path)
+    p = 0
+    # natural_density = pt.elements.isotope(_element).density
+    modified_density = 0.
+    mass_x_iso = 0.
+    for file in file_paths:
+        # Obtain element, z number from the basename
+        _basename = os.path.basename(file)
+        _name_number_csv = _basename.split('.')
+        _name_number = _name_number_csv[0]
+        _name = _name_number.split('-')
+        _symbol = _name[1] + '-' + _name[0]
+        isotope = str(_symbol)
+        if enrich_boo == 'Y':
+            iso_ratio_dict[isotope] = modified_ratio_list[p]
+            modified_density = modified_density + pt.elements.isotope(isotope).density * modified_ratio_list[p]
+            mass_x_iso = mass_x_iso + pt.elements.isotope(isotope).mass * modified_ratio_list[p]
+            p = p + 1
+        else:
+            iso_ratio_dict[isotope] = pt.elements.isotope(isotope).abundance/100
+            modified_density = pt.elements.isotope(_element).density
+            mass_x_iso = mass_x_iso + pt.elements.isotope(isotope).mass * iso_ratio_dict[isotope]
+    return iso_ratio_dict, modified_density, mass_x_iso
+#########
 
 
 def empty_dict(_key_list):
@@ -174,13 +204,13 @@ def get_normalized_data(_filename):
     return normalized_array
 
 
-def get_normalized_data_slice(_filename, _slice):
+def get_normalized_data_slice(_filename, _ignore):
     df = pd.read_csv(_filename, header=None, skiprows=1)
     data_array = np.array(df[1])
     data = data_array[:int(len(data_array)/2)]
     ob = data_array[int(len(data_array)/2):]
     normalized_array = data/ob
-    normalized_array = normalized_array[_slice:]
+    normalized_array = normalized_array[_ignore:]
     # OB at the end of 2773
     return normalized_array
 

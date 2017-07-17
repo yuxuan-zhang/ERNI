@@ -48,6 +48,16 @@ def get_mass_iso_ele(iso_abundance, iso_mass, ele_at_ratio, _natural_mix, _unnat
     return mass_iso_ele
 
 
+def get_mass_iso_ele_new(iso_mass, ele_at_ratio):
+    # Calculate the number of atoms per unit volume
+    mass_array = np.array(iso_mass)
+    abundance_array = np.array(list(dict.values(iso_ratio_dict)))
+
+    mass_abundance_multiplied = mass_array * abundance_array
+    mass_iso_ele = sum(mass_abundance_multiplied) * ele_at_ratio
+    return mass_iso_ele
+
+
 def get_xy(isotopes, thick_cm, file_names, energy_min, energy_max, iso_abundance, sub_x, ele_at_ratio, _natural_mix, _unnatural_ratio_dict):
     # Transmission calculation of summed and separated contributions by each isotopes
     df = pd.DataFrame()
