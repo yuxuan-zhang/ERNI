@@ -66,7 +66,7 @@ def modify_iso_ratio_dicts(elements, isotope_dict, enriched_element_str, input_r
     #         q = q + 1
     #     p = p + 1
     #     # Return modified or un-modified enrichment related values
-    return _iso_ratio_dicts, density_gcm3_dict, mass_x_iso_dict
+    return iso_ratio_dicts
 
 
 def modify_density_dict(density_gcm3_dict, special_density_boo, special_element_str, special_density_gcm3_list):
