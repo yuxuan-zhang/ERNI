@@ -41,7 +41,7 @@ _thick_input = 'N'  # input('Is there any element with different thickness? ')
 if _thick_input == 'Y':
     resize_element_str = input('Please list all separated by only " ": ')
     resize_element = resize_element_str.split(' ')
-    density_element = _functions.boo_dict_invert_by_key(resize_element, thick_boo_dict)
+    thick_boo_dict = _functions.boo_dict_invert_by_key(resize_element, thick_boo_dict)
     for ele in resize_element:
         thick_cm_dict[ele] = float(input('Thickness of {} in mm: '.format(ele)))
 print('Thickness (cm): ', thick_cm_dict)

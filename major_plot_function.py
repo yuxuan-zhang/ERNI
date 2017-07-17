@@ -37,32 +37,29 @@ import numpy as np
 # # To check whether the input are foils stacked
 # foils_stacked = ratios.count(ratios[0] == len(ratios))
 #
-# ### For elements with various thickness:
-# _thick_input = 'N'  # input('Is there any element with different thickness? ')
-# if _thick_input == 'Y':
-#     resize_element_str = input('Please list all separated by only " ": ')
-#     resize_element = resize_element_str.split(' ')
-#     density_element = _functions.boo_dict_invert_by_key(resize_element, thick_boo_dict)
-#     for ele in resize_element:
-#         thick_cm_dict[ele] = float(input('Thickness of {} in mm: '.format(ele)))
-# print('Thickness (cm): ', thick_cm_dict)
-#
-#
-# ### For elements doesn't have standard density:
-# _mixture_or_ele_with_diff_density = 'N' #input('Mixture or any element not follow standard density? ')
-# if _mixture_or_ele_with_diff_density == 'Y':
-#     _diff_density_pure = input('Pure element but would like to input density other than standard? ')
-#     if _diff_density_pure == 'Y':
-#         _compound = 'N'
-#         density_element_str = input('Please list all separated by only " ": ')
-#         density_element = density_element_str.split(' ')
-#         density_boo_dict = _functions.boo_dict_invert_by_key(density_element, density_boo_dict)
-#         for ele in density_element:
-#             density_gcm3_dict[ele] = float(input('Modified density of {} in g/cm3: '.format(ele)))
-#     else:
-#         _compound = 'Y'
-#     print('Density (g/cm3): ', density_gcm3_dict)
-#
+def inhomo_thick_cm_dict(elements, same_thick_cm, inhomo_thick_boo, inhomo_element_str, inhomo_thick_cm_list):
+    ### For elements with various thickness:
+    # _thick_input = 'N'  # input('Is there any element with different thickness? ')
+    # thick_boo_dict = _functions.boo_dict(elements, 'Y')  # Y/N Dict for same thickness
+    thick_cm_dict = _functions.thick_dict(elements, same_thick_cm)
+    if inhomo_thick_boo == 'Y':
+        inhomo_element = inhomo_element_str.split(' ')
+        # thick_boo_dict = _functions.boo_dict_invert_by_key(resize_element, thick_boo_dict)
+        thick_cm_dict = _functions.dict_replace_value_by_key(thick_cm_dict, inhomo_element, inhomo_thick_cm_list)
+    print('Thickness (cm): ', thick_cm_dict)
+    return thick_cm_dict
+
+
+def inhomo_density_dict(elements, inhomo_density_boo, inhomo_element_str, inhomo_density_gcm3_list):
+    ### For elements doesn't have standard density:
+    # diff_density_boo = 'N' #input('Mixture or any element not follow standard density? ')
+    density_gcm3_dict = _functions.density_dict(elements)
+    if inhomo_density_boo == 'Y':
+        inhomo_element = inhomo_element_str.split(' ')
+        _functions.dict_replace_value_by_key(density_gcm3_dict, inhomo_element, inhomo_density_gcm3_list)
+    print('Density (g/cm3): ', density_gcm3_dict)
+    return density_gcm3_dict
+
 #
 # ### For element with isotopic enrichment or depletion:
 # _unnatural_ele_input = 'N' #input('Is there any unnatural mixture? ')
