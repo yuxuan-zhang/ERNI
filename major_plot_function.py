@@ -37,33 +37,39 @@ import numpy as np
 # # To check whether the input are foils stacked
 # foils_stacked = ratios.count(ratios[0] == len(ratios))
 #
-def all_thick_cm_dict(elements, same_thick_cm, inhomo_thick_boo, inhomo_element_str, inhomo_thick_cm_list):
+def modify_thick_cm_dict(elements, same_thick_cm, special_thick_element_str, special_thick_cm_list):
     ### For elements with various thickness:
     # _thick_input = 'N'  # input('Is there any element with different thickness? ')
     # thick_boo_dict = _functions.boo_dict(elements, 'Y')  # Y/N Dict for same thickness
     thick_cm_dict = _functions.get_thick_dict(elements, same_thick_cm)
-    if inhomo_thick_boo == 'Y':
-        inhomo_element = inhomo_element_str.split(' ')
-        # thick_boo_dict = _functions.boo_dict_invert_by_key(resize_element, thick_boo_dict)
-        thick_cm_dict = _functions.dict_replace_value_by_key(thick_cm_dict, inhomo_element, inhomo_thick_cm_list)
+    special_element = special_thick_element_str.split(' ')
+    thick_cm_dict = _functions.dict_replace_value_by_key(thick_cm_dict, special_element, special_thick_cm_list)
     print('Thickness (cm): ', thick_cm_dict)
     return thick_cm_dict
 
 
-def all_iso_ratio_dicts(elements, enriched_element_str, input_ratio_dict):
-    enrich_boo_dict = _functions.boo_dict(elements, 'N')
+def modify_iso_ratio_dicts(elements, isotope_dict, enriched_element_str, input_ratio_dict):
+    iso_ratio_dicts = _functions.get_iso_ratio_dicts_quick(elements, isotope_dict)
     enriched_element = enriched_element_str.split(' ')
-    enrich_boo_dict = _functions.boo_dict_invert_by_key(enriched_element, enrich_boo_dict)
-    _iso_ratio_dicts = {}
-    mass_x_iso_dict = {}
-    density_gcm3_dict = {}
-    for ele in elements:
-        _iso_ratio_dicts[ele], density_gcm3_dict[ele], mass_x_iso_dict[ele] = _functions.get_iso_ratio_dict(ele, enrich_boo_dict[ele], input_ratio_dict[ele])
-        # Return modified or un-modified enrichment related values
+    for ele in enriched_element:
+        isotopes = isotope_dict[ele]
+        iso_ratio_dicts[ele] = _functions.dict_replace_value_by_key(iso_ratio_dicts[ele], isotopes, input_ratio_dict[ele])
+    # _iso_ratio_dicts = {}
+    # mass_x_iso_dict = {}
+    # density_gcm3_dict = {}
+    # p = 0
+    # for ele in enriched_element:
+    #     q = 0
+    #     isotopes = isotope_dicts[ele]
+    #     for iso in isotopes:
+    #         iso_ratio_dicts[ele][iso] = input_ratio_dict[p][q]
+    #         q = q + 1
+    #     p = p + 1
+    #     # Return modified or un-modified enrichment related values
     return _iso_ratio_dicts, density_gcm3_dict, mass_x_iso_dict
 
 
-def all_density_dict(density_gcm3_dict, special_density_boo, special_element_str, special_density_gcm3_list):
+def modify_density_dict(density_gcm3_dict, special_density_boo, special_element_str, special_density_gcm3_list):
     # For elements with special density:
     if special_density_boo == 'Y':
         special_element = special_element_str.split(' ')

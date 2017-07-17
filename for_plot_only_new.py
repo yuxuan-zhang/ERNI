@@ -1,6 +1,6 @@
 import _plot_functions
 import _functions
-import matplotlib.pyplot as plt
+import major_plot_function as mpf
 import periodictable as pt
 from periodictable import constants
 import numpy as np
@@ -27,71 +27,45 @@ _plot_mixed = 'N'  # 1 means plot mixed resonance
 formula_dict = _functions.input2formula(_input_formula)
 elements = _functions.dict_key_list(formula_dict)
 ratios = _functions.dict_value_list(formula_dict)
-all_ele_boo_dict = _functions.boo_dict(elements, 'Y')  # Y/N Dict for natural mixture
-thick_boo_dict = _functions.boo_dict(elements, 'Y')  # Y/N Dict for same thickness
-thick_cm_dict = _functions.get_thick_dict(elements, _input_thick_cm)
-density_boo_dict = _functions.boo_dict(elements, 'N')  # Y/N Dict for density manual input
-density_gcm3_dict = _functions.get_density_dict(elements)
+isotope_dict = _functions.get_isotope_dicts(_database, elements)
+print(isotope_dict)
+# DICT 1: Thickness dict with option for modification
+same_thick_cm = _input_thick_cm
+special_thick_boo = 'N'
+if special_thick_boo == 'Y':
+    special_thick_element_str = str
+    special_thick_cm_list = []
+    thick_cm_dict = mpf.modify_thick_cm_dict(elements, same_thick_cm, special_thick_element_str, special_thick_cm_list)
+else:
+    thick_cm_dict = _functions.get_thick_dict(elements, same_thick_cm)
+
+# DICT 2: Isotope atomic ratio dict with option for modification
+# DICT 3: Density dict is also constructed since the modification of isotopic ratio changes solid density
+enrichment_boo = 'N'
+if enrichment_boo == 'Y':
+    enriched_element_str = str
+    input_ratio_dict = {}
+    iso_ratio_dicts = mpf.modify_iso_ratio_dicts(elements, isotope_dict, enriched_element_str, input_ratio_dict)
+else:
+    iso_ratio_dicts = _functions.get_iso_ratio_dicts_quick(elements, isotope_dict)
+    density_gcm3_dict = _functions.get_density_dict(elements)
+
+# DICT 3: Update density dict if special case involved
+special_density_boo = 'N'
+foils_stacked = 'N'
+modify_whole_boo = 'N'
+if special_density_boo == 'Y':
+    if foils_stacked == 'Y':
+        # Stacked foils and would like to modify density for specific element
+        special_density_element_str = str
+        special_density_gcm3_list = []
+        density_gcm3_dict = mpf.modify_density_dict(density_gcm3_dict, special_density_boo, special_density_element_str, special_density_gcm3_list)
+    if modify_whole_boo == 'Y':
+        sample_density = input('Total sample density in g/cm3: ')
 
 # To check whether the input are foils stacked
-foils_stacked = ratios.count(ratios[0] == len(ratios))
+# foils_stacked = ratios.count(ratios[0] == len(ratios))
 
-### For elements with various thickness:
-_thick_input = 'N'  # input('Is there any element with different thickness? ')
-if _thick_input == 'Y':
-    resize_element_str = input('Please list all separated by only " ": ')
-    resize_element = resize_element_str.split(' ')
-    thick_boo_dict = _functions.boo_dict_invert_by_key(resize_element, thick_boo_dict)
-    for ele in resize_element:
-        thick_cm_dict[ele] = float(input('Thickness of {} in mm: '.format(ele)))
-print('Thickness (cm): ', thick_cm_dict)
-
-
-### For elements doesn't have standard density:
-_mixture_or_ele_with_diff_density = 'N' #input('Mixture or any element not follow standard density? ')
-if _mixture_or_ele_with_diff_density == 'Y':
-    _diff_density_pure = input('Pure element but would like to input density other than standard? ')
-    if _diff_density_pure == 'Y':
-        _compound = 'N'
-        density_element_str = input('Please list all separated by only " ": ')
-        density_element = density_element_str.split(' ')
-        density_boo_dict = _functions.boo_dict_invert_by_key(density_element, density_boo_dict)
-        for ele in density_element:
-            density_gcm3_dict[ele] = float(input('Modified density of {} in g/cm3: '.format(ele)))
-    else:
-        _compound = 'Y'
-    print('Density (g/cm3): ', density_gcm3_dict)
-
-
-### For element with isotopic enrichment or depletion:
-_unnatural_ele_input = 'N' #input('Is there any unnatural mixture? ')
-if _unnatural_ele_input == 'Y':
-    unnatural_ratio_dicts = {}
-    unnatural_element_str = input('Please list all separated by only " ": ')
-    unnatural_element = unnatural_element_str.split(' ')
-    all_ele_boo_dict = _functions.boo_dict_invert_by_key(unnatural_element, all_ele_boo_dict)
-    isotope_dict = _functions.get_isotope_dict(_database, unnatural_element)
-    print(isotope_dict)
-    for ele in unnatural_element:
-        isotopes = isotope_dict[ele]
-        unnatural_ratio_dict = {}
-        iso_density_dict = {}
-        for iso in isotopes:
-            unnatural_ratio_dict[iso] = float(input('Atomic ratio of {} in mixture: '.format(iso)))
-            iso_density_dict[iso] = pt.elements.isotope(iso).density
-        # Get array of isotopic density
-        iso_density_list = list(dict.values(iso_density_dict))
-        iso_density_array = np.array(iso_density_list)
-        # Get array of input/modified isotopic atomic ratio
-        iso_unnatural_ratio_list = list(dict.values(unnatural_ratio_dict))
-        iso_unnatural_ratio_array = np.array(iso_unnatural_ratio_list)
-        # Calculate the modified density due to the introduced change in isotopic abundance
-        ratio_modified_density = sum(iso_unnatural_ratio_array * iso_density_array)
-        unnatural_ratio_dicts[ele] = unnatural_ratio_dict
-        density_gcm3_dict[ele] = ratio_modified_density
-    # print(unnatural_ratio_dicts)
-    # print(density_gcm3_dicts)
-    # print(density_gcm3_dict)
 
 mass_iso_ele_dict = {}  # For number of atoms per cm3 calculation
 sigma_iso_ele_eleisodict = {}  # For transmission calculation at isotope level
@@ -102,61 +76,44 @@ df_raw_dict = {}  # Raw sigma data for elements and isotopes
 isotopes_dict = {}  # List all isotopes for each element involved
 abundance_dicts = {}  # List all natural abundance for each isotope of each element involved
 all_ratio_dicts = {}
-sample_density = .0
-for _each_ in elements:
-    _element = _each_
-    if foils_stacked is False:
-        if _mixture_or_ele_with_diff_density == 'Y':
-            ele_at_ratio = formula_dict[_each_] / sum(ratios)
+if modify_whole_boo == 'N':
+    sample_density = 0.
+# sample_density = .0
+for el in elements:
+    isotopes_list = list(dict.keys(iso_ratio_dicts[el]))
+    iso_ratio_list = list(dict.values(iso_ratio_dicts[el]))
+    if foils_stacked == 'Y':
+        ele_at_ratio = 1
     else:
-        if _mixture_or_ele_with_diff_density == 'Y':
-            ele_at_ratio = formula_dict[_each_] / sum(ratios)
-        else:
-            ele_at_ratio = 1
-    # Get pre info (isotopes, abundance, mass, density) of each element from the formula
-    isotopes_dict[_each_], all_ratio_dicts[_each_], iso_abundance, iso_mass, file_names \
-        = _plot_functions.get_pre_data(_database, _element)
-
-    # Replace the at.% if isotope composition does not follow natural abundance in the main isotope ratio dict
-    if _unnatural_ele_input == 'Y':
-        for _ele_need_to_replace in unnatural_element:
-            all_ratio_dicts[_ele_need_to_replace] = unnatural_ratio_dicts[_ele_need_to_replace]
+        ele_at_ratio = formula_dict[el] / sum(ratios)
 
     # A part for getting atoms_per_cm3, this part is irrelevant to fitting parameters, and will be exported for fitting
-    mass_iso_ele_dict[_each_] = _plot_functions.get_mass_iso_ele(iso_abundance,
-                                                                 iso_mass,
-                                                                 ele_at_ratio,
-                                                                 all_ele_boo_dict[_each_],
-                                                                 all_ratio_dicts[_each_])
+    mass_iso_ele_dict[el] = mass_x_iso_dict[el] * ele_at_ratio
     # Total density calculation of mixture mixed by ele_at_ratio
-    sample_density = sample_density + density_gcm3_dict[_each_] * ele_at_ratio
+    if modify_whole_boo == 'N':
+        sample_density = sample_density + density_gcm3_dict[el] * ele_at_ratio
 
-    x_energy, sigma_iso_ele_isodict, sigma_iso_ele_l_isodict, sigma_iso_ele_sum, df_raw_dict[_each_] \
-        = _plot_functions.get_xy(isotopes_dict[_each_],
-                                 thick_cm_dict[_each_],
-                                 file_names,
-                                 energy_min,
-                                 energy_max,
-                                 iso_abundance,
-                                 sub_x,
-                                 ele_at_ratio,
-                                 all_ele_boo_dict[_each_],
-                                 all_ratio_dicts[_each_])
+    file_names = _functions.get_file_path(_database, el)
+    x_energy, sigma_iso_ele_isodict, sigma_iso_ele_l_isodict, sigma_iso_ele_sum, df_raw_dict[el] \
+        = _plot_functions.get_xy_new(isotopes_list,
+                                     thick_cm_dict[el],
+                                     file_names,
+                                     energy_min,
+                                     energy_max,
+                                     iso_ratio_list,
+                                     sub_x,
+                                     ele_at_ratio)
     # Two level dict of isotopic array of (L * sigma * iso_ratio * ele_ratio)
-    sigma_iso_ele_l_eleisodict[_each_] = sigma_iso_ele_l_isodict
+    sigma_iso_ele_l_eleisodict[el] = sigma_iso_ele_l_isodict
     # One level dict of elemental array of (L * sigma * iso_ratio * ele_ratio)
-    sigma_iso_ele_sum_l_eledict[_each_] = sigma_iso_ele_sum * thick_cm_dict[_each_]
+    sigma_iso_ele_sum_l_eledict[el] = sigma_iso_ele_sum * thick_cm_dict[el]
 
     # Two level dict of isotopic array of (sigma * iso_ratio * ele_ratio)
-    sigma_iso_ele_eleisodict[_each_] = sigma_iso_ele_isodict
+    sigma_iso_ele_eleisodict[el] = sigma_iso_ele_isodict
     # One level dict of elemental array of (sigma * iso_ratio * ele_ratio)
-    sigma_iso_ele_sum_eledict[_each_] = sigma_iso_ele_sum
+    sigma_iso_ele_sum_eledict[el] = sigma_iso_ele_sum
 
 print('Abundance_dicts: ', all_ratio_dicts)
-
-if _mixture_or_ele_with_diff_density == 'Y':
-    if _compound == 'Y':
-        sample_density = float(input('Mixture or compound density of {} in g/cm3: '.format(_input_formula)))
 
 mass_iso_ele_list = list(dict.values(mass_iso_ele_dict))
 mass_iso_ele_sum = sum(np.array(mass_iso_ele_list))

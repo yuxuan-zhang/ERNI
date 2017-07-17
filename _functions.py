@@ -54,14 +54,14 @@ def sigl2trans_quick(_atoms_per_cm3, _sigma_l_portion_sum):
     return neutron_transmission
 
 
-def get_isotope_dict(_database, _element):
+def get_isotope_dicts(_database, _element):
     # main_dir = os.path.dirname(os.path.abspath(__file__))
-    isotope_dicts = {}
+    isotope_dict = {}
     for _each in _element:
-        path = 'data_web/' + _database + '/' + _each + '*.csv'
+        path = 'data_web/' + _database + '/' + str(_each) + '*.csv'
         # path = main_dir + '/data_web/' + _database + '/' + _each + '*.csv'
         file_names = glob.glob(path)
-        isotope_dict = {}
+        isotope_dict_mirror = {}
         for _i, file in enumerate(file_names):
             # Obtain element, z number from the basename
             _basename = os.path.basename(file)
@@ -70,10 +70,10 @@ def get_isotope_dict(_database, _element):
             _name = _name_number.split('-')
             _symbol = _name[1] + '-' + _name[0]
             isotope = str(_symbol)
-            isotope_dict[isotope] = isotope
-        isotopes = list(dict.values(isotope_dict))
-        isotope_dicts[_each] = isotopes
-    return isotope_dicts
+            isotope_dict_mirror[isotope] = isotope
+        isotopes = list(dict.values(isotope_dict_mirror))
+        isotope_dict[_each] = isotopes
+    return isotope_dict
 
 
 def input2formula(_input):
@@ -126,33 +126,62 @@ def get_density_dict(_key_list):
     return _density_dict
 
 
-def get_iso_ratio_dict(_element, enrich_boo, modified_ratio_list):
-    iso_ratio_dict = {}
-    path = 'data_web/EDNF_VIII/' + _element + '*.csv'
-    file_paths = glob.glob(path)
-    p = 0
+####
+def get_iso_ratio_dict(isotopes):
     # natural_density = pt.elements.isotope(_element).density
-    modified_density = 0.
-    mass_x_iso = 0.
-    for file in file_paths:
-        # Obtain element, z number from the basename
-        _basename = os.path.basename(file)
-        _name_number_csv = _basename.split('.')
-        _name_number = _name_number_csv[0]
-        _name = _name_number.split('-')
-        _symbol = _name[1] + '-' + _name[0]
-        isotope = str(_symbol)
-        if enrich_boo == 'Y':
-            iso_ratio_dict[isotope] = modified_ratio_list[p]
-            modified_density = modified_density + pt.elements.isotope(isotope).density * modified_ratio_list[p]
-            mass_x_iso = mass_x_iso + pt.elements.isotope(isotope).mass * modified_ratio_list[p]
-            p = p + 1
-        else:
-            iso_ratio_dict[isotope] = pt.elements.isotope(isotope).abundance/100
-            modified_density = pt.elements.isotope(_element).density
-            mass_x_iso = mass_x_iso + pt.elements.isotope(isotope).mass * iso_ratio_dict[isotope]
-    return iso_ratio_dict, modified_density, mass_x_iso
+    iso_ratio_dict = {}
+    for iso in isotopes:
+        iso_ratio_dict[iso] = pt.elements.isotope(iso).abundance
+    return iso_ratio_dict
+
+
+def get_iso_ratio_dicts(elements, iso_ratio_dict):
+    # natural_density = pt.elements.isotope(_element).density
+    iso_ratio_dicts = {}
+    for el in elements:
+        iso_ratio_dicts[el] = iso_ratio_dict
+    return iso_ratio_dicts
+
+
+def get_iso_ratio_dicts_quick(elements, isotopes):
+    # natural_density = pt.elements.isotope(_element).density
+    iso_ratio_dicts = {}
+    iso_ratio_dict = {}
+    for el in elements:
+        for iso in isotopes[el]:
+            print(iso)
+            iso_ratio_dict[iso] = pt.elements.isotope(iso).abundance
+        iso_ratio_dicts[el] = iso_ratio_dict
+    return iso_ratio_dicts
+
+
+def empty_2d_dict(top_level_name, top_base_dict):
+    whole_dict = {}
+    base_dict = {}
+    for top in top_level_name:
+        for base in top_base_dict[top]:
+            base_dict[base] = 1
+        whole_dict[top] = base_dict
+    return whole_dict
+
+
+def create_2d_dict(top_level_name, top_base_dict, value_dict):
+    whole_dict = {}
+    base_dict = {}
+    for top in top_level_name:
+        for base in top_base_dict[top]:
+            base_dict[base] = value_dict[top][base]
+        whole_dict[top] = base_dict
+    return whole_dict
+
+####
 #########
+
+
+def get_file_path(_database, _element):
+    path = 'data_web/' + _database + '/' + _element + '*.csv'
+    file_names = glob.glob(path)
+    return file_names
 
 
 def empty_dict(_key_list):
