@@ -37,15 +37,20 @@ import numpy as np
 # # To check whether the input are foils stacked
 # foils_stacked = ratios.count(ratios[0] == len(ratios))
 #
-def modify_thick_cm_dict(elements, same_thick_cm, special_thick_element_str, special_thick_cm_list):
-    ### For elements with various thickness:
-    # _thick_input = 'N'  # input('Is there any element with different thickness? ')
-    # thick_boo_dict = _functions.boo_dict(elements, 'Y')  # Y/N Dict for same thickness
-    thick_cm_dict = _functions.get_thick_dict(elements, same_thick_cm)
+def modify_thick_cm_dict_by_input(thick_cm_dict, special_thick_element_str, special_thick_cm_list):
+    # For elements with various thickness:
     special_element = special_thick_element_str.split(' ')
     thick_cm_dict = _functions.dict_replace_value_by_key(thick_cm_dict, special_element, special_thick_cm_list)
-    print('Thickness (cm): ', thick_cm_dict)
+    print('Modified thickness by input (cm): ', thick_cm_dict)
     return thick_cm_dict
+
+
+def modify_density_dict_by_input(density_gcm3_dict, special_element_str, special_density_gcm3_list):
+    # For elements with special density:
+    special_element = special_element_str.split(' ')
+    density_gcm3_dict = _functions.dict_replace_value_by_key(density_gcm3_dict, special_element, special_density_gcm3_list)
+    print('Modified density by input (g/cm^3): ', density_gcm3_dict)
+    return density_gcm3_dict
 
 
 def modify_iso_ratio_dicts(elements, isotope_dict, enriched_element_str, input_ratio_dict):
@@ -54,28 +59,36 @@ def modify_iso_ratio_dicts(elements, isotope_dict, enriched_element_str, input_r
     for ele in enriched_element:
         isotopes = isotope_dict[ele]
         iso_ratio_dicts[ele] = _functions.dict_replace_value_by_key(iso_ratio_dicts[ele], isotopes, input_ratio_dict[ele])
-    # _iso_ratio_dicts = {}
-    # mass_x_iso_dict = {}
-    # density_gcm3_dict = {}
-    # p = 0
-    # for ele in enriched_element:
-    #     q = 0
-    #     isotopes = isotope_dicts[ele]
-    #     for iso in isotopes:
-    #         iso_ratio_dicts[ele][iso] = input_ratio_dict[p][q]
-    #         q = q + 1
-    #     p = p + 1
-    #     # Return modified or un-modified enrichment related values
-    return iso_ratio_dicts
+    return iso_ratio_dicts, enriched_element
 
 
-def modify_density_dict(density_gcm3_dict, special_density_boo, special_element_str, special_density_gcm3_list):
-    # For elements with special density:
-    if special_density_boo == 'Y':
-        special_element = special_element_str.split(' ')
-        _functions.dict_replace_value_by_key(density_gcm3_dict, special_element, special_density_gcm3_list)
-    print('Density (g/cm3): ', density_gcm3_dict)
+def modify_molar_mass_dict_by_enrichment(molar_mass_dict, enriched_element, isotope_dict, enriched_iso_ratio_dicts, iso_mass_dicts):
+    for ele in enriched_element:
+        molar_mass = 0.
+        for iso in isotope_dict[ele]:
+            molar_mass = molar_mass + enriched_iso_ratio_dicts[ele][iso] * iso_mass_dicts[ele][iso]
+        molar_mass_dict[ele] = molar_mass
+    print('Modified molar mass by enrichment (g/mol): ', molar_mass_dict)
+    return molar_mass_dict
+
+
+def modify_density_dict_by_enrichment(density_gcm3_dict, enriched_element, isotope_dict, enriched_iso_ratio_dicts):
+    for ele in enriched_element:
+        density_gcm3 = 0.
+        for iso in isotope_dict[ele]:
+            density_gcm3 = density_gcm3 + enriched_iso_ratio_dicts[ele][iso] * pt.elements.isotope(iso).density
+        density_gcm3_dict[ele] = density_gcm3
+    print('Modified density by enrichment (g/cm^3): ', density_gcm3_dict)
     return density_gcm3_dict
+
+
+def l_x_n_multi_ele_stack(elements, thick_cm_dict, density_gcm3_dict, molar_mass_dict):
+    l_x_n = 0.
+    for ele in elements:
+        l_x_n = l_x_n + density_gcm3_dict[ele] * thick_cm_dict[ele] / molar_mass_dict[ele]
+    l_n_avo = l_x_n * pt.constants.avogadro_number
+    print('Thickness(l) x atoms_per_cm^3(N) (g/cm^3): ', l_x_n)
+    return l_n_avo
 
 
 # def get_mass_iso_ele_dict(elements):

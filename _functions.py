@@ -49,8 +49,8 @@ def sig2trans_quick(_thick_cm, _atoms_per_cm3, _sigma_portion_sum):
     return neutron_transmission
 
 
-def sigl2trans_quick(_atoms_per_cm3, _sigma_l_portion_sum):
-    neutron_transmission = np.exp(-1 * _atoms_per_cm3 * 1e-24 * _sigma_l_portion_sum)
+def sigl2trans_quick(l_n_avo, sigma_portion_sum):
+    neutron_transmission = np.exp(-1 * l_n_avo * 1e-24 * sigma_portion_sum)
     return neutron_transmission
 
 
@@ -127,6 +127,13 @@ def get_density_dict(_key_list):
 
 
 ####
+def get_molar_mass_dict(elements):
+    molar_mass_dict = {}
+    for ele in elements:
+        molar_mass_dict[ele] = pt.elements.isotope(ele).mass
+    return molar_mass_dict
+
+
 def get_iso_ratio_dict(isotopes):
     # natural_density = pt.elements.isotope(_element).density
     iso_ratio_dict = {}
@@ -200,6 +207,13 @@ def empty_dict(_key_list):
     for key in _key_list:
         _empty_dicts[key] = _empty_dict
     return _empty_dicts
+
+
+def repeat_value_dict(_key_list, value):
+    _thick_dict = {}
+    for key in _key_list:
+        _thick_dict[key] = value
+    return _thick_dict
 
 
 def boo_dict_invert_by_key(_key_list, _boo_dict):
