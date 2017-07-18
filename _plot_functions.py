@@ -115,7 +115,7 @@ def get_xy_new(isotopes, thick_cm, file_names, energy_min, energy_max, iso_ratio
     sigma_iso_ele_sum = 0.
     # sigma_iso_ele_l_sum = 0.
     iso_at_ratio = iso_ratio_list
-    for i, _isotope in enumerate(isotopes):
+    for i, iso in enumerate(isotopes):
         # Read database .csv file
         df = pd.read_csv(file_names[i], header=1)
         # Drop rows beyond range
@@ -136,8 +136,8 @@ def get_xy_new(isotopes, thick_cm, file_names, energy_min, energy_max, iso_ratio
         y_i = y_spline(x_energy)
         sigma_b = y_i
         # y_i_sum = y_i_sum + y_i * iso_abundance[i] * ele_at_ratio
-        sigma_iso_ele_isodict[_isotope] = sigma_b * iso_at_ratio[i] * ele_at_ratio
-        sigma_iso_ele_l_isodict[_isotope] = sigma_iso_ele_isodict[_isotope] * thick_cm
+        sigma_iso_ele_isodict[iso] = sigma_b * iso_at_ratio[i] * ele_at_ratio
+        sigma_iso_ele_l_isodict[iso] = sigma_iso_ele_isodict[iso] * thick_cm
         sigma_iso_ele_sum = sigma_iso_ele_sum + sigma_b * iso_at_ratio[i] * ele_at_ratio
         # sigma_iso_ele_l_sum = sigma_iso_ele_l_sum + sigma_b * iso_at_ratio[i] * ele_at_ratio * thick_cm
 
@@ -147,8 +147,8 @@ def get_xy_new(isotopes, thick_cm, file_names, energy_min, energy_max, iso_ratio
         """
         # Create a new DataFrame including all isotopic data
         # within the selected energy range
-        first_col = _isotope + ', E_eV'
-        second_col = _isotope + ', Sig_b'
+        first_col = iso + ', E_eV'
+        second_col = iso + ', Sig_b'
         df.rename(columns={'E_eV': first_col, 'Sig_b': second_col}, inplace=True)
         df_raw = pd.concat([df_raw, df], axis=1)
 

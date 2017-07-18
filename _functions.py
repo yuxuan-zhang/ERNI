@@ -143,16 +143,26 @@ def get_iso_ratio_dicts(elements, iso_ratio_dict):
     return iso_ratio_dicts
 
 
-def get_iso_ratio_dicts_quick(elements, isotopes):
+def get_iso_ratio_dicts_quick(elements, isotope_dict):
     # natural_density = pt.elements.isotope(_element).density
     iso_ratio_dicts = {}
-    iso_ratio_dict = {}
     for el in elements:
-        for iso in isotopes[el]:
-            print(iso)
-            iso_ratio_dict[iso] = pt.elements.isotope(iso).abundance
+        iso_ratio_dict = {}
+        for iso in isotope_dict[el]:
+            iso_ratio_dict[iso] = pt.elements.isotope(iso).abundance/100
         iso_ratio_dicts[el] = iso_ratio_dict
     return iso_ratio_dicts
+
+
+def get_iso_mass_dicts_quick(elements, isotope_dict):
+    # natural_density = pt.elements.isotope(_element).density
+    iso_mass_dicts = {}
+    for el in elements:
+        iso_mass_dict = {}
+        for iso in isotope_dict[el]:
+            iso_mass_dict[iso] = pt.elements.isotope(iso).mass
+        iso_mass_dicts[el] = iso_mass_dict
+    return iso_mass_dicts
 
 
 def empty_2d_dict(top_level_name, top_base_dict):
