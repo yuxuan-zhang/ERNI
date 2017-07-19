@@ -104,7 +104,7 @@ def get_xy(isotopes, thick_cm, file_names, energy_min, energy_max, iso_abundance
     return x_energy, sigma_iso_ele_isodict, sigma_iso_ele_l_isodict, sigma_iso_ele_sum, df_raw
 
 
-def get_xy_new(stacked_foil_boo, isotopes, thick_cm, file_names, energy_min, energy_max, iso_ratio_list, sub_x, ele_at_ratio):
+def get_xy_new(isotopes, thick_cm, file_names, energy_min, energy_max, iso_ratio_list, sub_x, ele_at_ratio):
     # Transmission calculation of summed and separated contributions by each isotopes
     df = pd.DataFrame()
     df_raw = pd.DataFrame()
@@ -114,8 +114,6 @@ def get_xy_new(stacked_foil_boo, isotopes, thick_cm, file_names, energy_min, ene
     sigma_iso_ele_sum = 0.
     # sigma_iso_ele_l_sum = 0.
     iso_at_ratio = iso_ratio_list
-    if stacked_foil_boo == 'Y':
-        ele_at_ratio = 1
     for i, iso in enumerate(isotopes):
         # Read database .csv file
         df = pd.read_csv(file_names[i], header=1)

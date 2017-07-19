@@ -158,7 +158,6 @@ if _mixture_or_ele_with_diff_density == 'Y':
     if _compound == 'Y':
         sample_density = float(input('Mixture or compound density of {} in g/cm3: '.format(_input_formula)))
 
-print(mass_iso_ele_dict)
 print(sigma_iso_ele_eleisodict)
 
 mass_iso_ele_list = list(dict.values(mass_iso_ele_dict))
