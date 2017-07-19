@@ -44,12 +44,12 @@ def sig2trans(_thick_cm, _atoms_per_cm3, _ele_atomic_ratio, _sigma_b, _iso_atomi
     return neutron_transmission
 
 
-def sig2trans_quick(_thick_cm, _atoms_per_cm3, _sigma_portion_sum):
+def sig_2trans_quick(_thick_cm, _atoms_per_cm3, _sigma_portion_sum):
     neutron_transmission = np.exp(-1 * _thick_cm * _atoms_per_cm3 * 1e-24 * _sigma_portion_sum)
     return neutron_transmission
 
 
-def sigl2trans_quick(l_n_avo, sigma_portion_sum):
+def sig_l_2trans_quick(l_n_avo, sigma_portion_sum):
     neutron_transmission = np.exp(-1 * l_n_avo * 1e-24 * sigma_portion_sum)
     return neutron_transmission
 
@@ -280,6 +280,7 @@ def get_spectra(_filename, time_lamda_ev_axis, delay_us, source_to_detector_cm):
         return ev_array
     if time_lamda_ev_axis == 'lamda':
         return time_array
+
 
 def get_spectra_slice(_filename, time_lamda_ev_axis, delay_us, source_to_detector_cm, _slice):
     df_spectra = pd.read_csv(_filename, sep='\t', header=None)

@@ -4,107 +4,11 @@ import pandas as pd
 import periodictable as pt
 import matplotlib.pyplot as plt
 from matplotlib import style
-import glob
-import os
 from scipy.interpolate import *
 style.use('ggplot')
 
 
-def get_pre_data(_database, _element):
-    # main_dir = os.path.dirname(os.path.abspath(__file__))
-    # path = main_dir + '/data_web/' + _database + '/' + _element + '*.csv'
-    path = 'data_web/' + _database + '/' + _element + '*.csv'
-    file_names = glob.glob(path)
-    abundance_dict = {}
-    mass_dict = {}
-    for _i, file in enumerate(file_names):
-        # Obtain element, z number from the basename
-        _basename = os.path.basename(file)
-        _name_number_csv = _basename.split('.')
-        _name_number = _name_number_csv[0]
-        _name = _name_number.split('-')
-        _symbol = _name[1] + '-' + _name[0]
-        abundance_dict[str(_symbol)] = pt.elements.isotope(_symbol).abundance / 100
-        mass_dict[str(_symbol)] = pt.elements.isotope(_symbol).mass
-    isotopes = list(dict.keys(abundance_dict))  # List of isotopes such as '238-U', ''235-U
-    iso_abundance = list(dict.values(abundance_dict))  # List of isotopic abundance
-    # iso_density = list(dict.values(density_dict))  # List of isotopic density
-    iso_mass = list(dict.values(mass_dict))  # List of isotopic molar mass
-    return isotopes, abundance_dict, iso_abundance, iso_mass, file_names
-
-
-def get_mass_iso_ele(iso_abundance, iso_mass, ele_at_ratio, _natural_mix, _unnatural_ratio_dict):
-    # Calculate the number of atoms per unit volume
-    abundance_array = np.array(iso_abundance)
-    mass_array = np.array(iso_mass)
-    if _natural_mix == 'Y':
-        abundance_array = abundance_array
-    else:
-        ratio_list = list(dict.values(_unnatural_ratio_dict))
-        ratio_array = np.array(ratio_list)
-        abundance_array = ratio_array
-    mass_abundance_multiplied = mass_array * abundance_array
-    mass_iso_ele = sum(mass_abundance_multiplied) * ele_at_ratio
-    return mass_iso_ele
-
-
-def get_xy(isotopes, thick_cm, file_names, energy_min, energy_max, iso_abundance, sub_x, ele_at_ratio, _natural_mix, _unnatural_ratio_dict):
-    # Transmission calculation of summed and separated contributions by each isotopes
-    df = pd.DataFrame()
-    df_raw = pd.DataFrame()
-    sigma_iso_ele_isodict = {}
-    sigma_iso_ele_l_isodict = {}
-    # sigma_iso_ele_l_isodict = {}
-    # thick_cm = thick_mm/10
-    sigma_iso_ele_sum = 0.
-    # sigma_iso_ele_l_sum = 0.
-    if _natural_mix == 'Y':
-        iso_at_ratio = iso_abundance
-    else:
-        ratio_list = list(dict.values(_unnatural_ratio_dict))
-        ratio_array = np.array(ratio_list)
-        iso_at_ratio = ratio_array
-    for i, _isotope in enumerate(isotopes):
-        # Read database .csv file
-        df = pd.read_csv(file_names[i], header=1)
-        # Drop rows beyond range
-        df = df.drop(df[df.E_eV < energy_min].index)  # drop rows beyond range
-        df = df.drop(df[df.E_eV > energy_max].index)  # drop rows beyond range
-        df = df.reset_index(drop=True)  # Reset index after dropping values
-        # print(df.head())
-        # print(df.tail())
-        '''
-        Attention!!!
-        The drop here not works perfect since all the data not at the same intervals.
-        df1 ends at 4999 and df2 might end at 5000. 
-        This will affect the accuracy of the summation performed later. 
-        '''
-        # Spline x-axis and y-axis for transmission calculation
-        x_energy = np.linspace(df['E_eV'].min(), df['E_eV'].max(), sub_x)
-        y_spline = interpolate.interp1d(x=df['E_eV'], y=df['Sig_b'], kind='linear')
-        y_i = y_spline(x_energy)
-        sigma_b = y_i
-        # y_i_sum = y_i_sum + y_i * iso_abundance[i] * ele_at_ratio
-        sigma_iso_ele_isodict[_isotope] = sigma_b * iso_at_ratio[i] * ele_at_ratio
-        sigma_iso_ele_l_isodict[_isotope] = sigma_iso_ele_isodict[_isotope] * thick_cm
-        sigma_iso_ele_sum = sigma_iso_ele_sum + sigma_b * iso_at_ratio[i] * ele_at_ratio
-        # sigma_iso_ele_l_sum = sigma_iso_ele_l_sum + sigma_b * iso_at_ratio[i] * ele_at_ratio * thick_cm
-
-        """
-        Attention:
-        The following part is for producing df_raw of all isotopes for future reference
-        """
-        # Create a new DataFrame including all isotopic data
-        # within the selected energy range
-        first_col = _isotope + ', E_eV'
-        second_col = _isotope + ', Sig_b'
-        df.rename(columns={'E_eV': first_col, 'Sig_b': second_col}, inplace=True)
-        df_raw = pd.concat([df_raw, df], axis=1)
-
-    return x_energy, sigma_iso_ele_isodict, sigma_iso_ele_l_isodict, sigma_iso_ele_sum, df_raw
-
-
-def get_xy_new(isotopes, thick_cm, file_names, energy_min, energy_max, iso_ratio_list, sub_x, ele_at_ratio):
+def get_xy_from_database(isotopes, thick_cm, file_names, energy_min, energy_max, iso_ratio_list, sub_x, ele_at_ratio):
     # Transmission calculation of summed and separated contributions by each isotopes
     df = pd.DataFrame()
     df_raw = pd.DataFrame()
@@ -154,9 +58,17 @@ def get_xy_new(isotopes, thick_cm, file_names, energy_min, energy_max, iso_ratio
     return x_energy, sigma_iso_ele_isodict, sigma_iso_ele_l_isodict, sigma_iso_ele_sum, df_raw
 
 
+def l_x_n_multi_ele_stack(elements, thick_cm_dict, density_gcm3_dict, molar_mass_dict):
+    l_x_n = 0.
+    for ele in elements:
+        l_x_n = l_x_n + density_gcm3_dict[ele] * thick_cm_dict[ele] / molar_mass_dict[ele]
+    l_n_avo = l_x_n * pt.constants.avogadro_number
+    print('Thickness(l) x atoms_per_cm^3(N) (g/cm^3): ', l_x_n)
+    return l_n_avo
 
-def plot_multi(_energy_x_axis, _trans_y_axis, _plot_mixed, _plot_each_ele_contribution, _plot_each_iso_contribution,
-            elements, isotopes_dict, x_energy, y_trans_tot, y_ele_dict, y_iso_dicts, _input_formula):
+
+def plot_database(_energy_x_axis, _trans_y_axis, _plot_mixed, _plot_each_ele_contribution, _plot_each_iso_contribution,
+            elements, isotope_dict, x_energy, y_trans_tot, y_ele_dict, y_iso_dicts, _input_formula):
     ### Plot the theoretical neutron resonance
     ### Determine x y axis types and captions
     if _energy_x_axis == 'Y':
@@ -186,7 +98,7 @@ def plot_multi(_energy_x_axis, _trans_y_axis, _plot_mixed, _plot_each_ele_contri
 
     if _plot_each_iso_contribution == 'Y':
         for _ele in elements:
-            for _iso in isotopes_dict[_ele]:
+            for _iso in isotope_dict[_ele]:
                 _y_each_axis = y_iso_dicts[_ele][_iso]
                 plt.plot(_x_axis, _y_each_axis, label=_iso)
 
@@ -195,4 +107,51 @@ def plot_multi(_energy_x_axis, _trans_y_axis, _plot_mixed, _plot_each_ele_contri
     plt.ylabel(_y_words)
     plt.legend(loc='best')
     plt.show()
+
+
+### Functions to modify the dicts in special case
+
+def modify_thick_cm_dict_by_input(thick_cm_dict, special_thick_element_str, special_thick_cm_list):
+    # For elements with various thickness:
+    special_element = special_thick_element_str.split(' ')
+    thick_cm_dict = _functions.dict_replace_value_by_key(thick_cm_dict, special_element, special_thick_cm_list)
+    print('Modified thickness by input (cm): ', thick_cm_dict)
+    return thick_cm_dict
+
+
+def modify_density_dict_by_input(density_gcm3_dict, special_element_str, special_density_gcm3_list):
+    # For elements with special density:
+    special_element = special_element_str.split(' ')
+    density_gcm3_dict = _functions.dict_replace_value_by_key(density_gcm3_dict, special_element, special_density_gcm3_list)
+    print('Modified density by input (g/cm^3): ', density_gcm3_dict)
+    return density_gcm3_dict
+
+
+def modify_iso_ratio_dicts(elements, isotope_dict, enriched_element_str, input_ratio_dict):
+    iso_ratio_dicts = _functions.get_iso_ratio_dicts_quick(elements, isotope_dict)
+    enriched_element = enriched_element_str.split(' ')
+    for ele in enriched_element:
+        isotopes = isotope_dict[ele]
+        iso_ratio_dicts[ele] = _functions.dict_replace_value_by_key(iso_ratio_dicts[ele], isotopes, input_ratio_dict[ele])
+    return iso_ratio_dicts, enriched_element
+
+
+def modify_molar_mass_dict_by_enrichment(molar_mass_dict, enriched_element, isotope_dict, enriched_iso_ratio_dicts, iso_mass_dicts):
+    for ele in enriched_element:
+        molar_mass = 0.
+        for iso in isotope_dict[ele]:
+            molar_mass = molar_mass + enriched_iso_ratio_dicts[ele][iso] * iso_mass_dicts[ele][iso]
+        molar_mass_dict[ele] = molar_mass
+    print('Modified molar mass by enrichment (g/mol): ', molar_mass_dict)
+    return molar_mass_dict
+
+
+def modify_density_dict_by_enrichment(density_gcm3_dict, enriched_element, isotope_dict, enriched_iso_ratio_dicts):
+    for ele in enriched_element:
+        density_gcm3 = 0.
+        for iso in isotope_dict[ele]:
+            density_gcm3 = density_gcm3 + enriched_iso_ratio_dicts[ele][iso] * pt.elements.isotope(iso).density
+        density_gcm3_dict[ele] = density_gcm3
+    print('Modified density by enrichment (g/cm^3): ', density_gcm3_dict)
+    return density_gcm3_dict
 

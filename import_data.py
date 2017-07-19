@@ -6,7 +6,7 @@ import glob
 
 # Parameters
 source_to_detector_cm = 1610.9  # cm
-delay_ms = 4.5 - 16.611  # ms
+delay_ms = 4.5 - 16.6127  # ms
 delay_us = delay_ms * 1000
 _slice = 220
 time_lamda_ev_axis = 'eV'
@@ -22,7 +22,7 @@ for i in range(len(file_names)):
 # df[time_lamda_ev_axis] = x_axis_array
 key_list = list(dict.values(key_dict))
 plot_boo_dict = _functions.boo_dict(key_list, 'N')
-plot_foil_num = [1, 3, 4, 5, 6, 7, 8]
+plot_foil_num = [1, 2, 3, 4, 5, 6, 7, 8]
 plot_foil = {}
 for num in plot_foil_num:
     plot_foil[num] = _name+str(num)
