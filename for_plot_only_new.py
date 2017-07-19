@@ -177,8 +177,8 @@ if _plot_each_ele_contribution == 'Y':
             y_ele_dict[_ele] = 1 - _functions.sigl2trans_quick(mixed_l_n_avo, sigma_iso_ele_sum_eledict[_ele])
 
 # Create the trans or absorb dict : y_iso_dicts of isotopes for plotting if needed
+y_iso_dicts = {}
 if _plot_each_iso_contribution == 'Y':
-    y_iso_dicts = {}
     for _ele in elements:
         y_iso_dict = {}
         for _iso in isotope_dict[_ele]:
@@ -212,7 +212,7 @@ if _export_to_clipboard_boo == 'Y':
     df_yi_tot.rename(columns={0: 'eV' + _name}, inplace=True)
     df_yi_tot['lamda-' + _name] = _functions.ev2lamda(x_energy)
     df_yi_tot['sample_density-' + _name] = sample_density
-    df_yi_tot['avo_divided-' + _name] = avo_divided
+    df_yi_tot['avo_divided-' + _name] = avo_divi_mass_iso_ele_sum
     df_yi_tot['sigma-' + _name] = yi_values_sum
 
 for ele in elements:

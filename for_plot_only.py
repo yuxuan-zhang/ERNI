@@ -8,8 +8,8 @@ import numpy as np
 
 # Parameters
 # _input_formula = elements_str
-_input_formula = 'AgAuWHfCdCoCdIn'  # input('Please input the chemicals? ')
-_input_thick_mm = 0.1  # float(input('Please input the thickness in mm : '))
+_input_formula = 'Co'  # input('Please input the chemicals? ')
+_input_thick_mm = 0.025  # float(input('Please input the thickness in mm : '))
 _input_thick_cm = _input_thick_mm/10
 _database = 'ENDF_VIII'
 energy_max = 300  # max incident energy in eV
