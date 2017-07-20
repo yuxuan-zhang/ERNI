@@ -6,9 +6,24 @@ import os
 import glob
 import pandas as pd
 import _functions
-import matplotlib.pyplot as plt
 from scipy.interpolate import *
+import peakutils as pku
 
+
+def peak_position_gap(varis, ideal_x_index, y_data_array):
+    time_lamda_ev_axis = 'eV'
+    spectra_path = 'data/spectra.txt'
+    _slice = 220
+    # Parameters:
+    delay_us = varis[0]
+    source_to_detector_cm = varis[1]
+    # Model:
+    x_data_array = _functions.get_spectra_slice(spectra_path, time_lamda_ev_axis, delay_us,
+                                                source_to_detector_cm, _slice)
+    exp_y_index = pku.indexes(y_data_array, thres=0.6, min_dist=50)
+    exp_x_index = pku.interpolate(x_data_array, y_data_array, ind=exp_y_index)
+
+    return (exp_x_index[0] - ideal_x_index)**2
 
 
 # def get_multi_data(file_name_signature, time_lamda_ev_axis, delay_us, source_to_detector_cm, _slice):

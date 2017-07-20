@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from periodictable.constants import avogadro_number
 
+'''Describe your sample: '''
 # Input sample name or names as str, case sensitive
 _input_formula = 'CoAg'  # input('Please input the chemicals? ')
 _input_thick_mm = 0.025  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
@@ -13,9 +14,9 @@ energy_max = 300  # max incident energy in eV
 energy_min = 0  # min incident energy in eV
 energy_sub = 100
 sub_x = energy_sub * (energy_max - energy_min)  # subdivided new x-axis
-
-'''Describe your sample: '''
 stacked_foil_boo = 'Y'  # Single element foil or stacked foils: Y/N?
+
+'''Input for dict modification in certain cases: '''
 # Thickness input:
 special_thick_boo = 'N'
 special_thick_element_str = str
@@ -29,7 +30,6 @@ input_ratio_dict = {}
 special_density_boo = 'N'
 special_density_element_str = str
 special_density_gcm3_list = []
-
 
 '''How you want the data to be plotted?'''
 _plot_or_not = 'Y'
@@ -110,7 +110,6 @@ sigma_iso_ele_sum_eledict = {}  # For transmission calculation at element level
 sigma_iso_ele_sum_l_eledict = {}
 sigma_iso_ele_l_eleisodict = {}
 df_raw_dict = {}  # Raw sigma data for elements and isotopes
-sample_density_dict = {}
 atoms_per_cm3_dict = {}
 
 for el in elements:
@@ -155,7 +154,7 @@ for el in elements:
 
 
 if stacked_foil_boo == 'Y':
-    # Stacked foils
+    # Stacked foils or single foil
     mixed_l_n_avo = _plot_functions.l_x_n_multi_ele_stack(elements, thick_cm_dict, density_gcm3_dict, molar_mass_dict)
 else:
     thick_cm_list = list(dict.values(thick_cm_dict))
@@ -163,6 +162,7 @@ else:
     sample_density = tot_density
     avo_divi_mass_iso_ele_list = list(dict.values(avo_divi_mass_iso_ele_dict))
     avo_divi_mass_iso_ele_sum = sum(np.array(avo_divi_mass_iso_ele_list))
+    # Get atoms per cm3 for mixture
     mixed_atoms_per_cm3 = sample_density * avo_divi_mass_iso_ele_sum
     mixed_l_n_avo = thick_cm * mixed_atoms_per_cm3
 
