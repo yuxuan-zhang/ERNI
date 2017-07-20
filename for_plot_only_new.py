@@ -12,9 +12,9 @@ _input_thick_cm = _input_thick_mm/10
 _database = 'ENDF_VIII'
 energy_max = 300  # max incident energy in eV
 energy_min = 0  # min incident energy in eV
-energy_sub = 100
-sub_x = energy_sub * (energy_max - energy_min)  # subdivided new x-axis
-stacked_foil_boo = 'Y'  # Single element foil or stacked foils: Y/N?
+energy_sub = 100  # steps used to interpolate database
+sub_x = energy_sub * (energy_max - energy_min)  # steps used to interpolate database
+compound_boo = 'N'  # Single element foil or stacked foils: Y/N?
 
 '''Input for dict modification in certain cases: '''
 # Thickness input:
@@ -61,7 +61,7 @@ isotope_dict = _functions.get_isotope_dicts(_database, elements)
 
 # DICT 1: Thickness dict with option for modification
 thick_cm_dict = _functions.repeat_value_dict(elements, _input_thick_cm)
-if stacked_foil_boo == 'Y':
+if compound_boo == 'N':
     if special_thick_boo == 'Y':
         thick_cm_dict = _plot_functions.modify_thick_cm_dict_by_input(thick_cm_dict, special_thick_element_str, special_thick_cm_list)
 
@@ -88,7 +88,7 @@ if enrichment_boo == 'Y':
     density_gcm3_dict = _plot_functions.modify_density_dict_by_enrichment(density_gcm3_dict, enriched_element, isotope_dict, iso_ratio_dicts)
 
 # Update DICT 5: Density dict, if special case considered
-if stacked_foil_boo == 'Y':
+if compound_boo == 'N':
     if special_density_boo == 'Y':
         # Stacked foils and would like to modify density for specific element
         density_gcm3_dict = _plot_functions.modify_density_dict_by_input(density_gcm3_dict, special_density_element_str, special_density_gcm3_list)
@@ -122,7 +122,7 @@ for el in elements:
 
     # A part for getting atoms_per_cm3, this part is irrelevant to fitting parameters, and will be exported for fitting
     avo_divi_mass_iso_ele_dict[el] = avogadro_number / (sum(iso_ratio_array * iso_mass_array) * ele_at_ratio)
-    if stacked_foil_boo == 'Y':
+    if compound_boo == 'N':
         # Multiple foils stacked
         # sample_density_dict[el] = density_gcm3_dict[el] * 1
         atoms_per_cm3_dict[el] = density_gcm3_dict[el] * avo_divi_mass_iso_ele_dict[el]
@@ -153,7 +153,7 @@ for el in elements:
     sigma_iso_ele_sum_eledict[el] = sigma_iso_ele_sum
 
 
-if stacked_foil_boo == 'Y':
+if compound_boo == 'N':
     # Stacked foils or single foil
     mixed_l_n_avo = _plot_functions.l_x_n_multi_ele_stack(elements, thick_cm_dict, density_gcm3_dict, molar_mass_dict)
 else:
