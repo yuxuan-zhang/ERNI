@@ -308,7 +308,7 @@ def get_tot_trans_for_single_ele(_input_ele_str, _input_thick_mm, energy_max, en
 
     # if stacked_foil_boo == 'Y':
         # Stacked foils or single foil
-        mixed_l_n_avo = l_x_n_multi_ele_stack(elements, thick_cm_dict, density_gcm3_dict, molar_mass_dict)
+    mixed_l_n_avo = l_x_n_multi_ele_stack(elements, thick_cm_dict, density_gcm3_dict, molar_mass_dict)
     # else:
     #     thick_cm_list = list(dict.values(thick_cm_dict))
     #     thick_cm = thick_cm_list[0]

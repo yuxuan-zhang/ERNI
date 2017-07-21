@@ -10,21 +10,47 @@ from scipy.interpolate import *
 import peakutils as pku
 
 
-def peak_position_gap(varis, ideal_x_index, y_data_array):
+def peak_x_gap(params, ideal_x_index, y_data_array):
+    # Unpack Parameters:
+    parvals = params.valuesdict()
+    source_to_detector_cm = parvals['source_to_detector_cm']
+    delay_us = parvals['delay_us']
+    # Model:
     time_lamda_ev_axis = 'eV'
     spectra_path = 'data/spectra.txt'
     _slice = 220
-    # Parameters:
-    delay_us = varis[0]
-    source_to_detector_cm = varis[1]
+    x_data_array = _functions.get_spectra_slice(spectra_path, time_lamda_ev_axis, delay_us,
+                                                source_to_detector_cm, _slice)
+    exp_y_index = pku.indexes(y_data_array, thres=0.5, min_dist=100)
+    exp_x_index = pku.interpolate(x_data_array, y_data_array, ind=exp_y_index)
+    gap = (exp_x_index[0] - ideal_x_index) ** 2
+    return gap
+
+
+def peak_x_gap_scipy(delay_us, ideal_x_index, y_data_array):
+    # Unpack Parameters:
+    source_to_detector_cm = 1610.9  # cm
     # Model:
+    time_lamda_ev_axis = 'eV'
+    spectra_path = 'data/spectra.txt'
+    _slice = 220
     x_data_array = _functions.get_spectra_slice(spectra_path, time_lamda_ev_axis, delay_us,
                                                 source_to_detector_cm, _slice)
     exp_y_index = pku.indexes(y_data_array, thres=0.6, min_dist=50)
     exp_x_index = pku.interpolate(x_data_array, y_data_array, ind=exp_y_index)
+    gap = (exp_x_index[0] - ideal_x_index) ** 2
+    return gap
 
-    return (exp_x_index[0] - ideal_x_index)**2
 
+def peak_gap(params, ideal_x_index):
+    # Unpack Parameters:
+    parvals = params.valuesdict()
+    source_to_detector_cm = parvals['source_to_detector_cm']
+    time_us = parvals['time_us']
+    # Model:
+    energy_miliev = 81.787 / (0.3956 * time_us / source_to_detector_cm) ** 2
+    energy_ev = energy_miliev / 1000
+    return (energy_ev - ideal_x_index) ** 2
 
 # def get_multi_data(file_name_signature, time_lamda_ev_axis, delay_us, source_to_detector_cm, _slice):
 #     # time_lamda_ev_axis = 'eV'
