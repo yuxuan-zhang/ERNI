@@ -18,12 +18,14 @@ def peak_x_gap(params, ideal_x_index, y_data_array):
     # Model:
     time_lamda_ev_axis = 'eV'
     spectra_path = 'data/spectra.txt'
-    _slice = 220
-    x_data_array = _functions.get_spectra_slice(spectra_path, time_lamda_ev_axis, delay_us,
-                                                source_to_detector_cm, _slice)
-    exp_y_index = pku.indexes(y_data_array, thres=0.5, min_dist=100)
+    range_min = 600
+    range_max = 2000
+    x_data_array = _functions.get_spectra_range(spectra_path, time_lamda_ev_axis, delay_us,
+                                                source_to_detector_cm, range_min, range_max)
+    exp_y_index = pku.indexes(y_data_array, thres=0.12/max(y_data_array), min_dist=7)
     exp_x_index = pku.interpolate(x_data_array, y_data_array, ind=exp_y_index)
-    gap = (exp_x_index[0] - ideal_x_index) ** 2
+    # gap = (exp_x_index[0] - ideal_x_index) ** 2
+    gap = (exp_x_index - ideal_x_index) ** 2
     return gap
 
 
@@ -42,15 +44,15 @@ def peak_x_gap_scipy(delay_us, ideal_x_index, y_data_array):
     return gap
 
 
-def peak_gap(params, ideal_x_index):
-    # Unpack Parameters:
-    parvals = params.valuesdict()
-    source_to_detector_cm = parvals['source_to_detector_cm']
-    time_us = parvals['time_us']
-    # Model:
-    energy_miliev = 81.787 / (0.3956 * time_us / source_to_detector_cm) ** 2
-    energy_ev = energy_miliev / 1000
-    return (energy_ev - ideal_x_index) ** 2
+# def peak_gap(params, ideal_x_index):
+#     # Unpack Parameters:
+#     parvals = params.valuesdict()
+#     source_to_detector_cm = parvals['source_to_detector_cm']
+#     time_us = parvals['time_us']
+#     # Model:
+#     energy_miliev = 81.787 / (0.3956 * time_us / source_to_detector_cm) ** 2
+#     energy_ev = energy_miliev / 1000
+#     return (energy_ev - ideal_x_index) ** 2
 
 # def get_multi_data(file_name_signature, time_lamda_ev_axis, delay_us, source_to_detector_cm, _slice):
 #     # time_lamda_ev_axis = 'eV'

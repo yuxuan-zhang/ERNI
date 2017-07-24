@@ -268,6 +268,32 @@ def get_normalized_data_slice(_filename, _ignore):
     return normalized_array
 
 
+def get_normalized_data_range(_filename, range_min, range_max):
+    df = pd.read_csv(_filename, header=None, skiprows=1)
+    data_array = np.array(df[1])
+    data = data_array[:int(len(data_array)/2)]
+    ob = data_array[int(len(data_array)/2):]
+    normalized_array = data/ob
+    normalized_array = normalized_array[range_min:range_max]
+    # OB at the end of 2773
+    return normalized_array
+
+
+def get_spectra_range(_filename, time_lamda_ev_axis, delay_us, source_to_detector_cm, range_min, range_max):
+    df_spectra = pd.read_csv(_filename, sep='\t', header=None)
+    time_array = (np.array(df_spectra[0]))
+    # flux_array = (np.array(df_spectra[1]))
+    if time_lamda_ev_axis == 'lamda':
+        lamda_array = time2lamda(time_array, delay_us, source_to_detector_cm)
+        return lamda_array
+    if time_lamda_ev_axis == 'eV':
+        ev_array = time2ev(time_array, delay_us, source_to_detector_cm)
+        ev_array = ev_array[range_min:range_max]
+        return ev_array
+    if time_lamda_ev_axis == 'lamda':
+        return time_array
+
+
 def get_spectra(_filename, time_lamda_ev_axis, delay_us, source_to_detector_cm):
     df_spectra = pd.read_csv(_filename, sep='\t', header=None)
     time_array = (np.array(df_spectra[0]))
