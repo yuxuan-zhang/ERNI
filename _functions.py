@@ -275,11 +275,22 @@ def get_normalized_data_range(_filename, range_min, range_max):
     ob = data_array[int(len(data_array)/2):]
     normalized_array = data/ob
     normalized_array = normalized_array[range_min:range_max]
+    normalized_array = normalized_array[::-1]  # Flip array from descending to normal
     # OB at the end of 2773
     return normalized_array
 
 
-def get_spectra_range(_filename, time_lamda_ev_axis, delay_us, source_to_detector_cm, range_min, range_max):
+def get_spectra_range(_filename, delay_us, source_to_detector_cm, range_min, range_max, time_lamda_ev_axis='eV'):
+    """
+    Get spectra file and convert time to wavelength or energy.
+    :param _filename:
+    :param delay_us:
+    :param source_to_detector_cm:
+    :param range_min:
+    :param range_max:
+    :param time_lamda_ev_axis:
+    :return:
+    """
     df_spectra = pd.read_csv(_filename, sep='\t', header=None)
     time_array = (np.array(df_spectra[0]))
     # flux_array = (np.array(df_spectra[1]))
@@ -289,8 +300,9 @@ def get_spectra_range(_filename, time_lamda_ev_axis, delay_us, source_to_detecto
     if time_lamda_ev_axis == 'eV':
         ev_array = time2ev(time_array, delay_us, source_to_detector_cm)
         ev_array = ev_array[range_min:range_max]
+        ev_array = ev_array[::-1]  # Flip array from descending to normal
         return ev_array
-    if time_lamda_ev_axis == 'lamda':
+    if time_lamda_ev_axis == 'time':
         return time_array
 
 
