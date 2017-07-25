@@ -1,51 +1,36 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib
-import pandas as pd
-import _functions
-import _fit_funtions
 import _plot_functions
-from lmfit import minimize, Parameters
-import os
-import periodictable as pt
+import _functions
+import numpy as np
+import pandas as pd
 from periodictable.constants import avogadro_number
-import peakutils as pku
-
-# Parameters
-source_to_detector_cm = 1610.569047826142  # cm
-delay_ms = -12.112589054625005  # ms
-delay_us = delay_ms * 1000
-_slice = 220
-_database = 'ENDF_VIII'
-_input_formula = 'CoAg'
-energy_min = 0
-energy_max = 400
-energy_sub = 100
-sub_x = energy_sub * (energy_max - energy_min)  # subdivided new x-axis
-_input_thick_mm = 0.025
-_input_thick_cm = _input_thick_mm/10
-time_lamda_ev_axis = 'eV'
-_name = 'foil6'
-data_path = 'data/' + _name + '.csv'
-spectra_path = 'data/spectra.txt'
-
 
 '''Describe your sample: '''
-stacked_foil_boo = 'Y'  # Single element foil or stacked foils: Y/N?
+# Input sample name or names as str, case sensitive
+_input_formula = 'UO3'  # input('Please input the chemicals? ')
+_input_thick_mm = 0.26  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
+_input_thick_cm = _input_thick_mm/10
+_database = 'ENDF_VIII'
+energy_max = 300  # max incident energy in eV
+energy_min = 0  # min incident energy in eV
+energy_sub = 100  # steps used to interpolate database
+sub_x = energy_sub * (energy_max - energy_min)  # steps used to interpolate database
+compound_boo = 'Y'  # Compound or single/multi elements foil/stacked foils: Y/N?
+
+'''Input for dict modification in certain cases: '''
 # Thickness input:
 special_thick_boo = 'N'
 special_thick_element_str = str
 special_thick_mm_list = []
 special_thick_cm_list = np.array(special_thick_mm_list)/10
 # Enriched isotope ratio input:
-enrichment_boo = 'N'  # Isotopic enreiched or depleted: Y/N?
-enriched_element_str = str
-input_ratio_dict = {}
+enrichment_boo = 'Y'  # Isotopic enriched or depleted: Y/N?
+enriched_element_str = 'U'
+input_ratio_dict = {'U': [0., 0., .15, .85]}
+                    # 'O': [1., 0., 0.]}  #{'233-U': 0., '234-U': 0., '235-U': 0.15, '238-U': 0.85}}
 # Special density input:
-special_density_boo = 'N'
+special_density_boo = 'Y'
 special_density_element_str = str
 special_density_gcm3_list = []
-
 
 '''How you want the data to be plotted?'''
 _plot_or_not = 'Y'
@@ -53,8 +38,22 @@ _energy_x_axis = 'Y'  # 1 means plot x-axis as energy in eV
 _trans_y_axis = 'N'  # 1 means plot y-axis as transmission
 _plot_each_ele_contribution = 'Y'  # 1 means plot each element's contribution
 _plot_each_iso_contribution = 'N'  # 1 means plot each isotope's contribution
-_plot_mixed = 'N'  # 1 means plot mixed resonance
+_plot_mixed = 'Y'  # 1 means plot mixed resonance
+'''Export to clipboard for Excel or DataGraph?'''
+_export_to_clipboard_boo = 'N'
 
+
+''' Parse input formula str and return:
+(1) elements list, elemental ratio list
+(2) isotopes dict in the form of {element1: [iso11, iso12, iso13, ...], 
+                                  element2: [iso21, iso22, iso23, ...], 
+                                  element3: [iso31, iso32, iso33, ...], 
+                                  ...}
+(3) isotopic ratio dict in the form of {element1: {iso11: iso_ratio11, iso12: iso_ratio12, iso13: iso_ratio13, ...},
+                                        element2: {iso21: iso_ratio21, iso22: iso_ratio12, iso23: iso_ratio23, ...},
+                                        element3: {iso31: iso_ratio31, iso32: iso_ratio12, iso33: iso_ratio33, ...},
+                                        ...}
+'''
 formula_dict = _functions.input2formula(_input_formula)
 elements = _functions.dict_key_list(formula_dict)
 ratios = _functions.dict_value_list(formula_dict)
@@ -63,7 +62,7 @@ isotope_dict = _functions.get_isotope_dicts(_database, elements)
 
 # DICT 1: Thickness dict with option for modification
 thick_cm_dict = _functions.repeat_value_dict(elements, _input_thick_cm)
-if stacked_foil_boo == 'Y':
+if compound_boo == 'N':
     if special_thick_boo == 'Y':
         thick_cm_dict = _plot_functions.modify_thick_cm_dict_by_input(thick_cm_dict, special_thick_element_str, special_thick_cm_list)
 
@@ -89,8 +88,8 @@ if enrichment_boo == 'Y':
     # Update density dict
     density_gcm3_dict = _plot_functions.modify_density_dict_by_enrichment(density_gcm3_dict, enriched_element, isotope_dict, iso_ratio_dicts)
 
-# Update DICT 5: Density dict, if special case considered
-if stacked_foil_boo == 'Y':
+# Update DICT 5: Density dict, if special case encountered
+if compound_boo == 'N':
     if special_density_boo == 'Y':
         # Stacked foils and would like to modify density for specific element
         density_gcm3_dict = _plot_functions.modify_density_dict_by_input(density_gcm3_dict, special_density_element_str, special_density_gcm3_list)
@@ -98,6 +97,11 @@ else:
     if special_density_boo == 'Y':
         # Not isolated elements or mixture or compound need density input currently
         input_tot_density = 0.7875
+
+print('Thickness (cm): ', thick_cm_dict)
+print('Density (g/cm^3): ', density_gcm3_dict)
+print('Isotopic ratio (at.%)', iso_ratio_dicts)
+print('Molar weight (g/mol): ', molar_mass_dict)
 
 
 '''For plotting the database'''
@@ -107,8 +111,7 @@ sigma_iso_ele_sum_eledict = {}  # For transmission calculation at element level
 sigma_iso_ele_sum_l_eledict = {}
 sigma_iso_ele_l_eleisodict = {}
 df_raw_dict = {}  # Raw sigma data for elements and isotopes
-sample_density_dict = {}
-atoms_per_cm3_dict = {}
+# atoms_per_cm3_dict = {}
 
 for el in elements:
     # isotopes_list = list(dict.keys(iso_ratio_dicts[el]))
@@ -120,14 +123,13 @@ for el in elements:
 
     # A part for getting atoms_per_cm3, this part is irrelevant to fitting parameters, and will be exported for fitting
     avo_divi_mass_iso_ele_dict[el] = avogadro_number / (sum(iso_ratio_array * iso_mass_array) * ele_at_ratio)
-    if stacked_foil_boo == 'Y':
-        # Multiple foils stacked
-        # sample_density_dict[el] = density_gcm3_dict[el] * 1
-        atoms_per_cm3_dict[el] = density_gcm3_dict[el] * avo_divi_mass_iso_ele_dict[el]
-    else:
-        if special_density_boo == 'Y':
-            # Total density of mixture
-            tot_density = input_tot_density
+    # if compound_boo == 'Y':
+    #     # Multiple foils stacked
+    #     # sample_density_dict[el] = density_gcm3_dict[el] * 1
+    #     # atoms_per_cm3_dict[el] = density_gcm3_dict[el] * avo_divi_mass_iso_ele_dict[el]
+    #     if special_density_boo == 'Y':
+    #         # Total density of mixture
+    #         tot_density = input_tot_density
 
     # Get sigma related terms
     file_names = _functions.get_file_path(_database, el)
@@ -151,16 +153,19 @@ for el in elements:
     sigma_iso_ele_sum_eledict[el] = sigma_iso_ele_sum
 
 
-if stacked_foil_boo == 'Y':
-    # Stacked foils
+if compound_boo == 'N':
+    # Stacked foils or single foil
     mixed_l_n_avo = _plot_functions.l_x_n_multi_ele_stack(elements, thick_cm_dict, density_gcm3_dict, molar_mass_dict)
 else:
     thick_cm_list = list(dict.values(thick_cm_dict))
     thick_cm = thick_cm_list[0]
-    sample_density = tot_density
+    sample_density = input_tot_density
     avo_divi_mass_iso_ele_list = list(dict.values(avo_divi_mass_iso_ele_dict))
     avo_divi_mass_iso_ele_sum = sum(np.array(avo_divi_mass_iso_ele_list))
+    print(avo_divi_mass_iso_ele_sum)
+    # Get atoms per cm3 for mixture
     mixed_atoms_per_cm3 = sample_density * avo_divi_mass_iso_ele_sum
+    print(mixed_atoms_per_cm3)
     mixed_l_n_avo = thick_cm * mixed_atoms_per_cm3
 
 # sum of (sigma * ele_ratio * iso_ratio * l)
@@ -169,10 +174,10 @@ yi_values_l_sum = sum(yi_values_l)
 # sum of (sigma * ele_ratio * iso_ratio)
 yi_values = list(dict.values(sigma_iso_ele_sum_eledict))
 yi_values_sum = sum(yi_values)
+# print(yi_values)
 
 trans_sum = _functions.sig_l_2trans_quick(mixed_l_n_avo, yi_values_sum)
 y_trans_tot = trans_sum
-y_attenu_tot = 1 - trans_sum
 
 # Create the trans or absorb dict of ele for plotting if needed
 if _plot_each_ele_contribution == 'Y':
@@ -199,62 +204,34 @@ if _plot_each_iso_contribution == 'Y':
 
 # Plot the theoretical neutron resonance
 if _plot_or_not == 'Y':
-    if _energy_x_axis == 'Y':
-        _x_axis = x_energy
-        _x_words = 'Energy (eV)'
-    else:
-        _x_axis = _functions.ev2lamda(x_energy)
-        _x_words = 'Wavelength (Å)'
+    _plot_functions.plot_database(_energy_x_axis,
+                                  _trans_y_axis,
+                                  _plot_mixed,
+                                  _plot_each_ele_contribution,
+                                  _plot_each_iso_contribution,
+                                  elements,
+                                  isotope_dict,
+                                  x_energy,
+                                  y_trans_tot,
+                                  y_ele_dict,
+                                  y_iso_dicts,
+                                  _input_formula)
 
-    if _trans_y_axis == 'Y':
-        _y_words = 'Neutron transmission'
-    else:
-        _y_words = 'Neutron attenuation'
+# Export to clipboard for density and thickness manipulations with Excel or DataGraph
+if _export_to_clipboard_boo == 'Y':
+    _name = _input_formula
+    df_yi_tot = pd.DataFrame(data=x_energy, index=None)
+    df_yi_tot.rename(columns={0: 'eV' + _name}, inplace=True)
+    df_yi_tot['lamda-' + _name] = _functions.ev2lamda(x_energy)
+    df_yi_tot['sample_density-' + _name] = sample_density
+    df_yi_tot['avo_divided-' + _name] = avo_divi_mass_iso_ele_sum
+    df_yi_tot['sigma-' + _name] = yi_values_sum
 
-    ### Determine x y axis values
-    if _plot_mixed == 'Y':
-        if _trans_y_axis == 'Y':
-            _y_axis = y_trans_tot
-        else:
-            _y_axis = 1 - y_trans_tot
-        plt.plot(_x_axis, _y_axis, label=_input_formula)
-
-    if _plot_each_ele_contribution == 'Y':
-        for _ele in elements:
-            _y_each_axis = y_ele_dict[_ele]
-            plt.plot(_x_axis, _y_each_axis, label=_ele)
-
-    if _plot_each_iso_contribution == 'Y':
-        for _ele in elements:
-            for _iso in isotope_dict[_ele]:
-                _y_each_axis = y_iso_dicts[_ele][_iso]
-                plt.plot(_x_axis, _y_each_axis, label=_iso)
-
-
-x_data_array = _functions.get_spectra_slice(spectra_path, time_lamda_ev_axis, delay_us,
-                                                source_to_detector_cm, _slice)
-print(x_data_array)
-y_data_array = 1 - _functions.get_normalized_data_slice('data/'+_name+'.csv', _slice)/4.2
-print(y_data_array)
-plt.plot(x_data_array, y_data_array, 'r-', label=_name, alpha=0.7)
-
-indexes = pku.indexes(y_data_array, thres=0.6, min_dist=50)
-
-print(indexes)
-peaks_x = pku.interpolate(x_data_array, y_data_array, ind=indexes)
-print(peaks_x)
-# plt.figure(figsize=(10, 6))
-plt.plot(x_data_array[indexes], y_data_array[indexes], 'bx', label='peak')
-plt.title('First estimation')
-
-# paramas = Parameters()
-# paramas.add('source_to_detector_cm', value=1610.9)
-# paramas.add('delay_ms', value=4.5-16.6)
-# paramas.add('density_gcm3', value=pt.elements.isotope(_input_element).density)
-
-plt.ylim(-0.01, 1.01)
-plt.xlim(energy_min, energy_max)
-plt.xlabel(_x_words)
-plt.ylabel(_y_words)
-plt.legend(loc='best')
-plt.show()
+    for ele in elements:
+        _ele_str = str(ele)
+        df_yi_tot['sigma-' + _ele_str] = sigma_iso_ele_sum_eledict[ele]
+        df_test = pd.DataFrame(sigma_iso_ele_eleisodict[ele])
+        df_yi_tot = pd.concat([df_yi_tot, df_test], axis=1)
+    print(df_yi_tot.head())
+    # Export to clipboard
+    df_yi_tot.to_clipboard(excel=True)

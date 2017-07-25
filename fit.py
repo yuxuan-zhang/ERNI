@@ -3,102 +3,86 @@ import matplotlib.pyplot as plt
 import matplotlib
 import pandas as pd
 import _functions
-import glob
 import _fit_funtions
+import _plot_functions
 from lmfit import minimize, Parameters
 import os
 import periodictable as pt
-from periodictable import constants
+from periodictable.constants import avogadro_number
 import peakutils as pku
-
-# Parameters
-source_to_detector_cm = 1610.9  # cm
-delay_ms = 4.5 - 16.6127  # ms
-delay_us = delay_ms * 1000
-_slice = 220
+# from scipy.optimize import leastsq
+import scipy.optimize
+# Input sample name or names as str, case sensitive
+_input_ele_str = 'Ag'  # input('Please input the chemicals? ')
+_input_thick_mm = 0.025  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
 _database = 'ENDF_VIII'
-_input_element = 'Co'
-energy_min = 0
-energy_max = 400
+energy_max = 170  # max incident energy in eV
+energy_min = 6  # min incident energy in eV
 energy_sub = 100
-sub_x = energy_sub * (energy_max - energy_min)  # subdivided new x-axis
-_thick_mm = 0.025
-_thick_cm = _thick_mm/10
+
+# Ideal
+x_energy, y_trans_tot = _plot_functions.get_tot_trans_for_single_ele(_input_ele_str, _input_thick_mm, energy_max, energy_min, energy_sub)
+y_attenu_tot = 1 - y_trans_tot
+# print('x_ideal: ', x_energy)
+# print('y_ideal: ', y_attenu_tot)
+ideal_y_index = pku.indexes(y_attenu_tot, thres=0.15, min_dist=10)#, thres=0.1, min_dist=50)
+ideal_x_index = pku.interpolate(x_energy, y_attenu_tot, ind=ideal_y_index)
+print('x_ideal_peak: ', ideal_x_index)
+# peaks_ind = pku.peak.indexes(y_attenu_tot, min_dist=50)
+# print(peaks_ind)
+# print('y_ideal_peak: ', ideal_y_index)
+plt.plot(x_energy, y_attenu_tot, 'b-', label=_input_ele_str+'_ideal')
+plt.plot(x_energy[ideal_y_index], y_attenu_tot[ideal_y_index], 'bo', label='peak_ideal')
+
+
+# Experiment
+source_to_detector_cm = 1610.1796635603498  # cm
+delay_ms = -12.112641168682274#-12.145 #4.5 - 16.61295379  # ms
+delay_us = delay_ms * 1000
+range_min = 600
+range_max = 1400
+_slice = range_min
+energy_min = 0
 time_lamda_ev_axis = 'eV'
-_name = 'foil6'
+_name = 'foil7'
 data_path = 'data/' + _name + '.csv'
 spectra_path = 'data/spectra.txt'
-# _fit_funtions.get_multi_data(file_name_signature, time_lamda_ev_axis, delay_us, source_to_detector_cm, _slice)
+x_data_array = _functions.get_spectra_range(spectra_path, delay_us,
+                                            source_to_detector_cm, range_min, range_max)
+# print('x_exp: ', x_data_array)
+y_data_array = 1 - _functions.get_normalized_data_range(data_path, range_min, range_max)/4.25
+# print('y_exp: ', y_data_array)
+exp_y_index = pku.indexes(y_data_array, thres=0.12/max(y_data_array), min_dist=7)
+exp_x_index = pku.interpolate(x_data_array, y_data_array, ind=exp_y_index)
+print('x_exp_peak: ', exp_x_index)
+print('Equal size: ', len(ideal_x_index) == len(exp_x_index))
+# baseline = pku.baseline(y_data_array)
+# print(baseline)
+# print('y_exp_peak: ', exp_y_index)
+#
+# df = pd.DataFrame()
+# df['Exp_x'] = x_data_array
+# df['Exp_y'] = y_data_array
+# df2 = pd.DataFrame()
+# df2['Ideal_x'] = x_energy
+# df2['Ideal_y'] = y_attenu_tot
 
+params = Parameters()
+params.add('source_to_detector_cm', value=source_to_detector_cm)
+params.add('delay_us', value=delay_us)
 
-x_data_array = _functions.get_spectra_slice(spectra_path, time_lamda_ev_axis, delay_us,
-                                                source_to_detector_cm, _slice)
-print(x_data_array)
-y_data_array = 1 - _functions.get_normalized_data_slice('data/'+_name+'.csv', _slice)/4.2
-print(y_data_array)
-plt.plot(x_data_array, y_data_array, 'r.', label=_name)
+x_gap = _fit_funtions.peak_x_gap(params, ideal_x_index, y_data_array)
+print('x_gap:', x_gap)
 
-indexes = pku.indexes(y_data_array, thres=0.6, min_dist=50)
+out = minimize(_fit_funtions.peak_x_gap, params, method='leastsq', args=(ideal_x_index, y_data_array))
+# out = scipy.optimize.minimize(_fit_funtions.peak_x_gap_scipy, delay_us, method='leastsq', args=(ideal_x_index, y_data_array))
+print(out.residual)
 
-print(indexes)
-peaks_x = pku.interpolate(x_data_array, y_data_array, ind=indexes)
-print(peaks_x)
-# plt.figure(figsize=(10, 6))
-plt.plot(x_data_array[indexes], y_data_array[indexes], 'bx', label='peak')
-plt.title('First estimation')
+plt.plot(x_data_array, y_data_array, 'r-', label=_name)
+plt.plot(x_data_array[exp_y_index], y_data_array[exp_y_index], 'go', label='peak_exp')
+plt.title('Peak estimation')
 
-
-# paramas = Parameters()
-# paramas.add('source_to_detector_cm', value=1610.9)
-# paramas.add('delay_ms', value=4.5-16.6)
-# paramas.add('density_gcm3', value=pt.elements.isotope(_input_element).density)
-
-formula_dict = _functions.input2formula(_input_element)
-elements = _functions.dict_key_list(formula_dict)
-ratios = _functions.dict_value_list(formula_dict)
-
-# To check whether the input are foils stacked
-# foils_stacked = ratios.count(ratios[0]) == len(ratios)
-# if foils_stacked is True:
-ele_at_ratio = 1
-### Get the data from database specified
-isotopes, abundance_dict, iso_abundance, iso_mass, file_names = _fit_funtions.get_pre_data_to_fit(_database, _input_element)
-# Get (mass * iso_ratio * ele_ratio). In this case, ele_at_ratio = 1
-mass_iso_ele = _fit_funtions.get_mass_iso_ele_to_fit(iso_abundance, iso_mass, ele_at_ratio)
-# Get density and then N (number of atoms per unit volume cm3)
-density_gcm3 = pt.elements.isotope(_input_element).density
-mixed_atoms_per_cm3 = density_gcm3 * pt.constants.avogadro_number/mass_iso_ele
-# Get transmission and/or attenuation
-x_energy, sigma_iso_ele_isodict, sigma_iso_ele_sum, df_raw = \
-    _fit_funtions.get_xy_to_fit(isotopes,
-                                file_names,
-                                energy_min,
-                                energy_max,
-                                iso_abundance,
-                                sub_x,
-                                ele_at_ratio)
-
-
-
-def get_residual():
-
-
-    model = _functions.sig2trans_quick(_thick_cm, mixed_atoms_per_cm3, sigma_iso_ele_sum)
-    resudual = data - model
-    return
-
-trans_sum = _functions.sig2trans_quick(_thick_cm, mixed_atoms_per_cm3, sigma_iso_ele_sum)
-attenu_sum = 1 - trans_sum
-
-plt.plot(x_energy, attenu_sum, 'b-', label=_input_element+'-'+_database)
-
-plt.xlim(0, 300)
-# plt.ylim(-0.01, 1.01)
-# plt.xlabel(_x_words)
-# plt.ylabel(_y_words)
+plt.ylim(-0.01, 1.01)
+plt.xlim(0, energy_max)
 plt.legend(loc='best')
 plt.show()
-# Transmission calculation of summed and separated contributions by each isotopes
-
-
-# def get_distance_delay(paramas, ):

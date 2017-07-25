@@ -23,7 +23,7 @@ special_thick_element_str = str
 special_thick_mm_list = []
 special_thick_cm_list = np.array(special_thick_mm_list)/10
 # Enriched isotope ratio input:
-enrichment_boo = 'N'  # Isotopic enreiched or depleted: Y/N?
+enrichment_boo = 'N'  # Isotopic enriched or depleted: Y/N?
 enriched_element_str = str
 input_ratio_dict = {}
 # Special density input:

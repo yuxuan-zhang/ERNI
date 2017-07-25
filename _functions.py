@@ -303,6 +303,7 @@ def get_spectra_range(_filename, delay_us, source_to_detector_cm, range_min, ran
         ev_array = ev_array[::-1]  # Flip array from descending to normal
         return ev_array
     if time_lamda_ev_axis == 'time':
+        time_array = time_array[range_min:range_max]
         return time_array
 
 
