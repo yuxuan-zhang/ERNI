@@ -189,7 +189,7 @@ def get_xy_to_fit(isotopes, file_names, energy_min, energy_max, iso_abundance, s
     return x_energy, sigma_iso_ele_isodict, sigma_iso_ele_sum, df_raw
 
 
-def get_sigma_to_fit(_input_ele_str, energy_max, energy_min, energy_sub):
+def get_sigma_term(_input_ele_str, energy_max, energy_min, energy_sub):
     # Input sample name or names as str, case sensitive
     # _input_formula = 'AgCo'  # input('Please input the chemicals? ')
     # _input_thick_mm = 0.025  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
@@ -231,14 +231,14 @@ def get_sigma_to_fit(_input_ele_str, energy_max, energy_min, energy_sub):
     isotope_dict = _functions.get_isotope_dicts(_database, elements)
 
     # DICT 1: Thickness dict with option for modification
-    thick_cm_dict = _functions.repeat_value_dict(elements, _input_thick_cm)
+    # thick_cm_dict = _functions.repeat_value_dict(elements, _input_thick_cm)
     # if compound_boo == 'N':
     #     if special_thick_boo == 'Y':
     #         thick_cm_dict = _plot_functions.modify_thick_cm_dict_by_input(thick_cm_dict, special_thick_element_str,
     #                                                                       special_thick_cm_list)
 
-    # DICT 2: Isotopic mass dict
-    iso_mass_dicts = _functions.get_iso_mass_dicts_quick(elements, isotope_dict)
+    # # DICT 2: Isotopic mass dict
+    # iso_mass_dicts = _functions.get_iso_mass_dicts_quick(elements, isotope_dict)
 
     # Dict 3: Molar mass dict
     molar_mass_dict = _functions.get_molar_mass_dict(elements)
@@ -249,33 +249,6 @@ def get_sigma_to_fit(_input_ele_str, energy_max, energy_min, energy_sub):
     # DICT 5: Density dict
     density_gcm3_dict = _functions.get_density_dict(elements)
 
-    # # Update DICT 3 & 4 & 5: isotopic ratio changes lead to |Density| & |Molar mass| changes
-    # if enrichment_boo == 'Y':
-    #     # Update isotope at.% ratio dict
-    #     iso_ratio_dicts, enriched_element = _plot_functions.modify_iso_ratio_dicts(elements, isotope_dict,
-    #                                                                                enriched_element_str,
-    #                                                                                input_ratio_dict)
-    #     # Update molar mass dict
-    #     molar_mass_dict = _plot_functions.modify_molar_mass_dict_by_enrichment(molar_mass_dict, enriched_element,
-    #                                                                            isotope_dict, iso_ratio_dicts,
-    #                                                                            iso_mass_dicts)
-    #     # Update density dict
-    #     density_gcm3_dict = _plot_functions.modify_density_dict_by_enrichment(density_gcm3_dict, enriched_element,
-    #                                                                           isotope_dict, iso_ratio_dicts)
-    #
-    # # Update DICT 5: Density dict, if special case encountered
-    # if compound_boo == 'N':
-    #     if special_density_boo == 'Y':
-    #         # Stacked foils and would like to modify density for specific element
-    #         density_gcm3_dict = _plot_functions.modify_density_dict_by_input(density_gcm3_dict,
-    #                                                                          special_density_element_str,
-    #                                                                          special_density_gcm3_list)
-    # else:
-    #     if special_density_boo == 'Y':
-    #         # Not isolated elements or mixture or compound need density input currently
-    #         input_tot_density = 0.7875
-
-    print('Thickness (cm): ', thick_cm_dict)
     print('Density (g/cm^3): ', density_gcm3_dict)
     print('Isotopic ratio (at.%)', iso_ratio_dicts)
     print('Molar weight (g/mol): ', molar_mass_dict)
@@ -294,9 +267,8 @@ def get_sigma_to_fit(_input_ele_str, energy_max, energy_min, energy_sub):
 
         # Get sigma related terms
         file_names = _functions.get_file_path(_database, el)
-        x_energy, sigma_iso_ele_isodict, sigma_iso_ele_l_isodict, sigma_iso_ele_sum, df_raw_dict[el] \
+        x_energy, sigma_iso_ele_isodict, sigma_iso_ele_sum, df_raw_dict[el] \
             = _plot_functions.get_xy_from_database(iso_ratio_dicts[el],
-                                                   thick_cm_dict[el],
                                                    file_names,
                                                    energy_min,
                                                    energy_max,
@@ -313,20 +285,4 @@ def get_sigma_to_fit(_input_ele_str, energy_max, energy_min, energy_sub):
         # One level dict of elemental array of (sigma * iso_ratio * ele_ratio)
         sigma_iso_ele_sum_eledict[el] = sigma_iso_ele_sum
 
-    # Get Thickness * number of atoms per cm^3
-    # if compound_boo == 'N':
-        # Stacked foils or single foil
-    mixed_l_n_avo = _plot_functions.l_x_n_multi_ele_stack(elements,
-                                                          thick_cm_dict,
-                                                          density_gcm3_dict,
-                                                          molar_mass_dict)
-
-    # Get the tot transmission for all
-    # # sum of (sigma * ele_ratio * iso_ratio * l)
-    yi_values = list(dict.values(sigma_iso_ele_sum_eledict))
-    yi_values_sum = sum(yi_values)
-    # sum of (sigma * ele_ratio * iso_ratio)
-    # print(yi_values)
-    y_trans_tot = _functions.sig_l_2trans_quick(mixed_l_n_avo, yi_values_sum)
-
-    return x_energy, y_trans_tot, sigma_iso_ele_eleisodict, sigma_iso_ele_isodict
+    return elements, isotope_dict, density_gcm3_dict, molar_mass_dict, x_energy, sigma_iso_ele_eleisodict, sigma_iso_ele_sum_eledict

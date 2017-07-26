@@ -9,12 +9,12 @@ from scipy.interpolate import *
 style.use('ggplot')
 
 
-def get_xy_from_database(isotopes, thick_cm, file_names, energy_min, energy_max, iso_ratio_list, sub_x, ele_at_ratio):
+def get_xy_from_database(isotopes, file_names, energy_min, energy_max, iso_ratio_list, sub_x, ele_at_ratio):
     # Transmission calculation of summed and separated contributions by each isotopes
     df = pd.DataFrame()
     df_raw = pd.DataFrame()
     sigma_iso_ele_isodict = {}
-    sigma_iso_ele_l_isodict = {}
+    # sigma_iso_ele_l_isodict = {}
     # thick_cm = thick_mm/10
     sigma_iso_ele_sum = 0.
     # sigma_iso_ele_l_sum = 0.
@@ -41,7 +41,7 @@ def get_xy_from_database(isotopes, thick_cm, file_names, energy_min, energy_max,
         sigma_b = y_i
         # y_i_sum = y_i_sum + y_i * iso_abundance[i] * ele_at_ratio
         sigma_iso_ele_isodict[iso] = sigma_b * iso_at_ratio[i] * ele_at_ratio
-        sigma_iso_ele_l_isodict[iso] = sigma_iso_ele_isodict[iso] * thick_cm
+        # sigma_iso_ele_l_isodict[iso] = sigma_iso_ele_isodict[iso] * thick_cm
         sigma_iso_ele_sum = sigma_iso_ele_sum + sigma_b * iso_at_ratio[i] * ele_at_ratio
         # sigma_iso_ele_l_sum = sigma_iso_ele_l_sum + sigma_b * iso_at_ratio[i] * ele_at_ratio * thick_cm
 
@@ -56,15 +56,15 @@ def get_xy_from_database(isotopes, thick_cm, file_names, energy_min, energy_max,
         df.rename(columns={'E_eV': first_col, 'Sig_b': second_col}, inplace=True)
         df_raw = pd.concat([df_raw, df], axis=1)
 
-    return x_energy, sigma_iso_ele_isodict, sigma_iso_ele_l_isodict, sigma_iso_ele_sum, df_raw
+    return x_energy, sigma_iso_ele_isodict, sigma_iso_ele_sum, df_raw
 
 
-# def atoms_per_cm3(elements, thick_cm_dict, density_gcm3_dict, molar_mass_dict):
-#     n = 0.
-#     for ele in elements:
-#         l_x_n = l_x_n + thick_cm_dict[ele] * density_gcm3_dict[ele] / molar_mass_dict[ele]
-#     l_n_avo = l_x_n * pt.constants.avogadro_number
-#     return atoms_per_cm3
+def atoms_per_cm3(elements, thick_cm_dict, density_gcm3_dict, molar_mass_dict):
+    n = 0.
+    for ele in elements:
+        l_x_n = l_x_n + thick_cm_dict[ele] * density_gcm3_dict[ele] / molar_mass_dict[ele]
+    l_n_avo = l_x_n * pt.constants.avogadro_number
+    return atoms_per_cm3
 
 
 def l_x_n_multi_ele_stack(elements, thick_cm_dict, density_gcm3_dict, molar_mass_dict):
@@ -283,23 +283,22 @@ def get_tot_trans_for_single_ele(_input_ele_str, _input_thick_mm, energy_max, en
     '''For plotting the database'''
     sigma_iso_ele_eleisodict = {}  # For transmission calculation at isotope level
     sigma_iso_ele_sum_eledict = {}  # For transmission calculation at element level
-    sigma_iso_ele_sum_l_eledict = {}
-    sigma_iso_ele_l_eleisodict = {}
+    # sigma_iso_ele_sum_l_eledict = {}
+    # sigma_iso_ele_l_eleisodict = {}
     df_raw_dict = {}  # Raw sigma data for elements and isotopes
 
     for el in elements:
         # isotopes_list = list(dict.keys(iso_ratio_dicts[el]))
         iso_ratio_list = list(dict.values(iso_ratio_dicts[el]))
-        iso_ratio_array = np.array(iso_ratio_list)
-        iso_mass_list = list(dict.values(iso_mass_dicts[el]))
-        iso_mass_array = np.array(iso_mass_list)
+        # iso_ratio_array = np.array(iso_ratio_list)
+        # iso_mass_list = list(dict.values(iso_mass_dicts[el]))
+        # iso_mass_array = np.array(iso_mass_list)
         ele_at_ratio = formula_dict[el] / sum_ratios
 
         # Get sigma related terms
         file_names = _functions.get_file_path(_database, el)
-        x_energy, sigma_iso_ele_isodict, sigma_iso_ele_l_isodict, sigma_iso_ele_sum, df_raw_dict[el] \
+        x_energy, sigma_iso_ele_isodict, sigma_iso_ele_sum, df_raw_dict[el] \
             = get_xy_from_database(iso_ratio_dicts[el],
-                                   thick_cm_dict[el],
                                    file_names,
                                    energy_min,
                                    energy_max,
@@ -307,9 +306,9 @@ def get_tot_trans_for_single_ele(_input_ele_str, _input_thick_mm, energy_max, en
                                    sub_x,
                                    ele_at_ratio)
         # Two level dict of isotopic array of (L * sigma * iso_ratio * ele_ratio)
-        sigma_iso_ele_l_eleisodict[el] = sigma_iso_ele_l_isodict
+        # sigma_iso_ele_l_eleisodict[el] = sigma_iso_ele_l_isodict
         # One level dict of elemental array of (L * sigma * iso_ratio * ele_ratio)
-        sigma_iso_ele_sum_l_eledict[el] = sigma_iso_ele_sum * thick_cm_dict[el]
+        # sigma_iso_ele_sum_l_eledict[el] = sigma_iso_ele_sum * thick_cm_dict[el]
 
         # Two level dict of isotopic array of (sigma * iso_ratio * ele_ratio)
         sigma_iso_ele_eleisodict[el] = sigma_iso_ele_isodict

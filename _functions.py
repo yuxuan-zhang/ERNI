@@ -216,6 +216,15 @@ def repeat_value_dict(_key_list, value):
     return _thick_dict
 
 
+def dict_value_by_key(_key_list, _value_list):
+    p = 0
+    _dict = {}
+    for key in _key_list:
+        _dict[key] = _value_list[p]
+        p = p + 1
+    return _dict
+
+
 def boo_dict_invert_by_key(_key_list, _boo_dict):
     for key in _key_list:
         if _boo_dict[key] == 'Y':

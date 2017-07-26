@@ -61,9 +61,6 @@ isotope_dict = _functions.get_isotope_dicts(_database, elements)
 
 # DICT 1: Thickness dict with option for modification
 thick_cm_dict = _functions.repeat_value_dict(elements, _input_thick_cm)
-if compound_boo == 'N':
-    if special_thick_boo == 'Y':
-        thick_cm_dict = _plot_functions.modify_thick_cm_dict_by_input(thick_cm_dict, special_thick_element_str, special_thick_cm_list)
 
 # DICT 2: Isotopic mass dict
 iso_mass_dicts = _functions.get_iso_mass_dicts_quick(elements, isotope_dict)
@@ -77,6 +74,11 @@ iso_ratio_dicts = _functions.get_iso_ratio_dicts_quick(elements, isotope_dict)
 # DICT 5: Density dict
 density_gcm3_dict = _functions.get_density_dict(elements)
 
+
+# Update DICT 2: isotopic ratio changes lead to |Density| & |Molar mass| changes
+if compound_boo == 'N':
+    if special_thick_boo == 'Y':
+        thick_cm_dict = _plot_functions.modify_thick_cm_dict_by_input(thick_cm_dict, special_thick_element_str, special_thick_cm_list)
 
 # Update DICT 3 & 4 & 5: isotopic ratio changes lead to |Density| & |Molar mass| changes
 if enrichment_boo == 'Y':
@@ -121,9 +123,8 @@ for el in elements:
 
     # Get sigma related terms
     file_names = _functions.get_file_path(_database, el)
-    x_energy, sigma_iso_ele_isodict, sigma_iso_ele_l_isodict, sigma_iso_ele_sum, df_raw_dict[el] \
+    x_energy, sigma_iso_ele_isodict, sigma_iso_ele_sum, df_raw_dict[el] \
         = _plot_functions.get_xy_from_database(iso_ratio_dicts[el],
-                                               thick_cm_dict[el],
                                                file_names,
                                                energy_min,
                                                energy_max,
