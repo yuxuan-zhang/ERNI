@@ -107,17 +107,17 @@ print('Molar weight (g/mol): ', molar_mass_dict)
 '''For plotting the database'''
 sigma_iso_ele_eleisodict = {}  # For transmission calculation at isotope level
 sigma_iso_ele_sum_eledict = {}  # For transmission calculation at element level
-sigma_iso_ele_sum_l_eledict = {}
-sigma_iso_ele_l_eleisodict = {}
+# sigma_iso_ele_sum_l_eledict = {}
+# sigma_iso_ele_l_eleisodict = {}
 df_raw_dict = {}  # Raw sigma data for elements and isotopes
 # atoms_per_cm3_dict = {}
 
 for el in elements:
     # isotopes_list = list(dict.keys(iso_ratio_dicts[el]))
     iso_ratio_list = list(dict.values(iso_ratio_dicts[el]))
-    iso_ratio_array = np.array(iso_ratio_list)
-    iso_mass_list = list(dict.values(iso_mass_dicts[el]))
-    iso_mass_array = np.array(iso_mass_list)
+    # iso_ratio_array = np.array(iso_ratio_list)
+    # iso_mass_list = list(dict.values(iso_mass_dicts[el]))
+    # iso_mass_array = np.array(iso_mass_list)
     ele_at_ratio = formula_dict[el] / sum_ratios
 
     # Get sigma related terms
@@ -132,9 +132,9 @@ for el in elements:
                                                sub_x,
                                                ele_at_ratio)
     # Two level dict of isotopic array of (L * sigma * iso_ratio * ele_ratio)
-    sigma_iso_ele_l_eleisodict[el] = sigma_iso_ele_l_isodict
+    # sigma_iso_ele_l_eleisodict[el] = sigma_iso_ele_l_isodict
     # One level dict of elemental array of (L * sigma * iso_ratio * ele_ratio)
-    sigma_iso_ele_sum_l_eledict[el] = sigma_iso_ele_sum * thick_cm_dict[el]
+    # sigma_iso_ele_sum_l_eledict[el] = sigma_iso_ele_sum * thick_cm_dict[el]
 
     # Two level dict of isotopic array of (sigma * iso_ratio * ele_ratio)
     sigma_iso_ele_eleisodict[el] = sigma_iso_ele_isodict

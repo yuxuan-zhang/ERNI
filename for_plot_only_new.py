@@ -6,7 +6,7 @@ from periodictable.constants import avogadro_number
 
 '''Describe your sample: '''
 # Input sample name or names as str, case sensitive
-_input_formula = 'AgCo'  # input('Please input the chemicals? ')
+_input_formula = 'Cd'  # input('Please input the chemicals? ')
 _input_thick_mm = 0.025  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
 _input_thick_cm = _input_thick_mm/10
 _database = 'ENDF_VIII'
@@ -36,8 +36,8 @@ special_density_gcm3_list = []
 _plot_or_not = 'Y'
 _energy_x_axis = 'Y'  # 1 means plot x-axis as energy in eV
 _trans_y_axis = 'N'  # 1 means plot y-axis as transmission
-_plot_each_ele_contribution = 'Y'  # 1 means plot each element's contribution
-_plot_each_iso_contribution = 'N'  # 1 means plot each isotope's contribution
+_plot_each_ele_contribution = 'N'  # 1 means plot each element's contribution
+_plot_each_iso_contribution = 'Y'  # 1 means plot each isotope's contribution
 _plot_mixed = 'Y'  # 1 means plot mixed resonance
 '''Export to clipboard for Excel or DataGraph?'''
 _export_to_clipboard_boo = 'N'
@@ -107,17 +107,17 @@ print('Molar weight (g/mol): ', molar_mass_dict)
 '''For plotting the database'''
 sigma_iso_ele_eleisodict = {}  # For transmission calculation at isotope level
 sigma_iso_ele_sum_eledict = {}  # For transmission calculation at element level
-sigma_iso_ele_sum_l_eledict = {}
-sigma_iso_ele_l_eleisodict = {}
+# sigma_iso_ele_sum_l_eledict = {}
+# sigma_iso_ele_l_eleisodict = {}
 df_raw_dict = {}  # Raw sigma data for elements and isotopes
 # atoms_per_cm3_dict = {}
 
 for el in elements:
     # isotopes_list = list(dict.keys(iso_ratio_dicts[el]))
     iso_ratio_list = list(dict.values(iso_ratio_dicts[el]))
-    iso_ratio_array = np.array(iso_ratio_list)
-    iso_mass_list = list(dict.values(iso_mass_dicts[el]))
-    iso_mass_array = np.array(iso_mass_list)
+    # iso_ratio_array = np.array(iso_ratio_list)
+    # iso_mass_list = list(dict.values(iso_mass_dicts[el]))
+    # iso_mass_array = np.array(iso_mass_list)
     ele_at_ratio = formula_dict[el] / sum_ratios
 
     # Get sigma related terms
@@ -132,9 +132,9 @@ for el in elements:
                                                sub_x,
                                                ele_at_ratio)
     # Two level dict of isotopic array of (L * sigma * iso_ratio * ele_ratio)
-    sigma_iso_ele_l_eleisodict[el] = sigma_iso_ele_l_isodict
+    # sigma_iso_ele_l_eleisodict[el] = sigma_iso_ele_l_isodict
     # One level dict of elemental array of (L * sigma * iso_ratio * ele_ratio)
-    sigma_iso_ele_sum_l_eledict[el] = sigma_iso_ele_sum * thick_cm_dict[el]
+    # sigma_iso_ele_sum_l_eledict[el] = sigma_iso_ele_sum * thick_cm_dict[el]
 
     # Two level dict of isotopic array of (sigma * iso_ratio * ele_ratio)
     sigma_iso_ele_eleisodict[el] = sigma_iso_ele_isodict
