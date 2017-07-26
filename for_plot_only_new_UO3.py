@@ -36,9 +36,9 @@ special_density_gcm3_list = []
 _plot_or_not = 'Y'
 _energy_x_axis = 'Y'  # 1 means plot x-axis as energy in eV
 _trans_y_axis = 'N'  # 1 means plot y-axis as transmission
-_plot_each_ele_contribution = 'Y'  # 1 means plot each element's contribution
-_plot_each_iso_contribution = 'N'  # 1 means plot each isotope's contribution
-_plot_mixed = 'Y'  # 1 means plot mixed resonance
+_plot_each_ele_contribution = 'N'  # 1 means plot each element's contribution
+_plot_each_iso_contribution = 'Y'  # 1 means plot each isotope's contribution
+_plot_mixed = 'N'  # 1 means plot mixed resonance
 '''Export to clipboard for Excel or DataGraph?'''
 _export_to_clipboard_boo = 'N'
 
@@ -112,6 +112,7 @@ sigma_iso_ele_sum_l_eledict = {}
 sigma_iso_ele_l_eleisodict = {}
 df_raw_dict = {}  # Raw sigma data for elements and isotopes
 # atoms_per_cm3_dict = {}
+mass_iso_ele_dict = {}
 
 for el in elements:
     # isotopes_list = list(dict.keys(iso_ratio_dicts[el]))
@@ -122,6 +123,7 @@ for el in elements:
     ele_at_ratio = formula_dict[el] / sum_ratios
 
     # A part for getting atoms_per_cm3, this part is irrelevant to fitting parameters, and will be exported for fitting
+    mass_iso_ele_dict[el] = (sum(iso_ratio_array * iso_mass_array) * ele_at_ratio)
     avo_divi_mass_iso_ele_dict[el] = avogadro_number / (sum(iso_ratio_array * iso_mass_array) * ele_at_ratio)
     # if compound_boo == 'Y':
     #     # Multiple foils stacked
@@ -160,8 +162,10 @@ else:
     thick_cm_list = list(dict.values(thick_cm_dict))
     thick_cm = thick_cm_list[0]
     sample_density = input_tot_density
-    avo_divi_mass_iso_ele_list = list(dict.values(avo_divi_mass_iso_ele_dict))
-    avo_divi_mass_iso_ele_sum = sum(np.array(avo_divi_mass_iso_ele_list))
+    mass_iso_ele_list = list(dict.values(mass_iso_ele_dict))
+    mass_iso_ele_sum = sum(np.array(mass_iso_ele_list))
+    avo_divi_mass_iso_ele_sum = avogadro_number/mass_iso_ele_sum
+    print(mass_iso_ele_dict)
     print(avo_divi_mass_iso_ele_sum)
     # Get atoms per cm3 for mixture
     mixed_atoms_per_cm3 = sample_density * avo_divi_mass_iso_ele_sum
@@ -180,8 +184,8 @@ trans_sum = _functions.sig_l_2trans_quick(mixed_l_n_avo, yi_values_sum)
 y_trans_tot = trans_sum
 
 # Create the trans or absorb dict of ele for plotting if needed
+y_ele_dict = {}
 if _plot_each_ele_contribution == 'Y':
-    y_ele_dict = {}
     for _ele in elements:
         if _trans_y_axis == 'Y':
             y_ele_dict[_ele] = _functions.sig_l_2trans_quick(mixed_l_n_avo, sigma_iso_ele_sum_eledict[_ele])
