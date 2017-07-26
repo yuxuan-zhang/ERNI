@@ -6,7 +6,7 @@ from periodictable.constants import avogadro_number
 
 '''Describe your sample: '''
 # Input sample name or names as str, case sensitive
-_input_formula = 'CoAg'  # input('Please input the chemicals? ')
+_input_formula = 'AgCo'  # input('Please input the chemicals? ')
 _input_thick_mm = 0.025  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
 _input_thick_cm = _input_thick_mm/10
 _database = 'ENDF_VIII'
@@ -14,7 +14,7 @@ energy_max = 300  # max incident energy in eV
 energy_min = 0  # min incident energy in eV
 energy_sub = 100  # steps used to interpolate database
 sub_x = energy_sub * (energy_max - energy_min)  # steps used to interpolate database
-compound_boo = 'N'  # Single element foil or stacked foils: Y/N?
+compound_boo = 'N'  # Compound or single/multi elements foil/stacked foils: Y/N?
 
 '''Input for dict modification in certain cases: '''
 # Thickness input:
@@ -24,8 +24,9 @@ special_thick_mm_list = []
 special_thick_cm_list = np.array(special_thick_mm_list)/10
 # Enriched isotope ratio input:
 enrichment_boo = 'N'  # Isotopic enriched or depleted: Y/N?
-enriched_element_str = str
-input_ratio_dict = {}
+enriched_element_str = 'U'
+input_ratio_dict = {'U': [0., 0., .15, .85]}
+                    # 'O': [1., 0., 0.]}  #{'233-U': 0., '234-U': 0., '235-U': 0.15, '238-U': 0.85}}
 # Special density input:
 special_density_boo = 'N'
 special_density_element_str = str
@@ -87,7 +88,7 @@ if enrichment_boo == 'Y':
     # Update density dict
     density_gcm3_dict = _plot_functions.modify_density_dict_by_enrichment(density_gcm3_dict, enriched_element, isotope_dict, iso_ratio_dicts)
 
-# Update DICT 5: Density dict, if special case considered
+# Update DICT 5: Density dict, if special case encountered
 if compound_boo == 'N':
     if special_density_boo == 'Y':
         # Stacked foils and would like to modify density for specific element
@@ -99,8 +100,8 @@ else:
 
 print('Thickness (cm): ', thick_cm_dict)
 print('Density (g/cm^3): ', density_gcm3_dict)
-print('Isotopic at.%', iso_ratio_dicts)
-print('Isotopic mass: ', iso_mass_dicts)
+print('Isotopic ratio (at.%)', iso_ratio_dicts)
+print('Molar weight (g/mol): ', molar_mass_dict)
 
 
 '''For plotting the database'''
@@ -110,7 +111,8 @@ sigma_iso_ele_sum_eledict = {}  # For transmission calculation at element level
 sigma_iso_ele_sum_l_eledict = {}
 sigma_iso_ele_l_eleisodict = {}
 df_raw_dict = {}  # Raw sigma data for elements and isotopes
-atoms_per_cm3_dict = {}
+# atoms_per_cm3_dict = {}
+mass_iso_ele_dict = {}
 
 for el in elements:
     # isotopes_list = list(dict.keys(iso_ratio_dicts[el]))
@@ -121,15 +123,15 @@ for el in elements:
     ele_at_ratio = formula_dict[el] / sum_ratios
 
     # A part for getting atoms_per_cm3, this part is irrelevant to fitting parameters, and will be exported for fitting
+    mass_iso_ele_dict[el] = (sum(iso_ratio_array * iso_mass_array) * ele_at_ratio)
     avo_divi_mass_iso_ele_dict[el] = avogadro_number / (sum(iso_ratio_array * iso_mass_array) * ele_at_ratio)
-    if compound_boo == 'N':
-        # Multiple foils stacked
-        # sample_density_dict[el] = density_gcm3_dict[el] * 1
-        atoms_per_cm3_dict[el] = density_gcm3_dict[el] * avo_divi_mass_iso_ele_dict[el]
-    else:
-        if special_density_boo == 'Y':
-            # Total density of mixture
-            tot_density = input_tot_density
+    # if compound_boo == 'Y':
+    #     # Multiple foils stacked
+    #     # sample_density_dict[el] = density_gcm3_dict[el] * 1
+    #     # atoms_per_cm3_dict[el] = density_gcm3_dict[el] * avo_divi_mass_iso_ele_dict[el]
+    #     if special_density_boo == 'Y':
+    #         # Total density of mixture
+    #         tot_density = input_tot_density
 
     # Get sigma related terms
     file_names = _functions.get_file_path(_database, el)
@@ -159,11 +161,15 @@ if compound_boo == 'N':
 else:
     thick_cm_list = list(dict.values(thick_cm_dict))
     thick_cm = thick_cm_list[0]
-    sample_density = tot_density
-    avo_divi_mass_iso_ele_list = list(dict.values(avo_divi_mass_iso_ele_dict))
-    avo_divi_mass_iso_ele_sum = sum(np.array(avo_divi_mass_iso_ele_list))
+    sample_density = input_tot_density
+    mass_iso_ele_list = list(dict.values(mass_iso_ele_dict))
+    mass_iso_ele_sum = sum(np.array(mass_iso_ele_list))
+    avo_divi_mass_iso_ele_sum = avogadro_number/mass_iso_ele_sum
+    print(mass_iso_ele_dict)
+    print(avo_divi_mass_iso_ele_sum)
     # Get atoms per cm3 for mixture
     mixed_atoms_per_cm3 = sample_density * avo_divi_mass_iso_ele_sum
+    print(mixed_atoms_per_cm3)
     mixed_l_n_avo = thick_cm * mixed_atoms_per_cm3
 
 # sum of (sigma * ele_ratio * iso_ratio * l)
@@ -172,14 +178,14 @@ yi_values_l_sum = sum(yi_values_l)
 # sum of (sigma * ele_ratio * iso_ratio)
 yi_values = list(dict.values(sigma_iso_ele_sum_eledict))
 yi_values_sum = sum(yi_values)
-print(yi_values)
+# print(yi_values)
 
 trans_sum = _functions.sig_l_2trans_quick(mixed_l_n_avo, yi_values_sum)
 y_trans_tot = trans_sum
 
 # Create the trans or absorb dict of ele for plotting if needed
+y_ele_dict = {}
 if _plot_each_ele_contribution == 'Y':
-    y_ele_dict = {}
     for _ele in elements:
         if _trans_y_axis == 'Y':
             y_ele_dict[_ele] = _functions.sig_l_2trans_quick(mixed_l_n_avo, sigma_iso_ele_sum_eledict[_ele])
