@@ -18,7 +18,7 @@ def peak_x_gap(params, ideal_x_index, y_data_array):
     delay_us = parvals['delay_us']
     # Model:
     spectra_path = 'data/spectra.txt'
-    range_min = 600
+    range_min = 500
     range_max = 2000
     x_data_array = _functions.get_spectra_range(spectra_path, delay_us,
                                                 source_to_detector_cm, range_min, range_max)

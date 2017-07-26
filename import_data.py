@@ -5,8 +5,8 @@ import _functions
 import glob
 
 # Parameters
-source_to_detector_cm = 1610.9  # cm
-delay_ms = 4.5 - 16.6127  # ms
+source_to_detector_cm = 1612.3278721983177  # cm
+delay_ms = -12.112494119089204#-12.145 #4.5 - 16.61295379  # ms
 delay_us = delay_ms * 1000
 _slice = 220
 time_lamda_ev_axis = 'eV'

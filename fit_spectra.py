@@ -4,8 +4,8 @@ import pandas as pd
 import _functions
 
 # Parameters
-source_to_detector_cm = 1610.9  # cm
-delay_ms = 0.45  # ms
+source_to_detector_cm = 1612.3278721983177  # cm
+delay_ms = -12.112494119089204#-12.145 #4.5 - 16.61295379  # ms
 data_20 = pd.read_csv('data/data_spectra_20.txt', sep='\t', header=None)
 data_40 = pd.read_csv('data/data_spectra_40.txt', sep='\t', header=None)
 data_3749 = pd.read_csv('data/data_spectra_3749.txt', sep='\t', header=None)

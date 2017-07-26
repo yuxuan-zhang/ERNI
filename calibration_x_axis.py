@@ -17,7 +17,7 @@ _input_ele_str = 'Ag'  # input('Please input the chemicals? ')
 _input_thick_mm = 0.025  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
 _database = 'ENDF_VIII'
 energy_max = 170  # max incident energy in eV
-energy_min = 0  # min incident energy in eV
+energy_min = 10  # min incident energy in eV
 energy_sub = 100
 
 # Ideal
@@ -36,11 +36,11 @@ plt.plot(x_energy[ideal_y_index], y_attenu_tot[ideal_y_index], 'bo', label='peak
 
 
 # Experiment
-source_to_detector_cm = 1610.1796635603498  # cm
-delay_ms = -12.112641168682274#-12.145 #4.5 - 16.61295379  # ms
+source_to_detector_cm = 1612.3278721983177  # cm
+delay_ms = -12.112494119089204#-12.145 #4.5 - 16.61295379  # ms
 delay_us = delay_ms * 1000
 range_min = 500
-range_max = 2771
+range_max = 2000
 _slice = range_min
 energy_min = 0
 time_lamda_ev_axis = 'eV'
@@ -71,12 +71,12 @@ params = Parameters()
 params.add('source_to_detector_cm', value=source_to_detector_cm)
 params.add('delay_us', value=delay_us)
 
-# x_gap = _fit_funtions.peak_x_gap(params, ideal_x_index, y_data_array)
-# print('x_gap:', x_gap)
+x_gap = _fit_functions.peak_x_gap(params, ideal_x_index, y_data_array)
+print('x_gap:', x_gap)
 
-# out = minimize(_fit_funtions.peak_x_gap, params, method='leastsq', args=(ideal_x_index, y_data_array))
+out = minimize(_fit_functions.peak_x_gap, params, method='leastsq', args=(ideal_x_index, y_data_array))
 # out = scipy.optimize.minimize(_fit_funtions.peak_x_gap_scipy, delay_us, method='leastsq', args=(ideal_x_index, y_data_array))
-# print(out.residual)
+print(out.__dict__)
 
 plt.plot(x_data_array, y_data_array, 'r-', label=_name)
 plt.plot(x_data_array[exp_y_index], y_data_array[exp_y_index], 'go', label='peak_exp')
