@@ -21,7 +21,11 @@ energy_min = 0  # min incident energy in eV
 energy_sub = 100
 
 # Ideal
-x_energy, y_trans_tot, sigma_iso_ele_eleisodict, sigma_iso_ele_isodict = _fit_functions.get_tot_trans_for_single_ele(_input_ele_str, _input_thick_mm, energy_max, energy_min, energy_sub)
+x_energy, y_trans_tot, sigma_iso_ele_eleisodict, sigma_iso_ele_isodict = \
+    _fit_functions.get_sigma_to_fit(_input_ele_str,
+                                    energy_max,
+                                    energy_min,
+                                    energy_sub)
 y_attenu_tot = 1 - y_trans_tot
 # print('x_ideal: ', x_energy)
 # print('y_ideal: ', y_attenu_tot)

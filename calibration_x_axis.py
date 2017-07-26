@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 import pandas as pd
 import _functions
-import _fit_funtions
+import _fit_functions
 import _plot_functions
 from lmfit import minimize, Parameters
 import os
