@@ -2,7 +2,6 @@ import _plot_functions
 import _functions
 import numpy as np
 import pandas as pd
-from periodictable.constants import avogadro_number
 
 '''Describe your sample: '''
 # Input sample name or names as str, case sensitive
