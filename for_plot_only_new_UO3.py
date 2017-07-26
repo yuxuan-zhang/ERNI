@@ -105,14 +105,12 @@ print('Molar weight (g/mol): ', molar_mass_dict)
 
 
 '''For plotting the database'''
-avo_divi_mass_iso_ele_dict = {}  # For number of atoms per cm3 calculation
 sigma_iso_ele_eleisodict = {}  # For transmission calculation at isotope level
 sigma_iso_ele_sum_eledict = {}  # For transmission calculation at element level
 sigma_iso_ele_sum_l_eledict = {}
 sigma_iso_ele_l_eleisodict = {}
 df_raw_dict = {}  # Raw sigma data for elements and isotopes
 # atoms_per_cm3_dict = {}
-mass_iso_ele_dict = {}
 
 for el in elements:
     # isotopes_list = list(dict.keys(iso_ratio_dicts[el]))
@@ -121,17 +119,6 @@ for el in elements:
     iso_mass_list = list(dict.values(iso_mass_dicts[el]))
     iso_mass_array = np.array(iso_mass_list)
     ele_at_ratio = formula_dict[el] / sum_ratios
-
-    # A part for getting atoms_per_cm3, this part is irrelevant to fitting parameters, and will be exported for fitting
-    mass_iso_ele_dict[el] = (sum(iso_ratio_array * iso_mass_array) * ele_at_ratio)
-    avo_divi_mass_iso_ele_dict[el] = avogadro_number / (sum(iso_ratio_array * iso_mass_array) * ele_at_ratio)
-    # if compound_boo == 'Y':
-    #     # Multiple foils stacked
-    #     # sample_density_dict[el] = density_gcm3_dict[el] * 1
-    #     # atoms_per_cm3_dict[el] = density_gcm3_dict[el] * avo_divi_mass_iso_ele_dict[el]
-    #     if special_density_boo == 'Y':
-    #         # Total density of mixture
-    #         tot_density = input_tot_density
 
     # Get sigma related terms
     file_names = _functions.get_file_path(_database, el)
@@ -155,33 +142,36 @@ for el in elements:
     sigma_iso_ele_sum_eledict[el] = sigma_iso_ele_sum
 
 
+# Get Thickness * number of atoms per cm^3
 if compound_boo == 'N':
     # Stacked foils or single foil
-    mixed_l_n_avo = _plot_functions.l_x_n_multi_ele_stack(elements, thick_cm_dict, density_gcm3_dict, molar_mass_dict)
+    mixed_l_n_avo = _plot_functions.l_x_n_multi_ele_stack(elements,
+                                                          thick_cm_dict,
+                                                          density_gcm3_dict,
+                                                          molar_mass_dict)
 else:
+    # For compound
     thick_cm_list = list(dict.values(thick_cm_dict))
     thick_cm = thick_cm_list[0]
-    sample_density = input_tot_density
-    mass_iso_ele_list = list(dict.values(mass_iso_ele_dict))
-    mass_iso_ele_sum = sum(np.array(mass_iso_ele_list))
-    avo_divi_mass_iso_ele_sum = avogadro_number/mass_iso_ele_sum
-    print(mass_iso_ele_dict)
-    print(avo_divi_mass_iso_ele_sum)
-    # Get atoms per cm3 for mixture
-    mixed_atoms_per_cm3 = sample_density * avo_divi_mass_iso_ele_sum
-    print(mixed_atoms_per_cm3)
-    mixed_l_n_avo = thick_cm * mixed_atoms_per_cm3
+    compound_density = input_tot_density
+    mixed_l_n_avo = _plot_functions.l_x_n_compound(elements,
+                                                   thick_cm,
+                                                   compound_density,
+                                                   molar_mass_dict,
+                                                   formula_dict,
+                                                   sum_ratios)
 
-# sum of (sigma * ele_ratio * iso_ratio * l)
-yi_values_l = list(dict.values(sigma_iso_ele_sum_l_eledict))
-yi_values_l_sum = sum(yi_values_l)
-# sum of (sigma * ele_ratio * iso_ratio)
+# Get the tot transmission for all
+# yi_values_l = list(dict.values(sigma_iso_ele_sum_l_eledict))
+# yi_values_l_sum = sum(yi_values_l)
+# # sum of (sigma * ele_ratio * iso_ratio * l)
 yi_values = list(dict.values(sigma_iso_ele_sum_eledict))
 yi_values_sum = sum(yi_values)
+# sum of (sigma * ele_ratio * iso_ratio)
 # print(yi_values)
-
 trans_sum = _functions.sig_l_2trans_quick(mixed_l_n_avo, yi_values_sum)
 y_trans_tot = trans_sum
+
 
 # Create the trans or absorb dict of ele for plotting if needed
 y_ele_dict = {}
@@ -227,8 +217,8 @@ if _export_to_clipboard_boo == 'Y':
     df_yi_tot = pd.DataFrame(data=x_energy, index=None)
     df_yi_tot.rename(columns={0: 'eV' + _name}, inplace=True)
     df_yi_tot['lamda-' + _name] = _functions.ev2lamda(x_energy)
-    df_yi_tot['sample_density-' + _name] = sample_density
-    df_yi_tot['avo_divided-' + _name] = avo_divi_mass_iso_ele_sum
+    df_yi_tot['sample_density-' + _name] = compound_density
+    df_yi_tot['avo_divided-' + _name] = mixed_l_n_avo
     df_yi_tot['sigma-' + _name] = yi_values_sum
 
     for ele in elements:

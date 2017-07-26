@@ -64,7 +64,17 @@ def l_x_n_multi_ele_stack(elements, thick_cm_dict, density_gcm3_dict, molar_mass
     for ele in elements:
         l_x_n = l_x_n + density_gcm3_dict[ele] * thick_cm_dict[ele] / molar_mass_dict[ele]
     l_n_avo = l_x_n * pt.constants.avogadro_number
-    print('Thickness(l) x atoms_per_cm^3(N) (g/cm^3): ', l_x_n)
+    print('Thickness(l) x atoms_per_cm^3(N) : ', l_n_avo)
+    return l_n_avo
+
+
+def l_x_n_compound(elements, thick_cm, compound_density, molar_mass_dict, formula_dict, sum_ratios):
+    molar_mass_sum = 0.
+    for ele in elements:
+        molar_mass_sum = molar_mass_sum + molar_mass_dict[ele] * formula_dict[ele] / sum_ratios
+    l_x_n = compound_density * thick_cm / molar_mass_sum
+    l_n_avo = l_x_n * pt.constants.avogadro_number
+    print('Thickness(l) x atoms_per_cm^3(N) : ', l_n_avo)
     return l_n_avo
 
 
