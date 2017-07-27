@@ -5,7 +5,7 @@ import pandas as pd
 
 '''Describe your sample: '''
 # Input sample name or names as str, case sensitive
-_input_formula = 'AgU'  # input('Please input the chemicals? ')
+_input_formula = 'UO'  # input('Please input the chemicals? ')
 _input_thick_mm = 0.025  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
 _input_thick_cm = _input_thick_mm/10
 _database = 'ENDF_VIII'
