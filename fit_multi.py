@@ -131,9 +131,8 @@ for el in elements:
 
     # Get sigma related terms
     file_names = _functions.get_file_path(_database, el)
-    x_energy, sigma_iso_ele_isodict, sigma_iso_ele_l_isodict, sigma_iso_ele_sum, df_raw_dict[el] \
+    x_energy, sigma_iso_ele_isodict, sigma_iso_ele_sum, df_raw_dict[el] \
         = _plot_functions.get_xy_from_database(iso_ratio_dicts[el],
-                                               thick_cm_dict[el],
                                                file_names,
                                                energy_min,
                                                energy_max,
@@ -141,9 +140,9 @@ for el in elements:
                                                sub_x,
                                                ele_at_ratio)
     # Two level dict of isotopic array of (L * sigma * iso_ratio * ele_ratio)
-    sigma_iso_ele_l_eleisodict[el] = sigma_iso_ele_l_isodict
+    # sigma_iso_ele_l_eleisodict[el] = sigma_iso_ele_l_isodict
     # One level dict of elemental array of (L * sigma * iso_ratio * ele_ratio)
-    sigma_iso_ele_sum_l_eledict[el] = sigma_iso_ele_sum * thick_cm_dict[el]
+    # sigma_iso_ele_sum_l_eledict[el] = sigma_iso_ele_sum * thick_cm_dict[el]
 
     # Two level dict of isotopic array of (sigma * iso_ratio * ele_ratio)
     sigma_iso_ele_eleisodict[el] = sigma_iso_ele_isodict

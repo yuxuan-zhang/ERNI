@@ -225,6 +225,18 @@ def dict_value_by_key(_key_list, _value_list):
     return _dict
 
 
+def ele_ratio_dict(element_list, thick_cm_dict, density_gcm3_dict, molar_mass_dict):
+    mol_dict = {}
+    ele_at_ratio_dict = {}
+    mol_sum = 0.
+    for ele in element_list:
+        mol_dict[ele] = density_gcm3_dict[ele] * thick_cm_dict[ele] / molar_mass_dict[ele]
+        mol_sum = mol_sum + mol_dict[ele]
+    for ele in element_list:
+        ele_at_ratio_dict[ele] = mol_dict[ele] / mol_sum
+    return ele_at_ratio_dict
+
+
 def boo_dict_invert_by_key(_key_list, _boo_dict):
     for key in _key_list:
         if _boo_dict[key] == 'Y':
@@ -316,7 +328,7 @@ def get_spectra_range(_filename, delay_us, source_to_detector_cm, range_min, ran
         return time_array
 
 
-def get_spectra(_filename, time_lamda_ev_axis, delay_us, source_to_detector_cm):
+def get_spectra(_filename, delay_us, source_to_detector_cm, time_lamda_ev_axis='eV'):
     df_spectra = pd.read_csv(_filename, sep='\t', header=None)
     time_array = (np.array(df_spectra[0]))
     # flux_array = (np.array(df_spectra[1]))
@@ -326,7 +338,7 @@ def get_spectra(_filename, time_lamda_ev_axis, delay_us, source_to_detector_cm):
     if time_lamda_ev_axis == 'eV':
         ev_array = time2ev(time_array, delay_us, source_to_detector_cm)
         return ev_array
-    if time_lamda_ev_axis == 'lamda':
+    if time_lamda_ev_axis == 'time':
         return time_array
 
 

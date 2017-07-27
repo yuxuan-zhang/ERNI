@@ -21,10 +21,10 @@ df_all['3749'] = data_3749[1]
 df_all['ob_18'] = ob_18[1]
 df_all['ob_delme'] = ob_delme[1]
 df_all['ob_Cd'] = ob_Cd[1]
-# df_all.set_index(df_all['lamda'], inplace=True)
+df_all.set_index(df_all['eV'], inplace=True)
 
-df_all.plot.scatter('eV', '20')
-plt.xlim(-0.01, 1.01)
+plt.plot(df_all)
+# plt.xlim(-0.01, 1.01)
 plt.show()
 
 # df_a = pd.read_csv('Analysis_07_11_2017.csv')
