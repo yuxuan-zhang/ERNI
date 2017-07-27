@@ -59,12 +59,12 @@ def get_xy_from_database(isotopes, file_names, energy_min, energy_max, iso_ratio
     return x_energy, sigma_iso_ele_isodict, sigma_iso_ele_sum, df_raw
 
 
-def atoms_per_cm3(elements, thick_cm_dict, density_gcm3_dict, molar_mass_dict):
-    n = 0.
-    for ele in elements:
-        l_x_n = l_x_n + thick_cm_dict[ele] * density_gcm3_dict[ele] / molar_mass_dict[ele]
-    l_n_avo = l_x_n * pt.constants.avogadro_number
-    return atoms_per_cm3
+# def atoms_per_cm3(elements, thick_cm_dict, density_gcm3_dict, molar_mass_dict):
+#     n = 0.
+#     for ele in elements:
+#         l_x_n = l_x_n + thick_cm_dict[ele] * density_gcm3_dict[ele] / molar_mass_dict[ele]
+#     l_n_avo = l_x_n * pt.constants.avogadro_number
+#     return atoms_per_cm3
 
 
 def l_x_n_multi_ele_stack(elements, thick_cm_dict, density_gcm3_dict, molar_mass_dict):
@@ -249,6 +249,17 @@ def get_tot_trans_for_single_ele(_input_ele_str, _input_thick_mm, energy_max, en
     # DICT 5: Density dict
     density_gcm3_dict = _functions.get_density_dict(elements)
 
+    # DICT 6: Stoichiometric ratio
+    # if compound_boo == 'Y':
+    #     # If input is compound, input formula follows the stoichimetric ratios
+    #     ele_at_ratio_dict = {}
+    #     for el in elements:
+    #         ele_at_ratio_dict[el] = formula_dict[el] / sum_ratios
+    # else:
+        # If input is NOT compound, so the input are stack of elements,
+        # stoichimetric ratios need to be calculated based on density and thickness
+    ele_at_ratio_dict = _functions.ele_ratio_dict(elements, thick_cm_dict, density_gcm3_dict, molar_mass_dict)
+
     # # Update DICT 3 & 4 & 5: isotopic ratio changes lead to |Density| & |Molar mass| changes
     # if enrichment_boo == 'Y':
     #     # Update isotope at.% ratio dict
@@ -293,7 +304,7 @@ def get_tot_trans_for_single_ele(_input_ele_str, _input_thick_mm, energy_max, en
         # iso_ratio_array = np.array(iso_ratio_list)
         # iso_mass_list = list(dict.values(iso_mass_dicts[el]))
         # iso_mass_array = np.array(iso_mass_list)
-        ele_at_ratio = formula_dict[el] / sum_ratios
+        # ele_at_ratio = formula_dict[el] / sum_ratios
 
         # Get sigma related terms
         file_names = _functions.get_file_path(_database, el)
@@ -304,7 +315,7 @@ def get_tot_trans_for_single_ele(_input_ele_str, _input_thick_mm, energy_max, en
                                    energy_max,
                                    iso_ratio_list,
                                    sub_x,
-                                   ele_at_ratio)
+                                   ele_at_ratio_dict[el])
         # Two level dict of isotopic array of (L * sigma * iso_ratio * ele_ratio)
         # sigma_iso_ele_l_eleisodict[el] = sigma_iso_ele_l_isodict
         # One level dict of elemental array of (L * sigma * iso_ratio * ele_ratio)

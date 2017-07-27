@@ -249,9 +249,21 @@ def get_sigma_term(_input_ele_str, energy_max, energy_min, energy_sub):
     # DICT 5: Density dict
     density_gcm3_dict = _functions.get_density_dict(elements)
 
+    # DICT 6: Stoichiometric ratio
+    # if compound_boo == 'Y':
+    #     # If input is compound, input formula follows the stoichimetric ratios
+    #     ele_at_ratio_dict = {}
+    #     for el in elements:
+    #         ele_at_ratio_dict[el] = formula_dict[el] / sum_ratios
+    # else:
+        # If input is NOT compound, so the input are stack of elements,
+        # stoichimetric ratios need to be calculated based on density and thickness
+    # ele_at_ratio_dict = _functions.ele_ratio_dict(elements, thick_cm_dict, density_gcm3_dict, molar_mass_dict)
+
+    # print('Thickness (cm): ', thick_cm_dict)
     print('Density (g/cm^3): ', density_gcm3_dict)
-    print('Isotopic ratio (at.%)', iso_ratio_dicts)
     print('Molar weight (g/mol): ', molar_mass_dict)
+    print('Isotopic ratio (at.%): ', iso_ratio_dicts)
 
     '''For plotting the database'''
     sigma_iso_ele_eleisodict = {}  # For transmission calculation at isotope level
@@ -263,7 +275,7 @@ def get_sigma_term(_input_ele_str, energy_max, energy_min, energy_sub):
     for el in elements:
         # isotopes_list = list(dict.keys(iso_ratio_dicts[el]))
         iso_ratio_list = list(dict.values(iso_ratio_dicts[el]))
-        ele_at_ratio = formula_dict[el] / sum_ratios
+        # ele_at_ratio = formula_dict[el] / sum_ratios
 
         # Get sigma related terms
         file_names = _functions.get_file_path(_database, el)

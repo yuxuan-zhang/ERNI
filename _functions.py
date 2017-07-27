@@ -6,7 +6,9 @@ import os
 import glob
 import pandas as pd
 
-
+'''
+Energy, wavelength and time conversions
+'''
 def ev2lamda(energy_ev):  # function to convert energy in eV to angstrom
     energy_miliev = energy_ev * 1000
     lamda = np.sqrt(81.787/energy_miliev)

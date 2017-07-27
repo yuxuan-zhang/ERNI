@@ -5,7 +5,7 @@ import pandas as pd
 
 '''Describe your sample: '''
 # Input sample name or names as str, case sensitive
-_input_formula = 'UO'  # input('Please input the chemicals? ')
+_input_formula = 'AgCo'  # input('Please input the chemicals? ')
 _input_thick_mm = 0.025  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
 _input_thick_cm = _input_thick_mm/10
 _database = 'ENDF_VIII'
@@ -38,6 +38,7 @@ _trans_y_axis = 'N'  # 1 means plot y-axis as transmission
 _plot_each_ele_contribution = 'Y'  # 1 means plot each element's contribution
 _plot_each_iso_contribution = 'N'  # 1 means plot each isotope's contribution
 _plot_mixed = 'Y'  # 1 means plot mixed resonance
+
 '''Export to clipboard for Excel or DataGraph?'''
 _export_to_clipboard_boo = 'N'
 
@@ -75,7 +76,7 @@ iso_ratio_dicts = _functions.get_iso_ratio_dicts_quick(elements, isotope_dict)
 density_gcm3_dict = _functions.get_density_dict(elements)
 
 
-# Update DICT 2: isotopic ratio changes lead to |Density| & |Molar mass| changes
+# Update DICT 1: isotopic ratio changes lead to |Density| & |Molar mass| changes
 if compound_boo == 'N':
     if special_thick_boo == 'Y':
         thick_cm_dict = _plot_functions.modify_thick_cm_dict_by_input(thick_cm_dict, special_thick_element_str, special_thick_cm_list)
@@ -113,25 +114,17 @@ else:
 print('Thickness (cm): ', thick_cm_dict)
 print('Density (g/cm^3): ', density_gcm3_dict)
 print('Molar weight (g/mol): ', molar_mass_dict)
-print('Elemental ratio (at.%): ', ele_at_ratio_dict)
+print('Stoichiometric ratio (at.%): ', ele_at_ratio_dict)
 print('Isotopic ratio (at.%): ', iso_ratio_dicts)
 
 
 '''For plotting the database'''
 sigma_iso_ele_eleisodict = {}  # For transmission calculation at isotope level
 sigma_iso_ele_sum_eledict = {}  # For transmission calculation at element level
-# sigma_iso_ele_sum_l_eledict = {}
-# sigma_iso_ele_l_eleisodict = {}
 df_raw_dict = {}  # Raw sigma data for elements and isotopes
-# atoms_per_cm3_dict = {}
 
 for el in elements:
-    # isotopes_list = list(dict.keys(iso_ratio_dicts[el]))
     iso_ratio_list = list(dict.values(iso_ratio_dicts[el]))
-    # iso_ratio_array = np.array(iso_ratio_list)
-    # iso_mass_list = list(dict.values(iso_mass_dicts[el]))
-    # iso_mass_array = np.array(iso_mass_list)
-
     # Get sigma related terms
     file_names = _functions.get_file_path(_database, el)
     x_energy, sigma_iso_ele_isodict, sigma_iso_ele_sum, df_raw_dict[el] \
@@ -142,11 +135,6 @@ for el in elements:
                                                iso_ratio_list,
                                                sub_x,
                                                ele_at_ratio_dict[el])
-    # Two level dict of isotopic array of (L * sigma * iso_ratio * ele_ratio)
-    # sigma_iso_ele_l_eleisodict[el] = sigma_iso_ele_l_isodict
-    # One level dict of elemental array of (L * sigma * iso_ratio * ele_ratio)
-    # sigma_iso_ele_sum_l_eledict[el] = sigma_iso_ele_sum * thick_cm_dict[el]
-
     # Two level dict of isotopic array of (sigma * iso_ratio * ele_ratio)
     sigma_iso_ele_eleisodict[el] = sigma_iso_ele_isodict
     # One level dict of elemental array of (sigma * iso_ratio * ele_ratio)
@@ -171,13 +159,8 @@ else:
                                                           molar_mass_dict)
 
 # Get the tot transmission for all
-# yi_values_l = list(dict.values(sigma_iso_ele_sum_l_eledict))
-# yi_values_l_sum = sum(yi_values_l)
-# # sum of (sigma * ele_ratio * iso_ratio * l)
 yi_values = list(dict.values(sigma_iso_ele_sum_eledict))
 yi_values_sum = sum(yi_values)
-# sum of (sigma * ele_ratio * iso_ratio)
-# print(yi_values)
 trans_sum = _functions.sig_l_2trans_quick(mixed_l_n_avo, yi_values_sum)
 y_trans_tot = trans_sum
 
