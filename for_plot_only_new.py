@@ -2,6 +2,8 @@ import _plot_functions
 import _functions
 import numpy as np
 import pandas as pd
+import pprint
+
 
 '''Describe your sample: '''
 # Input sample name or names as str, case sensitive
@@ -115,7 +117,8 @@ print('Thickness (cm): ', thick_cm_dict)
 print('Density (g/cm^3): ', density_gcm3_dict)
 print('Molar weight (g/mol): ', molar_mass_dict)
 print('Stoichiometric ratio (at.%): ', ele_at_ratio_dict)
-print('Isotopic ratio (at.%): ', iso_ratio_dicts)
+print('Isotopic ratio (at.%): ')
+pprint.pprint(iso_ratio_dicts)
 
 
 '''For plotting the database'''

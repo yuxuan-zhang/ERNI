@@ -371,3 +371,49 @@ def get_spectra_slice(_filename, time_lamda_ev_axis, delay_us, source_to_detecto
         return ev_array
     if time_lamda_ev_axis == 'lamda':
         return time_array
+
+
+def get_sigma(isotopes, file_names, energy_min, energy_max):
+    # Transmission calculation of summed and separated contributions by each isotopes
+    df = pd.DataFrame()
+    df_raw = pd.DataFrame()
+    # sigma_iso_ele_isodict = {}
+    # sigma_iso_ele_l_isodict = {}
+    # thick_cm = thick_mm/10
+    # sigma_iso_ele_sum = 0.
+    # sigma_iso_ele_l_sum = 0.
+    # iso_at_ratio = iso_ratio_list
+    for i, iso in enumerate(isotopes):
+        # Read database .csv file
+        df = pd.read_csv(file_names[i], header=1)
+        # Drop rows beyond range
+        df = df.drop(df[df.E_eV < energy_min].index)  # drop rows beyond range
+        df = df.drop(df[df.E_eV > energy_max].index)  # drop rows beyond range
+        df = df.reset_index(drop=True)  # Reset index after dropping values
+        # print(df.head())
+        # print(df.tail())
+        '''
+        Attention!!!
+        The drop here not works perfect since all the data not at the same intervals.
+        df1 ends at 4999 and df2 might end at 5000. 
+        This will affect the accuracy of the summation performed later. 
+        '''
+        # # Spline x-axis and y-axis for transmission calculation
+        # x_energy = np.linspace(df['E_eV'].min(), df['E_eV'].max(), sub_x)
+        # y_spline = interpolate.interp1d(x=df['E_eV'], y=df['Sig_b'], kind='linear')
+        # y_i = y_spline(x_energy)
+        # sigma_b = y_i
+
+        """
+        Attention:
+        The following part is for producing df_raw of all isotopes for future reference
+        """
+        # Create a new DataFrame including all isotopic data
+        # within the selected energy range
+        first_col = iso + ', E_eV'
+        second_col = iso + ', Sig_b'
+        df.rename(columns={'E_eV': first_col, 'Sig_b': second_col}, inplace=True)
+        df_raw = pd.concat([df_raw, df], axis=1)
+
+    return x_energy, sigma_iso_ele_isodict, sigma_iso_ele_sum, df_raw
+

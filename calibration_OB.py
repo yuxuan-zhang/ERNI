@@ -15,7 +15,7 @@ import scipy.optimize
 import scipy.signal
 
 # Input sample name or names as str, case sensitive
-_input_ele_str = 'Hg'  # input('Please input the chemicals? ')
+_input_ele_str = 'Ag'  # input('Please input the chemicals? ')
 _input_thick_mm = 0.025  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
 _database = 'ENDF_VIII'
 energy_max = 800  # max incident energy in eV
@@ -33,8 +33,8 @@ print('x_ideal_peak: ', ideal_x_index)
 # peaks_ind = pku.peak.indexes(y_attenu_tot, min_dist=50)
 # print(peaks_ind)
 # print('y_ideal_peak: ', ideal_y_index)
-# plt.plot(x_energy, y_attenu_tot, 'b-', label=_input_ele_str+'_ideal')
-# plt.plot(x_energy[ideal_y_index], y_attenu_tot[ideal_y_index], 'bo', label='peak_ideal')
+plt.plot(x_energy, y_attenu_tot, 'b-', label=_input_ele_str+'_ideal')
+plt.plot(x_energy[ideal_y_index], y_attenu_tot[ideal_y_index], 'bo', label='peak_ideal')
 
 
 # Experiment
