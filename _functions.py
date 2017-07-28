@@ -303,6 +303,20 @@ def get_normalized_data_range(_filename, range_min, range_max):
     return normalized_array
 
 
+def get_ob_range(_filename, range_min, range_max):
+    df = pd.read_csv(_filename, header=None, skiprows=1)
+    data_array = np.array(df[1])
+    data = data_array[:int(len(data_array)/2)]
+    ob = data_array[int(len(data_array)/2):]
+    ob = ob[range_min:range_max]
+    ob = ob[::-1]
+    # normalized_array = data/ob
+    # normalized_array = normalized_array[range_min:range_max]
+    # normalized_array = normalized_array[::-1]  # Flip array from descending to normal
+    # OB at the end of 2773
+    return ob
+
+
 def get_spectra_range(_filename, delay_us, source_to_detector_cm, range_min, range_max, time_lamda_ev_axis='eV'):
     """
     Get spectra file and convert time to wavelength or energy.

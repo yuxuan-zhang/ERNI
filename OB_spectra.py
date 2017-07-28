@@ -5,7 +5,9 @@ import _functions
 
 # Parameters
 source_to_detector_cm = 1612.3278721983177  # cm
-delay_ms = 0.00299  # ms
+delay_ms = -12.112494119089204
+# source_to_detector_cm = 1612.3278721983177  # cm
+# delay_ms = 0.00299  # ms
 delay_us = delay_ms * 1000
 
 data_20 = pd.read_csv('data/data_spectra_20.txt', sep='\t', header=None)
@@ -26,7 +28,7 @@ df_all['ob_delme'] = ob_delme[1]*4
 df_all['ob_Cd'] = ob_Cd[1]*4
 df_all.set_index(df_all['eV'], inplace=True)
 
-_name = 'foil6'
+_name = 'foil3'
 data_path = 'data/' + _name + '.csv'
 spectra_path = 'data/spectra.txt'
 x_data_array = _functions.get_spectra(spectra_path, delay_us, source_to_detector_cm, time_lamda_ev_axis='time')
@@ -42,24 +44,24 @@ df_all['foil6_data'] = data
 
 
 df_all.plot.line()
-plt.xlim(0, 0.01)
+plt.xlim(0, 200)
 plt.legend(loc='best')
 plt.show()
 
 
-df_april = pd.DataFrame()
-df_22 = pd.read_csv('data/Image022_Spectra.txt', sep='\t', header=None)
-df_23 = pd.read_csv('data/Image023_Spectra.txt', sep='\t', header=None)
-df_april['eV'] = _functions.time2ev(df_22[0], delay_ms, source_to_detector_cm)
-df_april['lamda'] = _functions.time2lamda(df_22[0], delay_ms, source_to_detector_cm)
-df_april['time'] = df_22[0]
-df_april['OB_22'] = df_22[1]
-df_april['OB_23'] = df_23[1]
-df_april.set_index(df_april['lamda'], inplace=True)
-print(df_april.head())
-df_april.plot.line()
-# plt.xlim(-0.01, 300)
-# plt.ylim(-0.01, 150000)
-plt.legend(loc='best')
-plt.show()
+# df_april = pd.DataFrame()
+# df_22 = pd.read_csv('data/Image022_Spectra.txt', sep='\t', header=None)
+# df_23 = pd.read_csv('data/Image023_Spectra.txt', sep='\t', header=None)
+# df_april['eV'] = _functions.time2ev(df_22[0], delay_ms, source_to_detector_cm)
+# df_april['lamda'] = _functions.time2lamda(df_22[0], delay_ms, source_to_detector_cm)
+# df_april['time'] = df_22[0]
+# df_april['OB_22'] = df_22[1]
+# df_april['OB_23'] = df_23[1]
+# df_april.set_index(df_april['lamda'], inplace=True)
+# print(df_april.head())
+# df_april.plot.line()
+# # plt.xlim(-0.01, 300)
+# # plt.ylim(-0.01, 150000)
+# plt.legend(loc='best')
+# plt.show()
 

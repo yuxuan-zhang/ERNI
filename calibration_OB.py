@@ -12,12 +12,14 @@ from periodictable.constants import avogadro_number
 import peakutils as pku
 # from scipy.optimize import leastsq
 import scipy.optimize
+import scipy.signal
+
 # Input sample name or names as str, case sensitive
-_input_ele_str = 'Cd'  # input('Please input the chemicals? ')
+_input_ele_str = 'Hg'  # input('Please input the chemicals? ')
 _input_thick_mm = 0.025  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
 _database = 'ENDF_VIII'
-energy_max = 400  # max incident energy in eV
-energy_min = 0  # min incident energy in eV
+energy_max = 800  # max incident energy in eV
+energy_min = 10  # min incident energy in eV
 energy_sub = 100
 
 # Ideal
@@ -36,32 +38,27 @@ print('x_ideal_peak: ', ideal_x_index)
 
 
 # Experiment
-source_to_detector_cm = 1643.18  # cm
-delay_ms = -12.653#-12.145 #4.5 - 16.61295379  # ms
+source_to_detector_cm = 1612.3278721983177  # cm
+delay_ms = -12.112494119089204#-12.145 #4.5 - 16.61295379  # ms
 delay_us = delay_ms * 1000
-range_min = 0
-range_max = 2773
+range_min = 300
+range_max = 2000
 _slice = range_min
 energy_min = 0
 time_lamda_ev_axis = 'eV'
 _name = 'foil7'
 data_path = 'data/' + _name + '.csv'
-spectra_path = 'data/OB_image18_pectra.txt'
+spectra_path = 'data/spectra.txt'
 x_data_array = _functions.get_spectra_range(spectra_path, delay_us,
                                             source_to_detector_cm, range_min, range_max)
 # print('x_exp: ', x_data_array)
-# y_data_array = 1 - _functions.get_normalized_data_range(data_path, range_min, range_max)/4.25
+y_data_array = _functions.get_ob_range(data_path, range_min, range_max)
+# y_data_array = scipy.signal.detrend(y_data_array)
 # print('y_exp: ', y_data_array)
-df_ob = pd.read_csv('data/OB_image18_pectra.txt', sep='\t', header=None)
-df_data = pd.DataFrame()
-df_data['x_time'] = df_ob[0]
-df_data['counts'] = df_ob[1]
-
-ob_data = df_ob[1]
-# exp_y_index = pku.indexes(ob_data, thres=0.12/max(ob_data), min_dist=7)
-# exp_x_index = pku.interpolate(x_data_array, ob_data, ind=exp_y_index)
-# print('x_exp_peak: ', exp_x_index)
-# print('Equal size: ', len(ideal_x_index) == len(exp_x_index))
+exp_y_index = pku.indexes(y_data_array, thres=0.12/max(y_data_array), min_dist=7)
+exp_x_index = pku.interpolate(x_data_array, y_data_array, ind=exp_y_index)
+print('x_exp_peak: ', exp_x_index)
+print('Equal size: ', len(ideal_x_index) == len(exp_x_index))
 # baseline = pku.baseline(y_data_array)
 # print(baseline)
 # print('y_exp_peak: ', exp_y_index)
@@ -72,22 +69,21 @@ ob_data = df_ob[1]
 # df2 = pd.DataFrame()
 # df2['Ideal_x'] = x_energy
 # df2['Ideal_y'] = y_attenu_tot
-# df_data.to_clipboard(excel=True)
 
-# params = Parameters()
-# params.add('source_to_detector_cm', value=source_to_detector_cm)
-# params.add('delay_us', value=delay_us)
-#
+params = Parameters()
+params.add('source_to_detector_cm', value=source_to_detector_cm)
+params.add('delay_us', value=delay_us)
+
 # x_gap = _fit_functions.peak_x_gap(params, ideal_x_index, y_data_array)
 # print('x_gap:', x_gap)
-#
+
 # out = minimize(_fit_functions.peak_x_gap, params, method='leastsq', args=(ideal_x_index, y_data_array))
-# # out = scipy.optimize.minimize(_fit_funtions.peak_x_gap_scipy, delay_us, method='leastsq', args=(ideal_x_index, y_data_array))
+# out = scipy.optimize.minimize(_fit_funtions.peak_x_gap_scipy, delay_us, method='leastsq', args=(ideal_x_index, y_data_array))
 # print(out.__dict__)
 
-plt.plot(x_data_array, ob_data, 'r-', label=_name)
-# plt.plot(x_data_array[exp_y_index], ob_data[exp_y_index], 'go', label='peak_exp')
-plt.title('Peak estimation')
+plt.plot(x_data_array, y_data_array, 'r-', label='OB')
+# plt.plot(x_data_array[exp_y_index], y_data_array[exp_y_index], 'go', label='peak_exp')
+plt.title('OB analysis of foil stack')
 
 # plt.ylim(-0.01, 1.01)
 plt.xlim(0, energy_max)

@@ -71,12 +71,12 @@ params = Parameters()
 params.add('source_to_detector_cm', value=source_to_detector_cm)
 params.add('delay_us', value=delay_us)
 
-x_gap = _fit_functions.peak_x_gap(params, ideal_x_index, y_data_array)
-print('x_gap:', x_gap)
+# x_gap = _fit_functions.peak_x_gap(params, ideal_x_index, y_data_array)
+# print('x_gap:', x_gap)
 
-out = minimize(_fit_functions.peak_x_gap, params, method='leastsq', args=(ideal_x_index, y_data_array))
+# out = minimize(_fit_functions.peak_x_gap, params, method='leastsq', args=(ideal_x_index, y_data_array))
 # out = scipy.optimize.minimize(_fit_funtions.peak_x_gap_scipy, delay_us, method='leastsq', args=(ideal_x_index, y_data_array))
-print(out.__dict__)
+# print(out.__dict__)
 
 plt.plot(x_data_array, y_data_array, 'r-', label=_name)
 plt.plot(x_data_array[exp_y_index], y_data_array[exp_y_index], 'go', label='peak_exp')
