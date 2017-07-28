@@ -2,11 +2,12 @@ import _plot_functions
 import _functions
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 '''Describe your sample: '''
 # Input sample name or names as str, case sensitive
-_input_formula = 'UO3'  # input('Please input the chemicals? ')
-_input_thick_mm = 0.26  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
+_input_formula = 'UGdO3'  # input('Please input the chemicals? ')
+_input_thick_mm = 3  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
 _input_thick_cm = _input_thick_mm/10
 _database = 'ENDF_VIII'
 energy_max = 300  # max incident energy in eV
@@ -22,7 +23,7 @@ special_thick_element_str = str
 special_thick_mm_list = []
 special_thick_cm_list = np.array(special_thick_mm_list)/10
 # Enriched isotope ratio input:
-enrichment_boo = 'Y'  # Isotopic enriched or depleted: Y/N?
+enrichment_boo = 'N'  # Isotopic enriched or depleted: Y/N?
 enriched_element_str = 'U'
 input_ratio_dict = {'U': [0., 0., .15, .85]}
                     # 'O': [1., 0., 0.]}  #{'233-U': 0., '234-U': 0., '235-U': 0.15, '238-U': 0.85}}
@@ -163,6 +164,7 @@ if compound_boo == 'Y':
                                                    compound_density,
                                                    molar_mass_dict,
                                                    ele_at_ratio_dict)
+    print('Compound density (g/cm^3): ', compound_density)
 else:
     # Stacked foils or single foil
     mixed_l_n_avo = _plot_functions.l_x_n_multi_ele_stack(elements,
@@ -207,6 +209,7 @@ if _plot_each_iso_contribution == 'Y':
 
 # Plot the theoretical neutron resonance
 if _plot_or_not == 'Y':
+    # plt.title('Sphere with 0.3 mm in dia.')
     _plot_functions.plot_database(_energy_x_axis,
                                   _trans_y_axis,
                                   _plot_mixed,
