@@ -34,8 +34,8 @@ def peak_x_gap(params, ideal_x_index, y_data_array):
 def peak_y_gap(params, ideal_x_index, y_data_array):
     # Unpack Parameters:
     parvals = params.valuesdict()
-    source_to_detector_cm = parvals['source_to_detector_cm']
-    delay_us = parvals['delay_us']
+    thick_cm_dict = parvals['thick_cm_dict']
+    density_gcm3_dict = parvals['density_gcm3_dict']
     # Model:
 
 

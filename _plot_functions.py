@@ -59,6 +59,73 @@ def get_xy_from_database(isotopes, file_names, energy_min, energy_max, iso_ratio
     return x_energy, sigma_iso_ele_isodict, sigma_iso_ele_sum, df_raw
 
 
+def get_xy_from_database_2(isotopes, file_names, energy_min, energy_max, iso_ratio_list, sub_x, ele_at_ratio):
+    # Transmission calculation of summed and separated contributions by each isotopes
+    df = pd.DataFrame()
+    df_raw = pd.DataFrame()
+    sigma_iso_ele_isodict = {}
+    # sigma_iso_ele_l_isodict = {}
+    # thick_cm = thick_mm/10
+    sigma_iso_ele_sum = 0.
+    # sigma_iso_ele_l_sum = 0.
+    iso_at_ratio = iso_ratio_list
+    for i, iso in enumerate(isotopes):
+        # Read database .csv file
+        df = pd.read_csv(file_names[i], header=1)
+        # Drop rows beyond range
+        df = df.drop(df[df.E_eV < energy_min].index)  # drop rows beyond range
+        df = df.drop(df[df.E_eV > energy_max].index)  # drop rows beyond range
+        df = df.reset_index(drop=True)  # Reset index after dropping values
+        # print(df.head())
+        # print(df.tail())
+        '''
+        Attention!!!
+        The drop here not works perfect since all the data not at the same intervals.
+        df1 ends at 4999 and df2 might end at 5000. 
+        This will affect the accuracy of the summation performed later. 
+        '''
+        # Spline x-axis and y-axis for transmission calculation
+        x_energy = np.linspace(df['E_eV'].min(), df['E_eV'].max(), sub_x)
+        y_spline = interpolate.interp1d(x=df['E_eV'], y=df['Sig_b'], kind='linear')
+        y_i = y_spline(x_energy)
+        sigma_b = y_i
+        # y_i_sum = y_i_sum + y_i * iso_abundance[i] * ele_at_ratio
+        sigma_iso_ele_isodict[iso] = sigma_b * iso_at_ratio[i] * ele_at_ratio
+        # sigma_iso_ele_l_isodict[iso] = sigma_iso_ele_isodict[iso] * thick_cm
+        sigma_iso_ele_sum = sigma_iso_ele_sum + sigma_b * iso_at_ratio[i] * ele_at_ratio
+        # sigma_iso_ele_l_sum = sigma_iso_ele_l_sum + sigma_b * iso_at_ratio[i] * ele_at_ratio * thick_cm
+
+        """
+        Attention:
+        The following part is for producing df_raw of all isotopes for future reference
+        """
+        # Create a new DataFrame including all isotopic data
+        # within the selected energy range
+        first_col = iso + ', E_eV'
+        second_col = iso + ', Sig_b'
+        df.rename(columns={'E_eV': first_col, 'Sig_b': second_col}, inplace=True)
+        df_raw = pd.concat([df_raw, df], axis=1)
+
+    return x_energy, sigma_iso_ele_isodict, sigma_iso_ele_sum, df_raw
+
+
+def l_x_n_multi_ele_stack_2(elements, thick_cm_dict, density_gcm3_dict, molar_mass_dict):
+    l_x_n = 0.
+    for ele in elements:
+        l_x_n = l_x_n + thick_cm_dict[ele] * density_gcm3_dict[ele] / molar_mass_dict[ele]
+    l_n_avo = l_x_n * pt.constants.avogadro_number
+    print('Thickness(l) x atoms_per_cm^3(N) : ', l_n_avo)
+    return l_n_avo
+
+
+def l_x_n_compound_2(elements, thick_cm, compound_density, molar_mass_dict, ele_at_ratio_dict):
+    molar_mass_sum = 0.
+    for ele in elements:
+        molar_mass_sum = molar_mass_sum + molar_mass_dict[ele] * ele_at_ratio_dict[ele]
+    l_x_n = thick_cm * compound_density / molar_mass_sum
+    l_n_avo = l_x_n * pt.constants.avogadro_number
+    print('Thickness(l) x atoms_per_cm^3(N) : ', l_n_avo)
+    return l_n_avo
 # def atoms_per_cm3(elements, thick_cm_dict, density_gcm3_dict, molar_mass_dict):
 #     n = 0.
 #     for ele in elements:

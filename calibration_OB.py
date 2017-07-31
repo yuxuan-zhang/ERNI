@@ -15,7 +15,7 @@ import scipy.optimize
 import scipy.signal
 
 # Input sample name or names as str, case sensitive
-_input_ele_str = 'Ag'  # input('Please input the chemicals? ')
+_input_ele_str = 'B'  # input('Please input the chemicals? ')
 _input_thick_mm = 0.025  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
 _database = 'ENDF_VIII'
 energy_max = 800  # max incident energy in eV
