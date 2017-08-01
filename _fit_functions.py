@@ -189,6 +189,54 @@ def get_xy_to_fit(isotopes, file_names, energy_min, energy_max, iso_abundance, s
     return x_energy, sigma_iso_ele_isodict, sigma_iso_ele_sum, df_raw
 
 
+def get_sigma(isotopes, file_names, energy_min, energy_max, sub_x):
+    # Transmission calculation of summed and separated contributions by each isotopes
+    df_raw = pd.DataFrame()
+    df_inter = pd.DataFrame()
+    # sigma_iso_ele_isodict = {}
+    # sigma_iso_ele_l_isodict = {}
+    # thick_cm = thick_mm/10
+    # sigma_iso_ele_sum = 0.
+    # sigma_iso_ele_l_sum = 0.
+    # iso_at_ratio = iso_ratio_list
+    sigma_dict = {}
+    for i, iso in enumerate(isotopes):
+        # Read database .csv file
+        df = pd.read_csv(file_names[i], header=1)
+        # Drop rows beyond range
+        df = df.drop(df[df.E_eV < energy_min].index)  # drop rows beyond range
+        df = df.drop(df[df.E_eV > energy_max].index)  # drop rows beyond range
+        df = df.reset_index(drop=True)  # Reset index after dropping values
+        # print(df.head())
+        # print(df.tail())
+        '''
+        Attention!!!
+        The drop here not works perfect since all the data not at the same intervals.
+        df1 ends at 4999 and df2 might end at 5000. 
+        This will affect the accuracy of the summation performed later. 
+        '''
+        # Spline x-axis and y-axis for transmission calculation
+        x_energy = np.linspace(df['E_eV'].min(), df['E_eV'].max(), sub_x)
+        y_spline = interpolate.interp1d(x=df['E_eV'], y=df['Sig_b'], kind='linear')
+        y_i = y_spline(x_energy)
+        sigma_b = y_i
+        df_inter['E_eV'] = x_energy
+        """
+        Attention:
+        The following part is for producing df_raw of all isotopes for future reference
+        """
+        # Create a new DataFrame including all isotopic data
+        # within the selected energy range
+        first_col = iso + ', E_eV'
+        second_col = iso + ', Sig_b'
+        sigma_dict[iso] = sigma_b
+        df.rename(columns={'E_eV': first_col, 'Sig_b': second_col}, inplace=True)
+        df_raw = pd.concat([df_raw, df], axis=1)
+        df_inter[second_col] = sigma_b
+
+    return x_energy, sigma_dict
+
+
 # def get_sigma_term(_input_ele_str, energy_max, energy_min, energy_sub):
 #     # Input sample name or names as str, case sensitive
 #     # _input_formula = 'AgCo'  # input('Please input the chemicals? ')
