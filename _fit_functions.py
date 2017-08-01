@@ -9,6 +9,26 @@ import _functions
 from scipy.interpolate import *
 import peakutils as pku
 import _plot_functions
+from lmfit import minimize, Parameters
+
+
+def def_params_from_dict(_dict, _dict_name_str):
+    dict_key = _functions.dict_key_list(_dict)
+    dict_value = _functions.dict_value_list(_dict)
+    params = Parameters()
+    for i in range(len(dict_key)):
+        param_name = _dict_name_str + dict_key[i]
+        params.add(param_name, value=dict_value[i])
+    return params
+
+
+def add_params_from_doct(params, _dict, _dict_name_str):
+    dict_key = _functions.dict_key_list(_dict)
+    dict_value = _functions.dict_value_list(_dict)
+    for i in range(len(dict_key)):
+        param_name = _dict_name_str + dict_key[i]
+        params.add(param_name, value=dict_value[i])
+    return params
 
 
 def peak_x_gap(params, ideal_x_index, y_data_array):
@@ -36,6 +56,8 @@ def peak_y_gap(params, ideal_x_index, y_data_array):
     parvals = params.valuesdict()
     thick_cm_dict = parvals['thick_cm_dict']
     density_gcm3_dict = parvals['density_gcm3_dict']
+    iso_ratio_dicts = parvals['iso_ratio_dicts']
+
     # Model:
 
 
@@ -236,7 +258,7 @@ def get_sigma(isotopes, file_names, energy_min, energy_max, sub_x):
 
     return x_energy, sigma_dict
 
-
+# def get_y_dict():
 # def get_sigma_term(_input_ele_str, energy_max, energy_min, energy_sub):
 #     # Input sample name or names as str, case sensitive
 #     # _input_formula = 'AgCo'  # input('Please input the chemicals? ')

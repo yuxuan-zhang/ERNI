@@ -191,9 +191,9 @@ else:
     # Convert transmission to attenuation
     y_sum = 1 - y_sum
 
-print(y_sum)
-print(y_ele_dict)
-print(y_all_dict)
+# print(y_sum)
+# print(y_ele_dict)
+# print(y_all_dict)
 
 """Plot the theoretical neutron resonance"""
 if _plot_or_not == 'Y':

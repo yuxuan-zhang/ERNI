@@ -30,24 +30,40 @@ formula_dict = _functions.input2formula(_input_ele_str)
 elements = _functions.dict_key_list(formula_dict)
 ratios = _functions.dict_value_list(formula_dict)
 sum_ratios = sum(ratios)
-thick_cm_dict = _functions.dict_value_by_key(elements, thick_cm_list)
-# stoichiometric_ratio = _functions.ele_ratio_dict(elements, thick_cm_dict, density_gcm3_dict, molar_mass_dict)
 isotope_dict = _functions.get_isotope_dicts(_database, elements)
+# DICT 1: Thickness dict with option for modification
+thick_cm_dict = _functions.dict_value_by_key(elements, thick_cm_list)
+# DICT 2: Isotopic mass dict
+iso_mass_dicts = _functions.get_iso_mass_dicts_quick(elements, isotope_dict)
+# Dict 3: Molar mass dict
+molar_mass_dict = _functions.get_molar_mass_dict(elements)
+# DICT 4: Isotope at.% dict with option for modification
+iso_ratio_dicts = _functions.get_iso_ratio_dicts_quick(elements, isotope_dict)
+# DICT 5: Density dict
+density_gcm3_dict = _functions.get_density_dict(elements)
+
+# Get sigma dictionary
 sigma_dicts = {}
 for ele in elements:
     file_names = _functions.get_file_path(_database, ele)
-    x_energy, sigma_dicts[ele] = _functions.get_sigma(isotope_dict[ele],
-                                                      file_names,
-                                                      energy_min,
-                                                      energy_max,
-                                                      energy_sub)
+    x_energy, sigma_dicts[ele] = _fit_functions.get_sigma(isotope_dict[ele],
+                                                          file_names,
+                                                          energy_min,
+                                                          energy_max,
+                                                          energy_sub)
 pprint.pprint(sigma_dicts)
 print(x_energy)
 
-params = Parameters()
-# params.add('thick_cm_dict', value=thick_cm_dict)
-# params.add('density_gcm3_dict', value=density_gcm3_dict)
+'''Get atoms_per_cm^3 for each elements'''
+atoms_per_cm3_dict = {}
+for ele in elements:
+    atoms_per_cm3_dict[ele] = avogadro_number * density_gcm3_dict[ele]/molar_mass_dict[ele]
+print('Number of atoms per unit volume (#/cm^3) : ', atoms_per_cm3_dict)
 
+params = _fit_functions.def_params_from_dict(thick_cm_dict, 'thick_cm_')
+print(params)
+params = _fit_functions.add_params_from_doct(params, density_gcm3_dict, 'density_gcm3_')
+print(params)
 
 # thick_cm_dict = _functions.dict_value_by_key(elements, thick_cm_list)
 # print(elements)
