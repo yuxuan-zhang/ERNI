@@ -70,9 +70,7 @@ def get_isotope_dicts(_database, _element):
     # main_dir = os.path.dirname(os.path.abspath(__file__))
     isotope_dict = {}
     for _each in _element:
-        path = 'data_web/' + _database + '/' + str(_each) + '*.csv'
-        # path = main_dir + '/data_web/' + _database + '/' + _each + '*.csv'
-        file_names = glob.glob(path)
+        file_names = get_file_path(_database, _each)
         isotope_dict_mirror = {}
         for _i, file in enumerate(file_names):
             # Obtain element, z number from the basename
@@ -222,7 +220,7 @@ def create_2d_dict(top_level_name, top_base_dict, value_dict):
 
 
 def get_file_path(_database, _element):
-    path = 'data_web/' + _database + '/' + _element + '*.csv'
+    path = 'data_web/' + _database + '/' + _element + '-*.csv'
     file_names = glob.glob(path)
     return file_names
 
