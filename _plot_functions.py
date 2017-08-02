@@ -154,7 +154,7 @@ def plot_resonance(_energy_x_axis, _trans_y_axis, _plot_mixed, _plot_each_ele_co
     if _plot_mixed == 'Y':
         # Plot total resonance of the samples
         _y_axis = y_sum
-        plt.plot(_x_axis, _y_axis, label=_input_formula)
+        plt.plot(_x_axis, _y_axis, label='Total')
 
     if _plot_each_ele_contribution == 'Y':
         # Plot resonance by elements
