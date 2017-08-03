@@ -12,7 +12,7 @@ iso_num = []
 df = pd.DataFrame()
 df_name = pd.DataFrame()
 
-url = ['',
+url = ['http://www.nndc.bnl.gov/exfor/servlet/X4sGetTabData?datfile=E4R1366_tdat.dat&emin=1e-05&emax=2e%2B07',
        '',
        '',
        '',

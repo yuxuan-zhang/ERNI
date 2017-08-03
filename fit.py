@@ -64,6 +64,8 @@ params = _fit_functions.def_params_from_dict(thick_cm_dict, 'thick_cm_')
 print(params)
 params = _fit_functions.add_params_from_doct(params, density_gcm3_dict, 'density_gcm3_')
 print(params)
+params = _fit_functions.add_params_from_doct(params, atoms_per_cm3_dict, 'atoms_per_cm3_')
+print(params)
 
 # thick_cm_dict = _functions.dict_value_by_key(elements, thick_cm_list)
 # print(elements)

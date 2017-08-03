@@ -8,10 +8,10 @@ from periodictable.constants import avogadro_number
 '''Describe your sample: '''
 # Input sample name or names as str, case sensitive
 _input_formula = 'UO3'  # input('Please input the chemicals? ')
-_input_thick_mm = .26  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
+_input_thick_mm = .3  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
 _input_thick_cm = _input_thick_mm/10
 _database = 'ENDF_VIII'
-energy_max = 800  # max incident energy in eV
+energy_max = 300  # max incident energy in eV
 energy_min = 0  # min incident energy in eV
 energy_sub = 100  # steps used to interpolate database
 sub_x = energy_sub * (energy_max - energy_min)  # steps used to interpolate database

@@ -23,7 +23,7 @@ compound_boo = 'N'  # Compound or single/multi elements foil/stacked foils: Y/N?
 # Thickness input:
 special_thick_boo = 'Y'
 special_thick_element_str = other_ele
-special_thick_mm_list = [10, 10, 10, 10, 10]
+special_thick_mm_list = [20, 20, 20, 20, 20]
 special_thick_cm_list = np.array(special_thick_mm_list)/10
 # Enriched isotope ratio input:
 enrichment_boo = 'Y'  # Isotopic enriched or depleted: Y/N?

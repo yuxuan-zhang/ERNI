@@ -31,6 +31,11 @@ def add_params_from_doct(params, _dict, _dict_name_str):
     return params
 
 
+def sig2trans_quick(_thick_cm, _atoms_per_cm3, _sigma_portion_sum):
+    neutron_transmission = np.exp(-1 * _thick_cm * _atoms_per_cm3 * 1e-24 * _sigma_portion_sum)
+    return neutron_transmission
+
+
 def peak_x_gap(params, ideal_x_index, y_data_array):
     # Unpack Parameters:
     parvals = params.valuesdict()
