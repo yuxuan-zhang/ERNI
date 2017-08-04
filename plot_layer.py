@@ -7,13 +7,13 @@ from periodictable.constants import avogadro_number
 
 '''Describe your sample: '''
 # Input sample name or names as str, case sensitive
-other_ele = ''
-other_ele_ratio = ''
+other_ele = 'B N'
+other_ele_ratio = 'B2N2'
 _input_formula = 'U' + other_ele_ratio  # input('Please input the chemicals? ')
 _input_thick_mm = .26  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
 _input_thick_cm = _input_thick_mm/10
 _database = 'ENDF_VIII'
-energy_max = 800  # max incident energy in eV
+energy_max = 300  # max incident energy in eV
 energy_min = 0  # min incident energy in eV
 energy_sub = 100  # steps used to interpolate database
 sub_x = energy_sub * (energy_max - energy_min)  # steps used to interpolate database
@@ -23,7 +23,7 @@ compound_boo = 'N'  # Compound or single/multi elements foil/stacked foils: Y/N?
 # Thickness input:
 special_thick_boo = 'Y'
 special_thick_element_str = other_ele
-special_thick_mm_list = [10]
+special_thick_mm_list = [10, 10]
 special_thick_cm_list = np.array(special_thick_mm_list)/10
 # Enriched isotope ratio input:
 enrichment_boo = 'Y'  # Isotopic enriched or depleted: Y/N?
@@ -33,8 +33,8 @@ input_ratio_dict = {'U': [0., 0., .15, .85],
                     # 'O': [1., 0., 0.]}  #{'233-U': 0., '234-U': 0., '235-U': 0.15, '238-U': 0.85}}
 # Special density input:
 special_density_boo = 'Y'
-special_density_element_str = 'U'
-special_density_gcm3_list = [.7875]
+special_density_element_str = 'U B N'
+special_density_gcm3_list = [.7875, 2.1, 2.1]
 
 '''How you want the data to be plotted?'''
 _plot_or_not = 'Y'

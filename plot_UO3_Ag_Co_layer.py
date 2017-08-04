@@ -7,8 +7,10 @@ from periodictable.constants import avogadro_number
 
 '''Describe your sample: '''
 # Input sample name or names as str, case sensitive
-_input_formula = 'B'  # input('Please input the chemicals? ')
-_input_thick_mm = 10  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
+other_ele = 'U O'
+other_ele_ratio = 'U2O6'
+_input_formula = 'AgCo' + other_ele_ratio  # input('Please input the chemicals? ')
+_input_thick_mm = .025  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
 _input_thick_cm = _input_thick_mm/10
 _database = 'ENDF_VIII'
 energy_max = 300  # max incident energy in eV
@@ -19,26 +21,25 @@ compound_boo = 'N'  # Compound or single/multi elements foil/stacked foils: Y/N?
 
 '''Input for dict modification in certain cases: '''
 # Thickness input:
-special_thick_boo = 'N'
-special_thick_element_str = 'Ni'
-special_thick_mm_list = [1]
+special_thick_boo = 'Y'
+special_thick_element_str = 'Ag ' + other_ele
+special_thick_mm_list = [0.03, .3, .3]
 special_thick_cm_list = np.array(special_thick_mm_list)/10
 # Enriched isotope ratio input:
-enrichment_boo = 'N'  # Isotopic enriched or depleted: Y/N?
-enriched_element_str = 'B'
-input_ratio_dict = {'U': [0., 0., .15, .85],
-                    'Be': [1],
-                    'B': [1, 0]}
+enrichment_boo = 'Y'  # Isotopic enriched or depleted: Y/N?
+enriched_element_str = 'U Ag'
+input_ratio_dict = {'U': [0., 0., .5, .5],
+                    'Ag': [.1, .9]}
                     # 'O': [1., 0., 0.]}  #{'233-U': 0., '234-U': 0., '235-U': 0.15, '238-U': 0.85}}
 # Special density input:
-special_density_boo = 'N'
-special_density_element_str = 'U'
-special_density_gcm3_list = [.7875]
+special_density_boo = 'Y'
+special_density_element_str = 'U O Co'
+special_density_gcm3_list = [.7875, .7875, 8]
 
 '''How you want the data to be plotted?'''
 _plot_or_not = 'Y'
 _energy_x_axis = 'Y'  # 1 means plot x-axis as energy in eV
-_trans_y_axis = 'N'  # 1 means plot y-axis as transmission
+_trans_y_axis = 'Y'  # 1 means plot y-axis as transmission
 _plot_each_ele_contribution = 'Y'  # 1 means plot each element's contribution
 _plot_each_iso_contribution = 'N'  # 1 means plot each isotope's contribution
 _plot_mixed = 'Y'  # 1 means plot mixed resonance
@@ -133,6 +134,7 @@ for el in elements:
     # One level dict of elemental array of (sigma * iso_ratio)
     sigma_iso_sum_eledict[el] = sigma_iso_sum
     # print(isotope_dict[el])
+
 '''Get atoms_per_cm^3 for each elements'''
 if compound_boo == 'Y':
     # For compound
@@ -161,6 +163,8 @@ else:
     for ele in elements:
         # atoms_per_cm3_dict
         if formula_dict[ele] == 1:
+            print(density_gcm3_dict[ele])
+            print(molar_mass_dict[ele])
             atoms_per_cm3_dict[ele] = avogadro_number * density_gcm3_dict[ele]/molar_mass_dict[ele]
         else:
             atoms_per_cm3_dict[ele] = (avogadro_number * density_gcm3_dict[ele]/molar_mass_times_ratio_sum) * formula_dict[ele]
