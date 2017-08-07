@@ -8,7 +8,7 @@ from periodictable.constants import avogadro_number
 '''Describe your sample: '''
 # Input sample name or names as str, case sensitive
 _input_formula = 'UO3'  # input('Please input the chemicals? ')
-_input_thick_mm = .3  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
+_input_thick_mm = 3  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
 _input_thick_cm = _input_thick_mm/10
 _database = 'ENDF_VIII'
 energy_max = 300  # max incident energy in eV
@@ -20,17 +20,17 @@ compound_boo = 'Y'  # Compound or single/multi elements foil/stacked foils: Y/N?
 '''Input for dict modification in certain cases: '''
 # Thickness input:
 special_thick_boo = 'Y'
-special_thick_element_str = str
+special_thick_element_str = ''
 special_thick_mm_list = []
 special_thick_cm_list = np.array(special_thick_mm_list)/10
 # Enriched isotope ratio input:
-enrichment_boo = 'Y'  # Isotopic enriched or depleted: Y/N?
+enrichment_boo = 'N'  # Isotopic enriched or depleted: Y/N?
 enriched_element_str = 'U'
 input_ratio_dict = {'U': [0., 0., .15, .85]}
                     # 'O': [1., 0., 0.]}  #{'233-U': 0., '234-U': 0., '235-U': 0.15, '238-U': 0.85}}
 # Special density input:
 special_density_boo = 'Y'
-special_density_element_str = str
+special_density_element_str = ''
 special_density_gcm3_list = []
 
 '''How you want the data to be plotted?'''
@@ -100,7 +100,7 @@ if compound_boo == 'N':
 else:
     if special_density_boo == 'Y':
         # Not isolated elements or mixture or compound need density input currently
-        input_tot_density = 0.7875
+        input_tot_density = 1.4
 
 print('Thickness (cm): ', thick_cm_dict)
 print('Density (g/cm^3): ', density_gcm3_dict)
