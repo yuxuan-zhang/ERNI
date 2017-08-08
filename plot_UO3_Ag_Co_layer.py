@@ -3,7 +3,7 @@ import _functions
 import numpy as np
 import pandas as pd
 import pprint
-from periodictable.constants import avogadro_number
+from scipy.constants import Avogadro
 
 '''Describe your sample: '''
 # Input sample name or names as str, case sensitive
@@ -33,13 +33,13 @@ input_ratio_dict = {'U': [0., 0., .5, .5],
                     # 'O': [1., 0., 0.]}  #{'233-U': 0., '234-U': 0., '235-U': 0.15, '238-U': 0.85}}
 # Special density input:
 special_density_boo = 'Y'
-special_density_element_str = 'U O Co'
-special_density_gcm3_list = [.7875, .7875, 8]
+special_density_element_str = 'U O Co Ag'
+special_density_gcm3_list = [.7875, .7875, 8, 5]
 
 '''How you want the data to be plotted?'''
 _plot_or_not = 'Y'
 _energy_x_axis = 'Y'  # 1 means plot x-axis as energy in eV
-_trans_y_axis = 'Y'  # 1 means plot y-axis as transmission
+_trans_y_axis = 'N'  # 1 means plot y-axis as transmission
 _plot_each_ele_contribution = 'Y'  # 1 means plot each element's contribution
 _plot_each_iso_contribution = 'N'  # 1 means plot each isotope's contribution
 _plot_mixed = 'Y'  # 1 means plot mixed resonance
@@ -147,7 +147,7 @@ if compound_boo == 'Y':
     density_within_compound = {}
     for ele in elements:
         density_within_compound[ele] = compound_density * (formula_dict[ele] * molar_mass_dict[ele] / molar_mass_times_ratio_sum)
-        atoms_per_cm3_dict[ele] = avogadro_number * density_within_compound[ele] / molar_mass_dict[ele]
+        atoms_per_cm3_dict[ele] = Avogadro * density_within_compound[ele] / molar_mass_dict[ele]
     print('Number of atoms per unit volume (#/cm^3) : ', atoms_per_cm3_dict)
 else:
     # Stacked foils or single foil
@@ -165,9 +165,9 @@ else:
         if formula_dict[ele] == 1:
             print(density_gcm3_dict[ele])
             print(molar_mass_dict[ele])
-            atoms_per_cm3_dict[ele] = avogadro_number * density_gcm3_dict[ele]/molar_mass_dict[ele]
+            atoms_per_cm3_dict[ele] = Avogadro * density_gcm3_dict[ele]/molar_mass_dict[ele]
         else:
-            atoms_per_cm3_dict[ele] = (avogadro_number * density_gcm3_dict[ele]/molar_mass_times_ratio_sum) * formula_dict[ele]
+            atoms_per_cm3_dict[ele] = (Avogadro * density_gcm3_dict[ele]/molar_mass_times_ratio_sum) * formula_dict[ele]
     print('Number of atoms per unit volume (#/cm^3) : ', atoms_per_cm3_dict)
 
 """ Get y-axis dictionaries:"""
