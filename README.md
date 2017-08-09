@@ -16,6 +16,6 @@ By defining the information of sample such as density, effective thickness, one 
 
 
 
-![Beer Lambert Law 1](/documentation/source/_static/Beer_lambert_law_1.png)
+![Beer Lambert Law 1](/notebook/Beer_lambert_law_1.png)
 
-![Beer Lambert Law 2](/documentation/source/_static/Beer_lambert_law_2.png)
+![Beer Lambert Law 2](/notebook/Beer_lambert_law_2.png)
