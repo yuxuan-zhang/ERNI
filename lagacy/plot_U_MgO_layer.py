@@ -1,19 +1,21 @@
-import _plot_functions
-import _functions
+import pprint
+
 import numpy as np
 import pandas as pd
-import pprint
-from scipy.constants import Avogadro
+from periodictable.constants import avogadro_number
+
+import _functions
+import _plot_functions
 
 '''Describe your sample: '''
 # Input sample name or names as str, case sensitive
-other_ele = 'U O'
-other_ele_ratio = 'U2O6'
-_input_formula = 'AgCo' + other_ele_ratio  # input('Please input the chemicals? ')
-_input_thick_mm = .025  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
+other_ele = 'Mg O'
+other_ele_ratio = 'Mg2O2'
+_input_formula = 'U' + other_ele_ratio  # input('Please input the chemicals? ')
+_input_thick_mm = .3  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
 _input_thick_cm = _input_thick_mm/10
 _database = 'ENDF_VIII'
-energy_max = 300  # max incident energy in eV
+energy_max = 800  # max incident energy in eV
 energy_min = 0  # min incident energy in eV
 energy_sub = 100  # steps used to interpolate database
 sub_x = energy_sub * (energy_max - energy_min)  # steps used to interpolate database
@@ -22,19 +24,18 @@ compound_boo = 'N'  # Compound or single/multi elements foil/stacked foils: Y/N?
 '''Input for dict modification in certain cases: '''
 # Thickness input:
 special_thick_boo = 'Y'
-special_thick_element_str = 'Ag ' + other_ele
-special_thick_mm_list = [0.03, .3, .3]
+special_thick_element_str = other_ele
+special_thick_mm_list = [10, 10]
 special_thick_cm_list = np.array(special_thick_mm_list)/10
 # Enriched isotope ratio input:
 enrichment_boo = 'Y'  # Isotopic enriched or depleted: Y/N?
-enriched_element_str = 'U Ag'
-input_ratio_dict = {'U': [0., 0., .5, .5],
-                    'Ag': [.1, .9]}
+enriched_element_str = 'U'
+input_ratio_dict = {'U': [0., 0., .15, .85]}
                     # 'O': [1., 0., 0.]}  #{'233-U': 0., '234-U': 0., '235-U': 0.15, '238-U': 0.85}}
 # Special density input:
 special_density_boo = 'Y'
-special_density_element_str = 'U O Co Ag'
-special_density_gcm3_list = [.7875, .7875, 8, 5]
+special_density_element_str = 'U ' + other_ele
+special_density_gcm3_list = [.7875, 3.58, 3.58]
 
 '''How you want the data to be plotted?'''
 _plot_or_not = 'Y'
@@ -147,7 +148,7 @@ if compound_boo == 'Y':
     density_within_compound = {}
     for ele in elements:
         density_within_compound[ele] = compound_density * (formula_dict[ele] * molar_mass_dict[ele] / molar_mass_times_ratio_sum)
-        atoms_per_cm3_dict[ele] = Avogadro * density_within_compound[ele] / molar_mass_dict[ele]
+        atoms_per_cm3_dict[ele] = avogadro_number * density_within_compound[ele] / molar_mass_dict[ele]
     print('Number of atoms per unit volume (#/cm^3) : ', atoms_per_cm3_dict)
 else:
     # Stacked foils or single foil
@@ -163,11 +164,9 @@ else:
     for ele in elements:
         # atoms_per_cm3_dict
         if formula_dict[ele] == 1:
-            print(density_gcm3_dict[ele])
-            print(molar_mass_dict[ele])
-            atoms_per_cm3_dict[ele] = Avogadro * density_gcm3_dict[ele]/molar_mass_dict[ele]
+            atoms_per_cm3_dict[ele] = avogadro_number * density_gcm3_dict[ele]/molar_mass_dict[ele]
         else:
-            atoms_per_cm3_dict[ele] = (Avogadro * density_gcm3_dict[ele]/molar_mass_times_ratio_sum) * formula_dict[ele]
+            atoms_per_cm3_dict[ele] = (avogadro_number * density_gcm3_dict[ele]/molar_mass_times_ratio_sum) * formula_dict[ele]
     print('Number of atoms per unit volume (#/cm^3) : ', atoms_per_cm3_dict)
 
 """ Get y-axis dictionaries:"""

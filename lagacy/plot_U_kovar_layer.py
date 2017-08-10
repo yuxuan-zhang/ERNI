@@ -1,9 +1,11 @@
-import _plot_functions
-import _functions
+import pprint
+
 import numpy as np
 import pandas as pd
-import pprint
 from periodictable.constants import avogadro_number
+
+import _functions
+import _plot_functions
 
 '''Describe your sample: '''
 # Input sample name or names as str, case sensitive

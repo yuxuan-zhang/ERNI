@@ -1,18 +1,9 @@
-import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib
-import pandas as pd
-import _functions
-import _fit_funtions
-import _plot_functions
-from lmfit import minimize, Parameters
-import os
-import periodictable as pt
-from periodictable.constants import avogadro_number
 import peakutils as pku
+
+import _functions
+import _plot_functions
 # from scipy.optimize import leastsq
-import scipy.optimize
-import scipy.signal
 import detect_peaks
 
 # Input sample name or names as str, case sensitive
@@ -51,7 +42,7 @@ spectra_path = 'data/spectra.txt'
 x_data_array = _functions.get_spectra_slice(spectra_path, time_lamda_ev_axis, delay_us,
                                             source_to_detector_cm, _slice)
 # print('x_exp: ', x_data_array)
-y_data_array = 1 - _functions.get_normalized_data_slice(data_path, _slice)/4.25
+y_data_array = 1 - _functions.get_normalized_data_slice(data_path, _slice) / 4.25
 # print('y_exp: ', y_data_array)
 
 exp_y_index = detect_peaks.detect_peaks(y_data_array, mph=0.07, mpd=10)

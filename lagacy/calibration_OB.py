@@ -1,18 +1,11 @@
-import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib
-import pandas as pd
-import _functions
-import _fit_functions
-import _plot_functions
-from lmfit import minimize, Parameters
-import os
-import periodictable as pt
-from periodictable.constants import avogadro_number
 import peakutils as pku
+from lmfit import Parameters
+
+import _functions
+import _plot_functions
+
 # from scipy.optimize import leastsq
-import scipy.optimize
-import scipy.signal
 
 # Input sample name or names as str, case sensitive
 _input_ele_str = 'B'  # input('Please input the chemicals? ')

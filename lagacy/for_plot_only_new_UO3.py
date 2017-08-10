@@ -1,8 +1,8 @@
-import _plot_functions
-import _functions
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+
+import _functions
+import _plot_functions
 
 '''Describe your sample: '''
 # Input sample name or names as str, case sensitive

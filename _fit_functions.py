@@ -1,15 +1,13 @@
-import numpy as np
-import periodictable as pt
-from periodictable import constants
-import re
-import os
 import glob
-import pandas as pd
+import os
+
 import _functions
-from scipy.interpolate import *
+import numpy as np
+import pandas as pd
 import peakutils as pku
-import _plot_functions
-from lmfit import minimize, Parameters
+import periodictable as pt
+from lmfit import Parameters
+from scipy.interpolate import *
 
 
 def def_params_from_dict(_dict, _dict_name_str):

@@ -1,18 +1,10 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib
-import pandas as pd
-import _functions
-import _fit_functions
-import _plot_functions
-from lmfit import minimize, Parameters
-import os
-import periodictable as pt
-from periodictable.constants import avogadro_number
-import peakutils as pku
 # from scipy.optimize import leastsq
-import scipy.optimize
 import pprint
+
+import _fit_functions
+import _functions
+import numpy as np
+from periodictable.constants import avogadro_number
 
 # Input sample name or names as str, case sensitive
 _input_ele_str = 'CoAg'  # input('Please input the chemicals? ')

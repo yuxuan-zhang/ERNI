@@ -1,17 +1,11 @@
-import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib
-import pandas as pd
-import _functions
-import _fit_funtions
-import _plot_functions
-from lmfit import minimize, Parameters
-import os
-import periodictable as pt
-from periodictable.constants import avogadro_number
 import peakutils as pku
+from lmfit import Parameters
+
+import _functions
+import _plot_functions
+
 # from scipy.optimize import leastsq
-import scipy.optimize
 # Input sample name or names as str, case sensitive
 _input_ele_str = 'Hf'  # input('Please input the chemicals? ')
 _input_thick_mm = 0.025  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
@@ -51,7 +45,7 @@ x_data_array = _functions.get_spectra_range(spectra_path, time_lamda_ev_axis, de
                                             source_to_detector_cm, range_min, range_max)
 x_data_array = x_data_array[::-1]
 # print('x_exp: ', x_data_array)
-y_data_array = 1 - _functions.get_normalized_data_range(data_path, range_min, range_max)/4.25
+y_data_array = 1 - _functions.get_normalized_data_range(data_path, range_min, range_max) / 4.25
 y_data_array = y_data_array[::-1]
 # print('y_exp: ', y_data_array)
 exp_y_index = pku.indexes(y_data_array, thres=0.12/max(y_data_array), min_dist=7)

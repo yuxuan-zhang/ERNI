@@ -1,8 +1,9 @@
-import numpy as np
+import glob
+
 import matplotlib.pyplot as plt
 import pandas as pd
-import _functions
-import glob
+
+from lagacy import _functions
 
 # Parameters
 source_to_detector_cm = 1612.3278721983177  # cm
@@ -31,7 +32,7 @@ print(plot_foil_list)
 plot_boo_dict = _functions.boo_dict_invert_by_key(plot_foil_list, plot_boo_dict)
 print(plot_boo_dict)
 for foil in key_list:
-    df[foil] = -1*_functions.get_normalized_data_slice('data/'+foil+'.csv', _slice)
+    df[foil] = -1 * _functions.get_normalized_data_slice('data/' + foil + '.csv', _slice)
     if plot_boo_dict[foil] == 'Y':
         plt.plot(x_axis_array, df[foil], '.', label=foil)
 print(df.head())

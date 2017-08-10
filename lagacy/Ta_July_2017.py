@@ -1,22 +1,19 @@
-import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib
+import numpy as np
 import pandas as pd
-import _functions
-import _fit_funtions
-import _plot_functions
-from lmfit import minimize, Parameters
-import os
-import periodictable as pt
-from periodictable.constants import avogadro_number
 import peakutils as pku
 # from scipy.optimize import leastsq
 import scipy.signal
+from lmfit import Parameters
+
+import _functions
+import _plot_functions
+
 plt.style.use('bmh')
 
 # Input sample name or names as str, case sensitive
 _input_ele_str = 'Ta'  # input('Please input the chemicals? ')
-_input_thick_mm = 0.015  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
+_input_thick_mm = 0.03  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
 _database = 'ENDF_VIII'
 energy_max = 220  # max incident energy in eV
 energy_min = 5  # min incident energy in eV
@@ -47,20 +44,23 @@ _slice = range_min
 energy_min = 0
 time_lamda_ev_axis = 'eV'
 _name = 'Exp. data'
-data_path = 'data/July_2017/Values.csv'
-ob_path = 'data/July_2017/ob.csv'
+data_path = 'data/July_2017/Values1.csv'
+ob_path = 'data/July_2017/Values_ob.csv'
 # data_path = 'data/' + _name + '.csv'
 spectra_path = 'data/July_2017/Image052_Spectra.txt'
 x_data_array = _functions.get_spectra_range(spectra_path, delay_us,
                                             source_to_detector_cm, range_min, range_max)
 # print('x_exp: ', x_data_array)
 df = pd.read_csv(data_path, header=None, skiprows=1)
-# df2 = pd.read_csv(ob_path, header=None, skiprows=1)
+df2 = pd.read_csv(ob_path, header=None, skiprows=1)
+
+# y_data_array = np.array(df[1]) / np.array(df2[1])
 y_data_array = np.array(df[1])
 y_data_array = y_data_array[::-1]  # Flip array from descending to normal
 print(y_data_array)
-y_data_array = -y_data_array
 y_data_array = scipy.signal.detrend(y_data_array)
+
+y_data_array = -y_data_array/1.25
 y_data_array = y_data_array[range_min:range_max]
 # y_data_array = 1 - _functions.get_normalized_data_range(data_path, range_min, range_max)/4.25
 # print('y_exp: ', y_data_array)
@@ -76,7 +76,7 @@ exp_x_index = pku.interpolate(x_data_array, y_data_array, ind=exp_y_index)
 df1 = pd.DataFrame()
 df2 = pd.DataFrame()
 time_array = _functions.get_spectra_range(spectra_path, delay_us,
-                                            source_to_detector_cm, range_min, range_max, time_lamda_ev_axis='time')
+                                          source_to_detector_cm, range_min, range_max, time_lamda_ev_axis='time')
 df1['Exp_x'] = time_array
 df1['Exp_y'] = y_data_array[::-1]
 df2['Ideal_x'] = x_energy

@@ -1,15 +1,10 @@
-import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib
-import pandas as pd
-import _functions
-import _fit_functions
-import _plot_functions
-from lmfit import minimize, Parameters
-import os
-import periodictable as pt
-from periodictable.constants import avogadro_number
+import numpy as np
 import peakutils as pku
+from periodictable.constants import avogadro_number
+
+import _functions
+import _plot_functions
 
 # Parameters
 source_to_detector_cm = 1610.569047826142  # cm
@@ -231,9 +226,9 @@ if _plot_or_not == 'Y':
 
 
 x_data_array = _functions.get_spectra_slice(spectra_path, time_lamda_ev_axis, delay_us,
-                                                source_to_detector_cm, _slice)
+                                            source_to_detector_cm, _slice)
 print(x_data_array)
-y_data_array = 1 - _functions.get_normalized_data_slice('data/'+_name+'.csv', _slice)/4.2
+y_data_array = 1 - _functions.get_normalized_data_slice('data/' + _name + '.csv', _slice) / 4.2
 print(y_data_array)
 plt.plot(x_data_array, y_data_array, 'r-', label=_name, alpha=0.7)
 

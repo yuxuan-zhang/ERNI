@@ -1,11 +1,12 @@
-import _functions
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import periodictable as pt
-from periodictable.constants import avogadro_number
-import matplotlib.pyplot as plt
 from matplotlib import style
 from scipy.interpolate import *
+
+import _functions
+
 style.use('ggplot')
 
 
