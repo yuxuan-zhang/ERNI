@@ -18,4 +18,9 @@ By defining the information of sample such as density, effective thickness, one 
 
 ![Beer Lambert Law 1](/notebook/Beer_lambert_law_1.png)
 
+
+$Tr\left( E \right) =\frac { I\left( E \right)  }{ { I }_{ 0 }\left( E \right)  } =exp\left[ -\sum _{ ^{ i } }{ { N }_{ i }{ d }_{ i }\sum _{ ^{ j } }{ { \sigma  }_{ ij }\left( E \right) { A }_{ ij } }  }  \right] $
+
 ![Beer Lambert Law 2](/notebook/Beer_lambert_law_2.png)
+
+
