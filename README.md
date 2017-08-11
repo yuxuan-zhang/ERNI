@@ -2,9 +2,9 @@
 [![codecov](https://codecov.io/gh/ornlneutronimaging/ImagingReso/branch/master/graph/badge.svg)](https://codecov.io/gh/ornlneutronimaging/ImagingReso)
 [![Documentation Status](https://readthedocs.org/projects/imagingreso/badge/?version=latest)](http://imagingreso.readthedocs.io/en/latest/?badge=latest)
 
-# ImagingReso
+# ImagingReso - a tool for neutron resonance analysis
 
-Neutron resonance This package provides feasibility of plotting and manipulating 
+This package provides feasibility of plotting and manipulating 
 neutron resonance signal from the published online database,
 [National Nuclear Data Center](http://www.nndc.bnl.gov/).
 
