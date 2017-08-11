@@ -11,6 +11,7 @@ import sys
 import re
 import pprint
 from resonance import Resonance
+import _utilities
 # Global parameters
 _energy_min = 1e-5
 _energy_max = 300
@@ -30,8 +31,13 @@ o_reso.add_layer(formula=_layer_2, thickness=_thickness_2)
 # Ideal
 pprint.pprint(o_reso.stack_sigma['Ag']['Ag']['energy_eV'])
 pprint.pprint(o_reso.stack_sigma['Ag']['Ag']['sigma_b'])
-pprint.pprint(o_reso.stack_sigma['Co']['Co']['sigma_b'])
-
+pprint.pprint(o_reso.stack['Ag']['Ag']['isotopes']['list'])
+pprint.pprint(o_reso.stack_sigma['Ag']['Ag']['109-Ag']['sigma_b'])
+pprint.pprint(o_reso.stack_sigma['Ag']['Ag']['107-Ag']['sigma_b'])
+# pprint.pprint(o_reso.stack_sigma['Co']['Co']['sigma_b'])
+x = _utilities.get_sigma('reference_data/ENDF_VIII/Ag-107.csv', E_min=1e-5, E_max=300, E_step=0.01)
+print(x['sigma_b']*o_reso.get_isotopic_ratio('Ag')['107-Ag'])
+pprint.pprint(o_reso.get_isotopic_ratio('Ag'))
 # Get sigma dictionary
 
 
