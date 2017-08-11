@@ -2,9 +2,7 @@
 [![codecov](https://codecov.io/gh/ornlneutronimaging/ImagingReso/branch/master/graph/badge.svg)](https://codecov.io/gh/ornlneutronimaging/ImagingReso)
 [![Documentation Status](https://readthedocs.org/projects/imagingreso/badge/?version=latest)](http://imagingreso.readthedocs.io/en/latest/?badge=latest)
 
-Neutron resonance analysis
-
-# ImagingReso - 
+# ERNI - **E**nergy **R**esolved **N**eutron **I**maging
 
 This package provides feasibility of plotting and manipulating 
 neutron resonance signal from the published online database,
