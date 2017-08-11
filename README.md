@@ -4,7 +4,7 @@
 
 # ImagingReso
 
-This package provides feasibility of plotting and manipulating 
+Neutron resonance This package provides feasibility of plotting and manipulating 
 neutron resonance signal from the published online database,
 [National Nuclear Data Center](http://www.nndc.bnl.gov/).
 
