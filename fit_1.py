@@ -12,6 +12,7 @@ import re
 import pprint
 from resonance import Resonance
 import _utilities
+
 # Global parameters
 _energy_min = 1e-5
 _energy_max = 300

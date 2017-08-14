@@ -94,7 +94,7 @@ for n in range(len(url)):
         _database = 'ENDF_VIII'
     else:
         _database = 'ENDF_VII'
-    save_path = main_dir + '/data_web/' + _database + '/'
+    save_path = main_dir + '/reference_data/' + _database + '/'
     # Separate lines
     lst = text.split(sep='Lin-Lin\r\n')
     line1 = lst[0].splitlines()
