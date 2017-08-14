@@ -1,11 +1,11 @@
 import pprint
 
+import _functions
 import numpy as np
 import pandas as pd
 from scipy.constants import Avogadro
 
-import _functions
-import _plot_functions
+from lagacy import _plot_functions
 
 '''Describe your sample: '''
 # Input sample name or names as str, case sensitive

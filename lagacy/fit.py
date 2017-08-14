@@ -2,9 +2,10 @@
 import pprint
 
 import _fit_functions
-import _functions
 import numpy as np
 from periodictable.constants import avogadro_number
+
+from lagacy import _functions
 
 # Input sample name or names as str, case sensitive
 _input_ele_str = 'CoAg'  # input('Please input the chemicals? ')

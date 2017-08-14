@@ -1,3 +1,4 @@
+import _functions
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -6,8 +7,7 @@ import peakutils as pku
 import scipy.signal
 from lmfit import Parameters
 
-import _functions
-import _plot_functions
+from lagacy import _plot_functions
 
 plt.style.use('bmh')
 

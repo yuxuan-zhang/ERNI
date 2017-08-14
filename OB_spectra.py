@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-import _functions
+from lagacy import _functions
 
 # Parameters
 source_to_detector_cm = 1612.3278721983177  # cm

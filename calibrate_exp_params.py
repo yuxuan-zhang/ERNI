@@ -1,22 +1,26 @@
+import _functions
 import matplotlib.pyplot as plt
 import peakutils as pku
 from lmfit import Parameters
 
-import _functions
-import _plot_functions
+from resonance import Resonance
 
-# from scipy.optimize import leastsq
+# Global parameters
+_energy_min = 1e-5
+_energy_max = 170
+_energy_step = 0.01
 # Input sample name or names as str, case sensitive
-_input_ele_str = 'Ag'  # input('Please input the chemicals? ')
-_input_thick_mm = 0.025  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
-_database = 'ENDF_VIII'
-energy_max = 170  # max incident energy in eV
-energy_min = 10  # min incident energy in eV
-energy_sub = 100
+_layer_1 = 'Ag'
+_thickness_1 = 0.025 # mm
+# _density_1 = 8 # g/cm3 deviated due to porosity
+
+o_reso = Resonance(energy_min=_energy_min, energy_max=_energy_max, energy_step=_energy_step)
+o_reso.add_layer(formula=_layer_1, thickness=_thickness_1)
 
 # Ideal
-x_energy, y_trans_tot = _plot_functions.get_tot_trans_for_single_ele(_input_ele_str, _input_thick_mm, energy_max, energy_min, energy_sub)
-y_attenu_tot = 1 - y_trans_tot
+x_energy = o_reso.stack_sigma['Ag']['Ag']['energy_eV']
+sigma_b_ = o_reso.stack_sigma['Ag']['Ag']['sigma_b']
+y_attenu_tot = o_reso.stack_signal['Ag']['attenuation']
 # print('x_ideal: ', x_energy)
 # print('y_ideal: ', y_attenu_tot)
 ideal_y_index = pku.indexes(y_attenu_tot, thres=0.15, min_dist=10)#, thres=0.1, min_dist=50)
@@ -25,7 +29,7 @@ print('x_ideal_peak: ', ideal_x_index)
 # peaks_ind = pku.peak.indexes(y_attenu_tot, min_dist=50)
 # print(peaks_ind)
 # print('y_ideal_peak: ', ideal_y_index)
-plt.plot(x_energy, y_attenu_tot, 'b-', label=_input_ele_str+'_ideal')
+plt.plot(x_energy, y_attenu_tot, 'b-', label=_layer_1+'_ideal')
 plt.plot(x_energy[ideal_y_index], y_attenu_tot[ideal_y_index], 'bo', label='peak_ideal')
 
 
@@ -77,6 +81,6 @@ plt.plot(x_data_array[exp_y_index], y_data_array[exp_y_index], 'go', label='peak
 plt.title('Peak estimation')
 
 plt.ylim(-0.01, 1.01)
-plt.xlim(0, energy_max)
+plt.xlim(0, _energy_max)
 plt.legend(loc='best')
 plt.show()

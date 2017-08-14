@@ -1,10 +1,10 @@
+import _functions
 import matplotlib.pyplot as plt
 import numpy as np
 import peakutils as pku
 from periodictable.constants import avogadro_number
 
-import _functions
-import _plot_functions
+from lagacy import _plot_functions
 
 # Parameters
 source_to_detector_cm = 1610.569047826142  # cm

@@ -1,13 +1,14 @@
 import glob
 import os
 
-import _functions
 import numpy as np
 import pandas as pd
 import peakutils as pku
 import periodictable as pt
 from lmfit import Parameters
 from scipy.interpolate import *
+
+from lagacy import _functions
 
 
 def def_params_from_dict(_dict, _dict_name_str):

@@ -1,9 +1,9 @@
+import _functions
 import matplotlib.pyplot as plt
 import peakutils as pku
 from lmfit import Parameters
 
-import _functions
-import _plot_functions
+from lagacy import _plot_functions
 
 # from scipy.optimize import leastsq
 # Input sample name or names as str, case sensitive

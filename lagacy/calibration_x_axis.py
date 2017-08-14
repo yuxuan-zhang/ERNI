@@ -6,12 +6,11 @@ from lmfit import Parameters
 from lagacy import _plot_functions
 
 # from scipy.optimize import leastsq
-
 # Input sample name or names as str, case sensitive
-_input_ele_str = 'B'  # input('Please input the chemicals? ')
+_input_ele_str = 'Ag'  # input('Please input the chemicals? ')
 _input_thick_mm = 0.025  # float(input('Please input the thickness or majority thickness of stacked foils in mm : '))
 _database = 'ENDF_VIII'
-energy_max = 800  # max incident energy in eV
+energy_max = 170  # max incident energy in eV
 energy_min = 10  # min incident energy in eV
 energy_sub = 100
 
@@ -34,7 +33,7 @@ plt.plot(x_energy[ideal_y_index], y_attenu_tot[ideal_y_index], 'bo', label='peak
 source_to_detector_cm = 1612.3278721983177  # cm
 delay_ms = -12.112494119089204#-12.145 #4.5 - 16.61295379  # ms
 delay_us = delay_ms * 1000
-range_min = 300
+range_min = 500
 range_max = 2000
 _slice = range_min
 energy_min = 0
@@ -45,8 +44,7 @@ spectra_path = 'data/spectra.txt'
 x_data_array = _functions.get_spectra_range(spectra_path, delay_us,
                                             source_to_detector_cm, range_min, range_max)
 # print('x_exp: ', x_data_array)
-y_data_array = _functions.get_ob_range(data_path, range_min, range_max)
-# y_data_array = scipy.signal.detrend(y_data_array)
+y_data_array = 1 - _functions.get_normalized_data_range(data_path, range_min, range_max) / 4.25
 # print('y_exp: ', y_data_array)
 exp_y_index = pku.indexes(y_data_array, thres=0.12/max(y_data_array), min_dist=7)
 exp_x_index = pku.interpolate(x_data_array, y_data_array, ind=exp_y_index)
@@ -74,11 +72,11 @@ params.add('delay_us', value=delay_us)
 # out = scipy.optimize.minimize(_fit_funtions.peak_x_gap_scipy, delay_us, method='leastsq', args=(ideal_x_index, y_data_array))
 # print(out.__dict__)
 
-plt.plot(x_data_array, y_data_array, 'r-', label='OB')
-# plt.plot(x_data_array[exp_y_index], y_data_array[exp_y_index], 'go', label='peak_exp')
-plt.title('OB analysis of foil stack')
+plt.plot(x_data_array, y_data_array, 'r-', label=_name)
+plt.plot(x_data_array[exp_y_index], y_data_array[exp_y_index], 'go', label='peak_exp')
+plt.title('Peak estimation')
 
-# plt.ylim(-0.01, 1.01)
+plt.ylim(-0.01, 1.01)
 plt.xlim(0, energy_max)
 plt.legend(loc='best')
 plt.show()

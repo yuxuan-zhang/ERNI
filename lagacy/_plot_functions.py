@@ -5,7 +5,7 @@ import periodictable as pt
 from matplotlib import style
 from scipy.interpolate import *
 
-import _functions
+from lagacy import _functions
 
 style.use('ggplot')
 

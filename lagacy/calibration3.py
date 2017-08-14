@@ -1,10 +1,10 @@
+import _functions
 import matplotlib.pyplot as plt
 import peakutils as pku
 
-import _functions
-import _plot_functions
 # from scipy.optimize import leastsq
 import detect_peaks
+from lagacy import _plot_functions
 
 # Input sample name or names as str, case sensitive
 _input_ele_str = 'Ag'  # input('Please input the chemicals? ')
