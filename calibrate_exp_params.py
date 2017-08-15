@@ -1,4 +1,3 @@
-import _functions
 import matplotlib.pyplot as plt
 import peakutils as pku
 from lmfit import Parameters
