@@ -555,7 +555,7 @@ class Resonance(object):
                 [['CoAg','Ag','107-Ag'], ['CoAg']]
             if the dictionary is empty, everything is plotted
         """
-        plt.figure(figsize=[10,10])
+        plt.figure(figsize=[5,5])
         
         _stack_signal = self.stack_signal
         _stack = self.stack
@@ -570,8 +570,11 @@ class Resonance(object):
         if x_axis == 'energy':
             x_axis_label = 'Energy (eV)'
         else:
-            x_axis_label = u"Wavelength (\u212B)"
-            plt.xlim(0, 1)
+            if x_axis == 'time':
+                x_axis_label = 'Time (ms)'
+            else:
+                x_axis_label = u"Wavelength (\u212B)"
+                plt.xlim(0, 1)
 
         if mixed:
             _x_axis = self.total_signal['energy_eV']

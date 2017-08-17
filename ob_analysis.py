@@ -10,16 +10,17 @@ _energy_max = 170
 _energy_step = 0.01
 # Input sample name or names as str, case sensitive
 _layer_1 = 'Ag'
-_thickness_1 = 0.025 # mm
+_name = _layer_1
+_thickness_1 = 0.075 # mm
 # _density_1 = 8 # g/cm3 deviated due to porosity
 
 o_reso = Resonance(energy_min=_energy_min, energy_max=_energy_max, energy_step=_energy_step)
 o_reso.add_layer(formula=_layer_1, thickness=_thickness_1)
 
 # Ideal
-x_energy = o_reso.stack_sigma['Ag']['Ag']['energy_eV']
-sigma_b_ = o_reso.stack_sigma['Ag']['Ag']['sigma_b']
-y_attenu_tot = o_reso.stack_signal['Ag']['attenuation']
+x_energy = o_reso.stack_sigma[_name][_name]['energy_eV']
+sigma_b_ = o_reso.stack_sigma[_name][_name]['sigma_b']
+y_attenu_tot = o_reso.stack_signal[_name]['attenuation']
 # print('x_ideal: ', x_energy)
 # print('y_ideal: ', y_attenu_tot)
 ideal_y_index = pku.indexes(y_attenu_tot, thres=0.15, min_dist=10)#, thres=0.1, min_dist=50)
@@ -41,18 +42,20 @@ range_max = 2000
 _slice = range_min
 energy_min = 0
 time_lamda_ev_axis = 'eV'
-_name = 'foil7'
-data_path = 'data/' + _name + '.csv'
+# _name = 'foil7'
+data_path = 'data/OB_Cd_spectra.txt'
+# data_path = 'data/' + _name + '.csv'
 spectra_path = 'data/spectra.txt'
 x_data_array = _utilities.get_spectra_range(spectra_path, delay_us,
                                             source_to_detector_cm, range_min, range_max)
 # print('x_exp: ', x_data_array)
-y_data_array = 1 - _utilities.get_normalized_data_range(data_path, range_min, range_max) / 4.25
+y_data_array = _utilities.get_normalized_data_range(data_path, range_min, range_max) / 4.25
 # print('y_exp: ', y_data_array)
 exp_y_index = pku.indexes(y_data_array, thres=0.12/max(y_data_array), min_dist=7)
 exp_x_index = pku.interpolate(x_data_array, y_data_array, ind=exp_y_index)
 print('x_exp_peak: ', exp_x_index)
 print('Equal size: ', len(ideal_x_index) == len(exp_x_index))
+# y_data_array = scipy.signal.detrend(y_data_array)
 # baseline = pku.baseline(y_data_array)
 # print(baseline)
 # print('y_exp_peak: ', exp_y_index)

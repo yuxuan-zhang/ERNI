@@ -438,8 +438,191 @@ def energy_to_lambda(energy_ev=[]):
     
     Returns:
     ========
-    array in Angstroms
+    lambda: array (in Angstroms)
     """
     energy_mev = energy_ev * 1000
     lambda_array = np.sqrt(81.787/energy_mev)
     return lambda_array
+
+def energy_to_time(energy_ev=[], delay_ms=np.NaN, source_to_detector_cm=np.NaN):
+    # function to convert energy in eV to time in us
+    """convert into lambda from the energy array
+
+    Parameters:
+    ===========
+    energy: array (in eV)
+
+    Returns:
+    ========
+    array in micro seconds
+    """
+    energy_miliev = energy_ev * 1000
+    time_us = np.sqrt(81.787 / energy_miliev) * source_to_detector_cm / 0.3956
+    delay_us = delay_ms * 1000
+    time_tot_us = (time_us - delay_us)
+    time_tot_s = time_tot_us / 1e6
+    return time_tot_s
+
+
+def ev2lamda(energy_ev):  # function to convert energy in eV to angstrom
+    energy_miliev = energy_ev * 1000
+    lamda = np.sqrt(81.787 / energy_miliev)
+    return lamda
+
+def time2lamda(time_tot_s, delay_us, source_to_detector_cm):  # function to convert time in us to angstrom
+    time_tot_us = 1e6 * time_tot_s + delay_us
+    lamda = 0.3956 * time_tot_us / source_to_detector_cm
+    return lamda
+
+def lamda2ev(lamda):  # function to convert angstrom to eV
+    energy_miliev = 81.787 / (lamda ** 2)
+    energy_ev = energy_miliev / 1000
+    return energy_ev
+
+def time2ev(time_tot_s, delay_ms=0.00299, source_to_detector_cm=1612.5):  # function to convert time in us to energy in eV
+    delay_us = delay_ms * 1000
+    time_tot_us = 1e6 * time_tot_s + delay_us
+    energy_miliev = 81.787 / (0.3956 * time_tot_us / source_to_detector_cm) ** 2
+    energy_ev = energy_miliev / 1000
+    return energy_ev
+
+
+def get_normalized_data(_filename):
+    df = pd.read_csv(_filename, header=None, skiprows=1)
+    data_array = np.array(df[1])
+    data = data_array[:int(len(data_array)/2)]
+    ob = data_array[int(len(data_array)/2):]
+    normalized_array = data/ob
+    # OB at the end of 2773
+    return normalized_array
+
+
+def get_normalized_data_slice(_filename, _ignore):
+    df = pd.read_csv(_filename, header=None, skiprows=1)
+    data_array = np.array(df[1])
+    data = data_array[:int(len(data_array)/2)]
+    ob = data_array[int(len(data_array)/2):]
+    normalized_array = data/ob
+    normalized_array = normalized_array[_ignore:]
+    # OB at the end of 2773
+    return normalized_array
+
+
+def get_normalized_data_range(_filename, range_min, range_max):
+    df = pd.read_csv(_filename, header=None, skiprows=1)
+    data_array = np.array(df[1])
+    data = data_array[:int(len(data_array)/2)]
+    ob = data_array[int(len(data_array)/2):]
+    normalized_array = data/ob
+    normalized_array = normalized_array[range_min:range_max]
+    normalized_array = normalized_array[::-1]  # Flip array from descending to normal
+    # OB at the end of 2773
+    return normalized_array
+
+
+def get_ob_range(_filename, range_min, range_max):
+    df = pd.read_csv(_filename, header=None, skiprows=1)
+    data_array = np.array(df[1])
+    data = data_array[:int(len(data_array)/2)]
+    ob = data_array[int(len(data_array)/2):]
+    ob = ob[range_min:range_max]
+    ob = ob[::-1]
+    # normalized_array = data/ob
+    # normalized_array = normalized_array[range_min:range_max]
+    # normalized_array = normalized_array[::-1]  # Flip array from descending to normal
+    # OB at the end of 2773
+    return ob
+
+
+def get_spectra_range(_filename, delay_us, source_to_detector_cm, range_min, range_max, time_lamda_ev_axis='eV'):
+    """
+    Get spectra file and convert time to wavelength or energy.
+    :param _filename:
+    :param delay_us:
+    :param source_to_detector_cm:
+    :param range_min:
+    :param range_max:
+    :param time_lamda_ev_axis:
+    :return:
+    """
+    df_spectra = pd.read_csv(_filename, sep='\t', header=None)
+    time_array = (np.array(df_spectra[0]))
+    # flux_array = (np.array(df_spectra[1]))
+    if time_lamda_ev_axis == 'lamda':
+        lamda_array = time2lamda(time_array, delay_us, source_to_detector_cm)
+        return lamda_array
+    if time_lamda_ev_axis == 'eV':
+        ev_array = time2ev(time_array, delay_us, source_to_detector_cm)
+        ev_array = ev_array[range_min:range_max]
+        ev_array = ev_array[::-1]  # Flip array from descending to normal
+        return ev_array
+    if time_lamda_ev_axis == 'time':
+        time_array = time_array[range_min:range_max]
+        return time_array
+
+
+def get_spectra(_filename, delay_us, source_to_detector_cm, time_lamda_ev_axis='eV'):
+    df_spectra = pd.read_csv(_filename, sep='\t', header=None)
+    time_array = (np.array(df_spectra[0]))
+    # flux_array = (np.array(df_spectra[1]))
+    if time_lamda_ev_axis == 'lamda':
+        lamda_array = time2lamda(time_array, delay_us, source_to_detector_cm)
+        return lamda_array
+    if time_lamda_ev_axis == 'eV':
+        ev_array = time2ev(time_array, delay_us, source_to_detector_cm)
+        return ev_array
+    if time_lamda_ev_axis == 'time':
+        return time_array
+
+def get_spectra2(_filename, delay_us, source_to_detector_cm, time_lamda_ev_axis='eV'):
+    df_spectra = pd.read_csv(_filename, sep='\t', header=None)
+    time_array = (np.array(df_spectra[0]))
+    counts_array = (np.array(df_spectra[1]))
+    if time_lamda_ev_axis == 'lamda':
+        lamda_array = time2lamda(time_array, delay_us, source_to_detector_cm)
+        return lamda_array, counts_array
+    if time_lamda_ev_axis == 'eV':
+        ev_array = time2ev(time_array, delay_us, source_to_detector_cm)
+        return ev_array, counts_array
+    if time_lamda_ev_axis == 'time':
+        return time_array, counts_array
+
+
+def get_spectra_slice(_filename, time_lamda_ev_axis, delay_us, source_to_detector_cm, _slice):
+    df_spectra = pd.read_csv(_filename, sep='\t', header=None)
+    time_array = (np.array(df_spectra[0]))
+    # flux_array = (np.array(df_spectra[1]))
+    if time_lamda_ev_axis == 'lamda':
+        lamda_array = time2lamda(time_array, delay_us, source_to_detector_cm)
+        return lamda_array
+    if time_lamda_ev_axis == 'eV':
+        ev_array = time2ev(time_array, delay_us, source_to_detector_cm)
+        ev_array = ev_array[_slice:]
+        return ev_array
+    if time_lamda_ev_axis == 'lamda':
+        return time_array
+
+'''
+Energy, wavelength and time conversions
+'''
+
+def ev2lamda(energy_ev):  # function to convert energy in eV to angstrom
+    energy_miliev = energy_ev * 1000
+    lamda = np.sqrt(81.787 / energy_miliev)
+    return lamda
+
+def time2lamda(time_tot_s, delay_us, source_to_detector_cm):  # function to convert time in us to angstrom
+    time_tot_us = 1e6 * time_tot_s + delay_us
+    lamda = 0.3956 * time_tot_us / source_to_detector_cm
+    return lamda
+
+def lamda2ev(lamda):  # function to convert angstrom to eV
+    energy_miliev = 81.787 / (lamda ** 2)
+    energy_ev = energy_miliev / 1000
+    return energy_ev
+
+def time2ev(time_tot_s, delay_us, source_to_detector_cm):  # function to convert time in us to energy in eV
+    time_tot_us = 1e6 * time_tot_s + delay_us
+    energy_miliev = 81.787 / (0.3956 * time_tot_us / source_to_detector_cm) ** 2
+    energy_ev = energy_miliev / 1000
+    return energy_ev

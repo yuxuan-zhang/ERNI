@@ -5,21 +5,22 @@ import _utilities
 from resonance import Resonance
 
 # Global parameters
-_energy_min = 1e-5
+_energy_min = 10
 _energy_max = 170
 _energy_step = 0.01
 # Input sample name or names as str, case sensitive
 _layer_1 = 'Ag'
-_thickness_1 = 0.025 # mm
+_name = _layer_1
+_thickness_1 = 0.075 # mm
 # _density_1 = 8 # g/cm3 deviated due to porosity
 
 o_reso = Resonance(energy_min=_energy_min, energy_max=_energy_max, energy_step=_energy_step)
 o_reso.add_layer(formula=_layer_1, thickness=_thickness_1)
 
 # Ideal
-x_energy = o_reso.stack_sigma['Ag']['Ag']['energy_eV']
-sigma_b_ = o_reso.stack_sigma['Ag']['Ag']['sigma_b']
-y_attenu_tot = o_reso.stack_signal['Ag']['attenuation']
+x_energy = o_reso.stack_sigma[_name][_name]['energy_eV']
+sigma_b_ = o_reso.stack_sigma[_name][_name]['sigma_b']
+y_attenu_tot = o_reso.stack_signal[_name]['attenuation']
 # print('x_ideal: ', x_energy)
 # print('y_ideal: ', y_attenu_tot)
 ideal_y_index = pku.indexes(y_attenu_tot, thres=0.15, min_dist=10)#, thres=0.1, min_dist=50)

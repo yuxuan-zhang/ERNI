@@ -1,8 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
-from lagacy import _functions
+import _utilities
 
 # Parameters
 source_to_detector_cm = 1612.3278721983177  # cm
@@ -18,8 +17,8 @@ ob_18 = pd.read_csv('data/OB_image18_pectra.txt', sep='\t', header=None)
 ob_delme = pd.read_csv('data/OB_delme_spectra.txt', sep='\t', header=None)
 ob_Cd = pd.read_csv('data/OB_Cd_spectra.txt', sep='\t', header=None)
 df_all = pd.DataFrame()
-df_all['eV'] = _functions.time2ev(data_20[0], delay_ms, source_to_detector_cm)
-df_all['lamda'] = _functions.time2lamda(data_20[0], delay_ms, source_to_detector_cm)
+df_all['eV'] = _utilities.time2ev(data_20[0], delay_ms, source_to_detector_cm)
+df_all['lamda'] = _utilities.time2lamda(data_20[0], delay_ms, source_to_detector_cm)
 df_all['time'] = data_20[0]
 df_all['20'] = data_20[1]
 df_all['40'] = data_40[1]
@@ -32,7 +31,7 @@ df_all.set_index(df_all['eV'], inplace=True)
 _name = 'foil3'
 data_path = 'data/' + _name + '.csv'
 spectra_path = 'data/spectra.txt'
-x_data_array = _functions.get_spectra(spectra_path, delay_us, source_to_detector_cm, time_lamda_ev_axis='time')
+x_data_array = _utilities.get_spectra(spectra_path, delay_us, source_to_detector_cm, time_lamda_ev_axis='time')
 df = pd.read_csv(data_path, header=None, skiprows=1)
 data_array = np.array(df[1])
 data = data_array[:int(len(data_array)/2)] * 100000
