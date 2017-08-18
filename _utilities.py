@@ -431,23 +431,22 @@ def set_distance_units(value=np.NaN, from_units='mm', to_units='cm'):
 
 def energy_to_lambda(energy_ev=[]):
     """convert into lambda from the energy array
-    
+
     Parameters:
     ===========
     energy: array (in eV)
-    
+
     Returns:
     ========
     lambda: array (in Angstroms)
     """
     energy_mev = energy_ev * 1000
-    lambda_array = np.sqrt(81.787/energy_mev)
+    lambda_array = np.sqrt(81.787 / energy_mev)
     return lambda_array
 
-def energy_to_time(energy_ev=[], delay_us=2.99, source_to_detector_cm=1612.5):
-    # function to convert energy in eV to time in us
-    # delay values with no actual MCP delay settings
-    """convert into time from the energy array
+def energy_to_time(energy_ev=[], delay_us=np.NaN, source_to_detector_cm=np.NaN):
+    # delay values is normal 2.99 us with NONE actual MCP delay settings
+    """convert energy (eV) to time (us)
 
     Parameters:
     ===========
@@ -455,17 +454,36 @@ def energy_to_time(energy_ev=[], delay_us=2.99, source_to_detector_cm=1612.5):
 
     Returns:
     ========
-    time: array in (micro seconds)
+    time: array in us (micro seconds)
     """
     energy_mev = energy_ev * 1000
     time_tot_us = np.sqrt(81.787 / energy_mev) * source_to_detector_cm / 0.3956
-    time_record_us = (time_tot_us - delay_us)
+    time_record_us = time_tot_us - delay_us
     time_record_ns = time_record_us * 1000
     time_record_s = time_record_us / 1e6
     return time_record_us
 
-def time_to_energy(time_record_s, delay_us=2.99, source_to_detector_cm=1612.5):  # function to convert time in us to energy in eV
-    """convert into energy from time
+def energy_to_image_number(energy_ev=[], delay_us=np.NaN, time_resolution_us=np.NaN, source_to_detector_cm=np.NaN):
+    # delay values is normal 2.99 us with NONE actual MCP delay settings
+    """convert energy (eV) to image numbers (#)
+
+    Parameters:
+    ===========
+    energy: array (in eV)
+
+    Returns:
+    ========
+    image numbers: array in (micro seconds)
+    """
+    energy_mev = energy_ev * 1000
+    time_tot_us = np.sqrt(81.787 / energy_mev) * source_to_detector_cm / 0.3956
+    time_record_us = (time_tot_us - delay_us)
+    image_number = time_record_us / time_resolution_us
+    return image_number
+
+
+def time_to_energy(time_record_s, delay_us=np.NaN, source_to_detector_cm=np.NaN):
+    """convert time (s) to energy (eV)
     Parameters:
     ===========
     time (in s)
