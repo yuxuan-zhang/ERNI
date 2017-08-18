@@ -455,13 +455,14 @@ def energy_to_time(energy_ev=[], delay_us=2.99, source_to_detector_cm=1612.5):
 
     Returns:
     ========
-    array in micro seconds
+    array in (micro seconds)
     """
     energy_mev = energy_ev * 1000
     tot_time_us = np.sqrt(81.787 / energy_mev) * source_to_detector_cm / 0.3956
     time_record_us = (tot_time_us - delay_us)
+    time_record_ns = time_record_us * 1000
     time_record_s = time_record_us / 1e6
-    return time_record_s
+    return time_record_us
 
 
 def ev2lamda(energy_ev):  # function to convert energy in eV to angstrom

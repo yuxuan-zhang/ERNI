@@ -17,4 +17,4 @@ _thickness_1 = 0.075 # mm
 o_reso = Resonance(energy_min=_energy_min, energy_max=_energy_max, energy_step=_energy_step)
 o_reso.add_layer(formula=_layer_1, thickness=_thickness_1)
 
-o_reso.plot(mixed=True, all_elements=True, transmission=False)
+o_reso.plot(all_elements=True, transmission=False, x_axis='time')

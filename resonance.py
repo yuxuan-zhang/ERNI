@@ -569,17 +569,18 @@ class Resonance(object):
             
         if x_axis == 'energy':
             x_axis_label = 'Energy (eV)'
-        else:
-            if x_axis == 'time':
-                x_axis_label = 'Time (ms)'
-            else:
-                x_axis_label = u"Wavelength (\u212B)"
-                plt.xlim(0, 1)
+        if x_axis == 'lambda':
+            x_axis_label = u"Wavelength (\u212B)"
+            plt.xlim(0, 1)
+        if x_axis == 'time':
+            x_axis_label = 'Time (us)'
 
         if mixed:
             _x_axis = self.total_signal['energy_eV']
             if x_axis == 'lambda':
                 _x_axis = _utilities.energy_to_lambda(energy_ev=_x_axis)
+            if x_axis == 'time':
+                _x_axis = _utilities.energy_to_time(energy_ev=_x_axis)
             _y_axis = self.total_signal[y_axis_tag]
             plt.plot(_x_axis, _y_axis, label="Total")
         
@@ -588,6 +589,8 @@ class Resonance(object):
                 _x_axis = _stack_signal[_compound]['energy_eV']
                 if x_axis == 'lambda':
                     _x_axis = _utilities.energy_to_lambda(energy_ev=_x_axis)
+                if x_axis == 'time':
+                    _x_axis = _utilities.energy_to_time(energy_ev=_x_axis)
                 _y_axis = _stack_signal[_compound][y_axis_tag]
                 plt.plot(_x_axis, _y_axis, label=_compound)
         
@@ -597,6 +600,8 @@ class Resonance(object):
                     _x_axis = _stack_signal[_compound][_element]['energy_eV']
                     if x_axis == 'lambda':
                         _x_axis = _utilities.energy_to_lambda(energy_ev=_x_axis)
+                    if x_axis == 'time':
+                        _x_axis = _utilities.energy_to_time(energy_ev=_x_axis)
                     _y_axis = _stack_signal[_compound][_element][y_axis_tag]
                     plt.plot(_x_axis, _y_axis, label="{}/{}".format(_compound, _element))
                     
@@ -607,6 +612,8 @@ class Resonance(object):
                         _x_axis = _stack_signal[_compound][_element][_isotope]['energy_eV']
                         if x_axis == 'lambda':
                             _x_axis = _utilities.energy_to_lambda(energy_ev=_x_axis)
+                        if x_axis == 'time':
+                            _x_axis = _utilities.energy_to_time(energy_ev=_x_axis)
                         _y_axis = _stack_signal[_compound][_element][_isotope][y_axis_tag]
                         plt.plot(_x_axis, _y_axis, label="{}/{}/{}".format(_compound, _element, _isotope))
         
@@ -621,6 +628,8 @@ class Resonance(object):
             _x_axis = _live_path['energy_eV']
             if x_axis == 'lambda':
                 _x_axis = _utilities.energy_to_lambda(energy_ev=_x_axis)
+            if x_axis == 'time':
+                _x_axis = _utilities.energy_to_time(energy_ev=_x_axis)
             _y_axis = _live_path[y_axis_tag]
             plt.plot(_x_axis, _y_axis, label=_label)
 
