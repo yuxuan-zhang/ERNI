@@ -447,7 +447,7 @@ def energy_to_lambda(energy_ev=[]):
 def energy_to_time(energy_ev=[], delay_us=2.99, source_to_detector_cm=1612.5):
     # function to convert energy in eV to time in us
     # delay values with no actual MCP delay settings
-    """convert into lambda from the energy array
+    """convert into time from the energy array
 
     Parameters:
     ===========
@@ -455,14 +455,30 @@ def energy_to_time(energy_ev=[], delay_us=2.99, source_to_detector_cm=1612.5):
 
     Returns:
     ========
-    array in (micro seconds)
+    time: array in (micro seconds)
     """
     energy_mev = energy_ev * 1000
-    tot_time_us = np.sqrt(81.787 / energy_mev) * source_to_detector_cm / 0.3956
-    time_record_us = (tot_time_us - delay_us)
+    time_tot_us = np.sqrt(81.787 / energy_mev) * source_to_detector_cm / 0.3956
+    time_record_us = (time_tot_us - delay_us)
     time_record_ns = time_record_us * 1000
     time_record_s = time_record_us / 1e6
     return time_record_us
+
+def time_to_energy(time_record_s, delay_us=2.99, source_to_detector_cm=1612.5):  # function to convert time in us to energy in eV
+    """convert into energy from time
+    Parameters:
+    ===========
+    time (in s)
+
+    Returns:
+    ========
+    energy: (in eV)
+    """
+    time_tot_us = 1e6 * time_record_s + delay_us
+    energy_mev = 81.787 / (0.3956 * time_tot_us / source_to_detector_cm) ** 2
+    energy_ev = energy_mev / 1000
+    return energy_ev
+
 
 
 def ev2lamda(energy_ev):  # function to convert energy in eV to angstrom
