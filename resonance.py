@@ -533,7 +533,7 @@ class Resonance(object):
                     
         self.stack_sigma = stack_sigma
                     
-    def plot(self, transmission=False, x_axis='energy', mixed=False, all_layers=False, all_elements=False, 
+    def plot(self, transmission=False, x_axis='energy', mixed=True, all_layers=False, all_elements=False,
              all_isotopes=False, items_to_plot=[]):
         """display the transmission or attenuation of compound, element and/or isotopes specified
         
