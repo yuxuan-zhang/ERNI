@@ -17,4 +17,4 @@ _density_1 = 0.7875 # g/cm3 deviated due to porosity
 o_reso = Resonance(energy_min=_energy_min, energy_max=_energy_max, energy_step=_energy_step)
 o_reso.add_layer(formula=_layer_1, thickness=_thickness_1, density=_density_1)
 
-o_reso.plot(all_elements=True, transmission=True, x_axis='number')
+o_reso.plot(all_elements=True, transmission=True, x_axis='time')
