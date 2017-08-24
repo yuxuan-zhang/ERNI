@@ -5,7 +5,7 @@ import _utilities
 from resonance import Resonance
 
 # Global parameters
-_energy_min = 1e-5
+_energy_min = 8
 _energy_max = 170
 _energy_step = 0.01
 # Input sample name or names as str, case sensitive
@@ -52,7 +52,25 @@ y_data_array = 1 - _utilities.get_normalized_data_range(data_path, range_min, ra
 exp_y_index = pku.indexes(y_data_array, thres=0.12/max(y_data_array), min_dist=7)
 exp_x_index = pku.interpolate(x_data_array, y_data_array, ind=exp_y_index)
 print('x_exp_peak: ', exp_x_index)
-print('Equal size: ', len(ideal_x_index) == len(exp_x_index))
+equal_size_boo = len(ideal_x_index) == len(exp_x_index)
+print('Equal size: ', equal_size_boo)
+
+
+# Fitting the peak positions
+
+params = Parameters()
+params.add('source_to_detector_cm', value=source_to_detector_cm)
+params.add('delay_us', value=delay_us)
+
+plt.plot(x_data_array, y_data_array, 'r-', label=_name)
+plt.plot(x_data_array[exp_y_index], y_data_array[exp_y_index], 'go', label='peak_exp')
+plt.title('Peak estimation')
+
+plt.ylim(-0.01, 1.01)
+plt.xlim(0, _energy_max)
+plt.legend(loc='best')
+plt.show()
+
 # baseline = pku.baseline(y_data_array)
 # print(baseline)
 # print('y_exp_peak: ', exp_y_index)
@@ -63,23 +81,9 @@ print('Equal size: ', len(ideal_x_index) == len(exp_x_index))
 # df2 = pd.DataFrame()
 # df2['Ideal_x'] = x_energy
 # df2['Ideal_y'] = y_attenu_tot
-
-params = Parameters()
-params.add('source_to_detector_cm', value=source_to_detector_cm)
-params.add('delay_us', value=delay_us)
-
 # x_gap = _fit_functions.peak_x_gap(params, ideal_x_index, y_data_array)
 # print('x_gap:', x_gap)
 
 # out = minimize(_fit_functions.peak_x_gap, params, method='leastsq', args=(ideal_x_index, y_data_array))
 # out = scipy.optimize.minimize(_fit_funtions.peak_x_gap_scipy, delay_us, method='leastsq', args=(ideal_x_index, y_data_array))
 # print(out.__dict__)
-
-plt.plot(x_data_array, y_data_array, 'r-', label=_name)
-plt.plot(x_data_array[exp_y_index], y_data_array[exp_y_index], 'go', label='peak_exp')
-plt.title('Peak estimation')
-
-plt.ylim(-0.01, 1.01)
-plt.xlim(0, _energy_max)
-plt.legend(loc='best')
-plt.show()
